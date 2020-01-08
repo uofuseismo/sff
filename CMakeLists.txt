@@ -70,7 +70,9 @@ configure_file(${CMAKE_SOURCE_DIR}/include/sff/version.hpp.in
 ################################################################################
 set(SRC
     src/utilities/time.cpp
-    src/utilities/version.cpp)
+    src/utilities/version.cpp
+    src/sac/header.cpp
+    src/sac/waveform.cpp)
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
 set(BUILD_SHARED_LIBS YES)
