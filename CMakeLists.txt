@@ -95,12 +95,16 @@ endif()
 ################################################################################
 #                                 Unit Tests                                   #
 ################################################################################
-add_executable(utilitiesTest
-               testing/utilities/main.cpp
-               testing/utilities/time.cpp)
-target_link_libraries(utilitiesTest PRIVATE sff ${GTEST_BOTH_LIBRARIES})
-add_test(NAME utilitiesTest
-         COMMAND utilitiesTest)
+add_executable(tests
+               testing/main.cpp
+               testing/utilities/time.cpp
+               testing/sac/sac.cpp)
+target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
+add_test(NAME tests
+         COMMAND tests)
+
+# Also need to copy some test data
+file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 
 ################################################################################
 #                                Installation                                  #

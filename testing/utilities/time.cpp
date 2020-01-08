@@ -11,7 +11,7 @@ using namespace SFF::Utilities;
 //============================================================================//
 //                                     Time                                   //
 //============================================================================//
-TEST(LibraryUtilitiesTime, EpochToCalendar)
+TEST(UtilitiesTime, EpochToCalendar)
 {
     Time time(1408117832.844000);
     //time.setEpochalTime(1408117832.844000);
@@ -34,7 +34,7 @@ TEST(LibraryUtilitiesTime, EpochToCalendar)
     EXPECT_EQ(844000, moveTime.getMicroSecond());
 }
 
-TEST(LibraryUtilitiesTime, clear)
+TEST(UtilitiesTime, clear)
 {
     Time time(1408117832.844000);
     time.clear();
@@ -49,7 +49,7 @@ TEST(LibraryUtilitiesTime, clear)
     EXPECT_NEAR(0,  time.getEpochalTime(), 1.e-4);
 }
 
-TEST(LibraryUtilitiesTime, swap)
+TEST(UtilitiesTime, swap)
 {
     Time time1(1408117832.844000);
     Time time1Ref = time1;
@@ -60,7 +60,7 @@ TEST(LibraryUtilitiesTime, swap)
     EXPECT_TRUE(time2 == time1Ref);
 }
 
-TEST(LibraryUtilitiesTime, CalendarToEpoch)
+TEST(UtilitiesTime, CalendarToEpoch)
 {
     Time time;
     // Build time from day of month
@@ -85,7 +85,7 @@ TEST(LibraryUtilitiesTime, CalendarToEpoch)
     EXPECT_NEAR(1460402025.255, copyTime.getEpochalTime(), 1.e-4); 
 }
 
-TEST(LibraryUtilitiesTime, CompareTime)
+TEST(UtilitiesTime, CompareTime)
 {
     Time time1(1460402025.255);
     Time time2(1460402425.255);
@@ -95,7 +95,7 @@ TEST(LibraryUtilitiesTime, CompareTime)
     EXPECT_TRUE(time1 != time2);
 }
 
-TEST(LibraryUtilitiesTime, TimeOperators)
+TEST(UtilitiesTime, TimeOperators)
 {
     Time time1; // 1578513045.372
     time1.setYear(2020);
@@ -114,7 +114,7 @@ TEST(LibraryUtilitiesTime, TimeOperators)
 }
 
 /*
-TEST(LibraryUtilitiesTime, LeapSeconds)
+TEST(UtilitiesTime, LeapSeconds)
 {
     LeapSeconds ls;
     Time time;
