@@ -35,5 +35,17 @@ After successfully installing the dependencies and obtaining the source code nex
     cmake ../ \
     -DCMAKE_CXX_COMPILER=${CXX} \
     -DCMAKE_CXX_FLAGS="-g -Wall -Wextra" \
-    -DWRAP_PYTHON=TRUE 
+    -DWRAP_PYTHON=TRUE
+    cd ..
+
+## Building
+
+Following a successful configuration descend into the build directory and type
+
+    make
+
+To verify nominal functionality of the software on your system next type
+
+    make test
+
 
