@@ -42,5 +42,22 @@ def test_time():
     assert tsub.second == 8, 'get second failed'
     assert tsub.micro_second == 900000, 'get micro_second failed'
 
+def test_sac():
+    sac = pysff.SAC()
+    sac.read('data/debug.sac')
+    assert sac.number_of_samples == sac.get_integer_header(sac.Integer.npts), 'npts failed'
+    assert sac.get_integer_header(sac.Integer.nvhdr) == 6, 'nvhdr failed'
+    assert sac.number_of_samples == 100, 'npts is wrong'
+    assert (sac.sampling_period - 0.005) < 1.e-7, 'sampling period is wrong'
+    assert sac.sampling_period == sac.get_float_header(sac.Float.delta), 'delta failed'
+    assert sac.get_character_header(sac.Character.knetwk) == 'FK', 'knetwk is wrong'
+    assert sac.get_character_header(sac.Character.kstnm) == 'NEW', 'kstnm is wrong'
+    assert sac.get_character_header(sac.Character.kcmpnm) == 'HHZ', 'kcmpnm is wrong'
+    assert sac.get_character_header(sac.Character.khole) == '10', 'khole is wrong'
+    ref = np.arange(1, 101, 1) 
+    data = sac.data
+    assert np.max(ref - data) < 1.e-7, 'couldnt recover data'
+
 if __name__ == "__main__":
     test_time()
+    test_sac()

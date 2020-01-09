@@ -82,7 +82,7 @@ set_property(TARGET sff PROPERTY CXX_STANDARD 17)
 if (WRAP_PYTHON)
    add_library(pysff MODULE
                python/time.cpp
-               #python/sac.cpp
+               python/sac.cpp
                #python/multiChannelMatchedFilterParameters.cpp
                #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)
