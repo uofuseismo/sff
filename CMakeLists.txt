@@ -76,8 +76,8 @@ set(SRC
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
 set(BUILD_SHARED_LIBS YES)
-add_library(sffpp ${SRC})
-set_property(TARGET sffpp PROPERTY CXX_STANDARD 17)
+add_library(sff ${SRC})
+set_property(TARGET sff PROPERTY CXX_STANDARD 17)
 
 if (WRAP_PYTHON)
    add_library(pysff MODULE
@@ -87,7 +87,7 @@ if (WRAP_PYTHON)
                #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)
    target_link_libraries(pysff PRIVATE
-                         pybind11::module sffpp OpenMP::OpenMP_CXX)
+                         pybind11::module sff OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
    set_property(TARGET pysff PROPERTY PREFIX "")
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_tests.py DESTINATION .)
@@ -100,7 +100,7 @@ add_executable(tests
                testing/main.cpp
                testing/utilities/time.cpp
                testing/sac/sac.cpp)
-target_link_libraries(tests PRIVATE sffpp ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
 add_test(NAME tests
          COMMAND tests)
 
@@ -112,12 +112,12 @@ file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 ################################################################################
 include(GNUInstallDirs)
 if (MFLIB_WRAP_PYTHON)
-   install(TARGETS sffpp pysff
+   install(TARGETS sff pysff
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 else()
-   install(TARGETS sffpp
+   install(TARGETS sff
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
