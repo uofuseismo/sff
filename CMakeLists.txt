@@ -101,6 +101,7 @@ add_executable(tests
                testing/utilities/time.cpp
                testing/sac/sac.cpp)
 target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
+target_include_directories(tests PRIVATE ${GTEST_INCLUDE_DIRS})
 add_test(NAME tests
          COMMAND tests)
 
