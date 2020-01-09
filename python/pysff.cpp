@@ -11,6 +11,14 @@ PYBIND11_MODULE(pysff, m)
     //------------------------------------------------------------------------//
     pybind11::class_<PBSFF::Time> time(m, "Time");
     time.def(pybind11::init<> ());
+    time.def("__add__", [](PBSFF::Time &a, const PBSFF::Time &b)
+    {
+        return a + b;
+    }, pybind11::is_operator());
+    time.def("__sub__", [](PBSFF::Time &a, const PBSFF::Time &b)
+    {
+        return a - b;
+    }, pybind11::is_operator());
     time.doc() = "This is used for managing converting between epochal and date-times.";
     time.def_property("epoch",
                       &PBSFF::Time::getEpochalTime,
@@ -41,8 +49,8 @@ PYBIND11_MODULE(pysff, m)
                       &PBSFF::Time::setMinute,
                       "This specifies the minute of the hour and must be in the range [0,59].");
     time.def_property("second",
-                      &PBSFF::Time::getDayOfMonth,
-                      &PBSFF::Time::setDayOfMonth,
+                      &PBSFF::Time::getSecond,
+                      &PBSFF::Time::setSecond,
                       "This specifies the second of the minute and must be in the range [0,59].");
     time.def_property("micro_second",
                       &PBSFF::Time::getMicroSecond,

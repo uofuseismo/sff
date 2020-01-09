@@ -42,6 +42,19 @@ Time& Time::operator=(const SFF::Utilities::Time &time)
     return *this;
 }
 
+/// Operators
+Time Time::operator+(const Time &y)
+{
+    Time tout(*mTime + *y.mTime);
+    return tout;    
+}
+
+Time Time::operator-(const Time &y) 
+{
+    Time tout(*mTime - *y.mTime);
+    return tout;    
+}
+
 /// Destructor 
 Time::~Time() = default;
 
@@ -71,6 +84,7 @@ int Time::getYear() const
 void Time::setJulianDay(const int jday)
 {
     mTime->setJulianDay(jday);
+printf("jday: %d\n", jday);
 }
 
 int Time::getJulianDay() const
@@ -82,6 +96,7 @@ int Time::getJulianDay() const
 void Time::setMonth(const int month)
 {
     mTime->setMonth(month);
+printf("mon: %d\n", month);
 }
 
 int Time::getMonth() const
@@ -93,6 +108,7 @@ int Time::getMonth() const
 void Time::setDayOfMonth(const int dom)
 {
     mTime->setDayOfMonth(dom);
+printf("dom: %d\n", dom);
 }
 
 int Time::getDayOfMonth() const
@@ -104,6 +120,7 @@ int Time::getDayOfMonth() const
 void Time::setHour(const int hour)
 {
     mTime->setHour(hour);
+printf("hr: %d\n", hour);
 }
 
 int Time::getHour() const

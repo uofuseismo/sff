@@ -90,6 +90,7 @@ if (WRAP_PYTHON)
                          pybind11::module sff OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
    set_property(TARGET pysff PROPERTY PREFIX "")
+   file(COPY ${CMAKE_SOURCE_DIR}/python/unit_tests.py DESTINATION .)
 endif()
 
 ################################################################################

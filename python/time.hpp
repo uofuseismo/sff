@@ -21,6 +21,9 @@ public:
     /// Copy assignment
     Time& operator=(const Time &time);
     Time& operator=(const SFF::Utilities::Time &time);
+    /// Add/subtract operators
+    Time operator+(const Time &t);
+    Time operator-(const Time &t);
     /// Destructor
     ~Time();
 
