@@ -161,3 +161,54 @@ int Time::getMicroSecond() const
     return mTime->getMicroSecond();
 }
 
+/// Creates the class
+void PBSFF::initializeTime(pybind11::module &m)
+{
+    pybind11::class_<PBSFF::Time> time(m, "Time");
+    time.def(pybind11::init<> ());
+    time.def("__add__", [](PBSFF::Time &a, const PBSFF::Time &b)
+    {
+        return a + b;
+    }, pybind11::is_operator());
+    time.def("__sub__", [](PBSFF::Time &a, const PBSFF::Time &b)
+    {
+        return a - b;
+    }, pybind11::is_operator());
+    time.doc() = "This is used for managing converting between epochal and date-times.";
+    time.def_property("epoch",
+                      &PBSFF::Time::getEpochalTime,
+                      &PBSFF::Time::setEpochalTime,
+                      "epoch: This defines the UTC time in seconds since epoch (Jan 1, 1970).");
+    time.def_property("year",
+                      &PBSFF::Time::getYear,
+                      &PBSFF::Time::setYear,
+                      "This defines the time's year - e.g., 2020 indicates the year 2020.  This must be greater than 1900.");
+    time.def_property("julian_day",
+                      &PBSFF::Time::getJulianDay,
+                      &PBSFF::Time::setJulianDay,
+                      "There are two ways to specify the day of the year.  The first is the Julian day.  In this case, this must be in the range [1,366] where 366 accounts for leap years.  Setting this variable will invalidate the month and day of the month.");
+    time.def_property("month",
+                      &PBSFF::Time::getMonth,
+                      &PBSFF::Time::setMonth,
+                      "The other way to specify the day of the year is by specifying the month and the day of the month with the day_of_month attribute.   This is the month and must be in the range [1,12].  Setting this variable then this will invalidate the Julian day.");
+    time.def_property("day_of_month",
+                      &PBSFF::Time::getDayOfMonth,
+                      &PBSFF::Time::setDayOfMonth,
+                      "The other way to specify the day of the year is by speciyfing the month with the month attribute and the day of the month.  This is the day of the month and must be in the range [1,31].  Setting this variable will invalidate the Julian day.");
+    time.def_property("hour",
+                      &PBSFF::Time::getHour,
+                      &PBSFF::Time::setHour,
+                      "This specifies the hour of the day and must be in the range [0,23].");
+    time.def_property("minute",
+                      &PBSFF::Time::getMinute,
+                      &PBSFF::Time::setMinute,
+                      "This specifies the minute of the hour and must be in the range [0,59].");
+    time.def_property("second",
+                      &PBSFF::Time::getSecond,
+                      &PBSFF::Time::setSecond,
+                      "This specifies the second of the minute and must be in the range [0,59].");
+    time.def_property("micro_second",
+                      &PBSFF::Time::getMicroSecond,
+                      &PBSFF::Time::setMicroSecond,
+                      "This specifies the micro-second and must be in the range [0,999999].");
+}

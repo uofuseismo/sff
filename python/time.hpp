@@ -59,5 +59,6 @@ public:
 private:
     std::unique_ptr<SFF::Utilities::Time> mTime;
 };
+void initializeTime(pybind11::module &m);
 }
 #endif
