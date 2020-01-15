@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <pybind11/numpy.h>
+#include "time.hpp"
 #include "sff/sac/enums.hpp"
 namespace SFF::SAC
 {
@@ -34,6 +35,9 @@ public:
     double getSamplingPeriod() const;
     void setSamplingRate(double samplingRate);
     double getSamplingRate() const;
+    /// Sets/gets the start time
+    void setStartTime(const PBSFF::Time &time);
+    PBSFF::Time getStartTime() const;
     /// Gets the number of samples
     int getNumberOfSamples() const;
     /// The header variables

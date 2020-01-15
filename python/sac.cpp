@@ -3,6 +3,8 @@
 #include <string>
 #include "sff/sac/waveform.hpp"
 #include "sff/sac/header.hpp"
+#include "sff/utilities/time.hpp"
+#include "time.hpp"
 #include "sac.hpp"
 
 using namespace PBSFF;
@@ -116,6 +118,20 @@ double SAC::getSamplingRate() const
     return mWaveform->getSamplingRate();
 }
 
+/// Start time
+void SAC::setStartTime(const PBSFF::Time &time)
+{
+    auto t = time.getNativeClass();
+    mWaveform->setStartTime(t);
+}
+
+PBSFF::Time SAC::getStartTime() const
+{
+    auto t = mWaveform->getStartTime();
+    PBSFF::Time tout(t);
+    return tout;
+}
+
 /// Double header 
 void SAC::setDoubleHeaderVariable(const SFF::SAC::Double name,
                                   const double value)
@@ -207,11 +223,15 @@ void PBSFF::initializeSAC(pybind11::module &m)
     sac.def_property("sampling_rate",
                      &PBSFF::SAC::getSamplingRate,
                      &PBSFF::SAC::setSamplingRate,
-                     "Sets the sampling rate which is specified in Hz.  This must be positive.");
+                     "The sampling rate which is specified in Hz.  This must be positive.");
     sac.def_property("sampling_period",
                      &PBSFF::SAC::getSamplingPeriod,
                      &PBSFF::SAC::setSamplingPeriod,
-                     "Sets the sampling period which is specified in seconds.  This must be positive.");
+                     "The sampling period which is specified in seconds.  This must be positive.");
+    sac.def_property("start_time",
+                     &PBSFF::SAC::getStartTime,
+                     &PBSFF::SAC::setStartTime, 
+                     "The time of the first sample in the trace.");
     sac.def_property_readonly("number_of_samples",
                               &PBSFF::SAC::getNumberOfSamples,
                               "Gets the number of samples in the signal.");
