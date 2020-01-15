@@ -49,9 +49,21 @@ Time Time::operator+(const Time &y)
     return tout;    
 }
 
+Time Time::operator+(const double y)
+{
+    Time tout(*mTime + y);
+    return tout;    
+}
+
 Time Time::operator-(const Time &y) 
 {
     Time tout(*mTime - *y.mTime);
+    return tout;    
+}
+
+Time Time::operator-(const double y) 
+{
+    Time tout(*mTime - y);
     return tout;    
 }
 
@@ -170,8 +182,16 @@ void PBSFF::initializeTime(pybind11::module &m)
     {
         return a + b;
     }, pybind11::is_operator());
+    time.def("__add__", [](PBSFF::Time &a, const double b) 
+    {   
+        return a + b;
+    }, pybind11::is_operator());
     time.def("__sub__", [](PBSFF::Time &a, const PBSFF::Time &b)
     {
+        return a - b;
+    }, pybind11::is_operator());
+    time.def("__sub__", [](PBSFF::Time &a, const double b) 
+    {   
         return a - b;
     }, pybind11::is_operator());
     time.doc() = "This is used for managing converting between epochal and date-times.";

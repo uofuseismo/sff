@@ -24,6 +24,9 @@ public:
     /// Add/subtract operators
     Time operator+(const Time &t);
     Time operator-(const Time &t);
+    /// Add/subtract operators
+    Time operator+(double t);
+    Time operator-(double t);
     /// Destructor
     ~Time();
 

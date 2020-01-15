@@ -29,6 +29,17 @@ def test_time():
     assert tnew.minute == 12, 'get minute failed'
     assert tnew.second == 8, 'get second failed'
     assert tnew.micro_second == 900000, 'get micro_second failed'
+
+    tnew = t + 86400.1 
+    assert tnew.year == 2020, 'get year failed - add double'
+    assert tnew.month == 1, 'get month failed - add double'
+    assert tnew.day_of_month == 10, 'get day of month failed - add double'
+    assert tnew.julian_day == 10, 'get julian day failed - add double'
+    assert tnew.hour == 0, 'get hour failed - add double'
+    assert tnew.minute == 12, 'get minute failed - add double'
+    assert tnew.second == 8, 'get second failed - add double'
+    assert tnew.micro_second == 900000, 'get micro_second failed - add double'
+
     # Subtract half a day
     thalf = pysff.Time()
     thalf.epoch = 43200
@@ -41,6 +52,16 @@ def test_time():
     assert tsub.minute == 12, 'get minute failed'
     assert tsub.second == 8, 'get second failed'
     assert tsub.micro_second == 900000, 'get micro_second failed'
+
+    tsub = tnew - 43200
+    assert tsub.year == 2020, 'get year failed - sub double'
+    assert tsub.month == 1, 'get month failed - sub double'
+    assert tsub.day_of_month == 9, 'get day of month failed - sub double'
+    assert tsub.julian_day == 9, 'get julian day failed - sub double'
+    assert tsub.hour == 12, 'get hour failed - sub double'
+    assert tsub.minute == 12, 'get minute failed - sub double'
+    assert tsub.second == 8, 'get second failed - sub double'
+    assert tsub.micro_second == 900000, 'get micro_second failed - sub double'
 
 def test_sac():
     sac = pysff.SAC()
