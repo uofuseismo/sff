@@ -96,7 +96,6 @@ int Time::getYear() const
 void Time::setJulianDay(const int jday)
 {
     mTime->setJulianDay(jday);
-printf("jday: %d\n", jday);
 }
 
 int Time::getJulianDay() const
@@ -108,7 +107,6 @@ int Time::getJulianDay() const
 void Time::setMonth(const int month)
 {
     mTime->setMonth(month);
-printf("mon: %d\n", month);
 }
 
 int Time::getMonth() const
@@ -120,7 +118,6 @@ int Time::getMonth() const
 void Time::setDayOfMonth(const int dom)
 {
     mTime->setDayOfMonth(dom);
-printf("dom: %d\n", dom);
 }
 
 int Time::getDayOfMonth() const
@@ -132,7 +129,6 @@ int Time::getDayOfMonth() const
 void Time::setHour(const int hour)
 {
     mTime->setHour(hour);
-printf("hr: %d\n", hour);
 }
 
 int Time::getHour() const
@@ -195,40 +191,58 @@ void PBSFF::initializeTime(pybind11::module &m)
         return a - b;
     }, pybind11::is_operator());
     time.doc() = "This is used for managing converting between epochal and date-times.";
-    time.def_property("epoch",
-                      &PBSFF::Time::getEpochalTime,
-                      &PBSFF::Time::setEpochalTime,
-                      "epoch: This defines the UTC time in seconds since epoch (Jan 1, 1970).");
-    time.def_property("year",
-                      &PBSFF::Time::getYear,
-                      &PBSFF::Time::setYear,
-                      "This defines the time's year - e.g., 2020 indicates the year 2020.  This must be greater than 1900.");
-    time.def_property("julian_day",
-                      &PBSFF::Time::getJulianDay,
-                      &PBSFF::Time::setJulianDay,
-                      "There are two ways to specify the day of the year.  The first is the Julian day.  In this case, this must be in the range [1,366] where 366 accounts for leap years.  Setting this variable will invalidate the month and day of the month.");
-    time.def_property("month",
-                      &PBSFF::Time::getMonth,
-                      &PBSFF::Time::setMonth,
-                      "The other way to specify the day of the year is by specifying the month and the day of the month with the day_of_month attribute.   This is the month and must be in the range [1,12].  Setting this variable then this will invalidate the Julian day.");
-    time.def_property("day_of_month",
-                      &PBSFF::Time::getDayOfMonth,
-                      &PBSFF::Time::setDayOfMonth,
-                      "The other way to specify the day of the year is by speciyfing the month with the month attribute and the day of the month.  This is the day of the month and must be in the range [1,31].  Setting this variable will invalidate the Julian day.");
-    time.def_property("hour",
-                      &PBSFF::Time::getHour,
-                      &PBSFF::Time::setHour,
-                      "This specifies the hour of the day and must be in the range [0,23].");
-    time.def_property("minute",
-                      &PBSFF::Time::getMinute,
-                      &PBSFF::Time::setMinute,
-                      "This specifies the minute of the hour and must be in the range [0,59].");
-    time.def_property("second",
-                      &PBSFF::Time::getSecond,
-                      &PBSFF::Time::setSecond,
-                      "This specifies the second of the minute and must be in the range [0,59].");
-    time.def_property("micro_second",
-                      &PBSFF::Time::getMicroSecond,
-                      &PBSFF::Time::setMicroSecond,
-                      "This specifies the micro-second and must be in the range [0,999999].");
+    time.def("get_epoch",
+             &PBSFF::Time::getEpochalTime,
+             "Gets the UTC time in seconds since the epoch (Jan 1, 1970).");
+    time.def("set_epoch",
+             &PBSFF::Time::setEpochalTime,
+             "This defines the UTC time in seconds since epoch (Jan 1, 1970).");
+    time.def("get_year",
+             &PBSFF::Time::getYear,
+             "Gets the year.");
+    time.def("set_year",
+             &PBSFF::Time::setYear,
+             "This defines the time's year - e.g., 2020 indicates the year 2020.  This must be greater than 1900.");
+    time.def("get_julian_day",
+             &PBSFF::Time::getJulianDay,
+             "Gets the Julian day (day of the year).");
+    time.def("set_julian_day",
+             &PBSFF::Time::setJulianDay,
+             "There are two ways to specify the day of the year.  The first is the Julian day.  In this case, this must be in the range [1,366] where 366 accounts for leap years.  Setting this variable will invalidate the month and day of the month.");
+    time.def("get_month",
+             &PBSFF::Time::getMonth,
+             "Gets the month of the year.");
+    time.def("set_month",
+             &PBSFF::Time::setMonth,
+             "The other way to specify the day of the year is by specifying the month and the day of the month with the day_of_month attribute.  This is the month and must be in the range [1,12].  Setting this variable then this will invalidate the Julian day.");
+    time.def("get_day_of_month",
+             &PBSFF::Time::getDayOfMonth,
+             "Gets the day of the month.");
+    time.def("set_day_of_month",
+             &PBSFF::Time::setDayOfMonth,
+             "The other way to specify the day of the year is by speciyfing the month with the month attribute and the day of the month.  This is the day of the month and must be in the range [1,31].  Setting this variable will invalidate the Julian day.");
+    time.def("get_hour",
+             &PBSFF::Time::getHour,
+             "Gets the hour of the day.");
+    time.def("set_hour",
+             &PBSFF::Time::setHour,
+             "This specifies the hour of the day and must be in the range [0,23].");
+    time.def("get_minute",
+              &PBSFF::Time::getMinute,
+             "Gets the minute of the hour.");
+    time.def("set_minute",
+             &PBSFF::Time::setMinute,
+             "This specifies the minute of the hour and must be in the range [0,59].");
+    time.def("get_second",
+             &PBSFF::Time::getSecond,
+             "Gets the second.");
+    time.def("set_second",
+             &PBSFF::Time::setSecond,
+            "This specifies the second of the minute and must be in the range [0,59].");
+    time.def("get_microsecond",
+             &PBSFF::Time::getMicroSecond,
+             "Gets the microsecond."); 
+    time.def("set_microsecond",
+             &PBSFF::Time::setMicroSecond,
+             "This specifies the microsecond and must be in the range [0,999999].");
 }

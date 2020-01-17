@@ -216,25 +216,33 @@ void PBSFF::initializeSAC(pybind11::module &m)
     sac.def("write",
             &PBSFF::SAC::write,
             "Writes a waveform to disk corresponding to the given file name.");
-    sac.def_property("data",
-                     &PBSFF::SAC::getWaveform,
-                     &PBSFF::SAC::setWaveform,
-                     "Accesses the waveform data");
-    sac.def_property("sampling_rate",
-                     &PBSFF::SAC::getSamplingRate,
-                     &PBSFF::SAC::setSamplingRate,
-                     "The sampling rate which is specified in Hz.  This must be positive.");
-    sac.def_property("sampling_period",
-                     &PBSFF::SAC::getSamplingPeriod,
-                     &PBSFF::SAC::setSamplingPeriod,
-                     "The sampling period which is specified in seconds.  This must be positive.");
-    sac.def_property("start_time",
-                     &PBSFF::SAC::getStartTime,
-                     &PBSFF::SAC::setStartTime, 
-                     "The time of the first sample in the trace.");
-    sac.def_property_readonly("number_of_samples",
-                              &PBSFF::SAC::getNumberOfSamples,
-                              "Gets the number of samples in the signal.");
+    sac.def("get_data",
+            &PBSFF::SAC::getWaveform,
+            "Gets the waveform data as a NumPy array.");
+    sac.def("set_data",
+            &PBSFF::SAC::setWaveform,
+            "Sets the waveform data from a NumPy array.");
+    sac.def("get_sampling_rate",
+            &PBSFF::SAC::getSamplingRate,
+            "Gets the sampling rate in Hz.");
+    sac.def("set_sampling_rate",
+            &PBSFF::SAC::setSamplingRate,
+            "Sets the sampling rate which is specified in Hz.  This must be positive.");
+    sac.def("get_sampling_period",
+            &PBSFF::SAC::getSamplingPeriod,
+            "Gets the sampling period in seconds.");
+    sac.def("set_sampling_period",
+            &PBSFF::SAC::setSamplingPeriod,
+            "Sets the sampling period which is specified in seconds.  This must be positive.");
+    sac.def("get_start_time",
+            &PBSFF::SAC::getStartTime,
+            "Gets the UTC time since the epoch of the first sample in the trace.");
+    sac.def("set_start_time",
+            &PBSFF::SAC::setStartTime, 
+            "Sets the UTC time since the epoch of the first sample in the trace.");
+    sac.def("get_number_of_samples",
+            &PBSFF::SAC::getNumberOfSamples,
+            "Gets the number of samples in the signal.");
     sac.def("set_float_header",
             &PBSFF::SAC::setDoubleHeaderVariable,
             "Sets a floating precision header variable.");
