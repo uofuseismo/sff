@@ -72,7 +72,9 @@ set(SRC
     src/utilities/time.cpp
     src/utilities/version.cpp
     src/sac/header.cpp
-    src/sac/waveform.cpp)
+    src/sac/waveform.cpp
+    src/segy/silixaBinaryFileHeader.cpp
+    src/segy/textualFileHeader.cpp)
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
 set(BUILD_SHARED_LIBS YES)
@@ -99,7 +101,8 @@ endif()
 add_executable(tests
                testing/main.cpp
                testing/utilities/time.cpp
-               testing/sac/sac.cpp)
+               testing/sac/sac.cpp
+               testing/segy/silixa.cpp)
 target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
 target_include_directories(tests PRIVATE ${GTEST_INCLUDE_DIRS})
 add_test(NAME tests

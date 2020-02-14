@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <array>
 #include "sff/segy/textualFileHeader.hpp"
-#include "sff/private/ebcdic.hpp"
 
 using namespace SFF::SEGY;
 
