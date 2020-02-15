@@ -42,6 +42,15 @@ endif()
 link_libraries(stdc++fs)
 
 ################################################################################
+#                           Download the test data file                        #
+################################################################################
+file(DOWNLOAD
+     http://home.chpc.utah.edu/~u6024448/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
+     ${CMAKE_SOURCE_DIR}/testing/data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
+     INACTIVITY_TIMEOUT 5)
+#    SHOW_PROGRESS)
+
+################################################################################
 #                         Look For Some Required Libraries                     #
 ################################################################################
 find_package(GTest REQUIRED)
