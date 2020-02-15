@@ -166,7 +166,6 @@ TEST(SEGY, Trace)
 {
 //    SEGY::Silixa::Trace trace;
 /*
-
     // Pick out the binary header
     std::ifstream file("data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy",
                        std::ios::binary);
