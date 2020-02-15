@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <array>
+#include <string>
 #include "sff/segy/textualFileHeader.hpp"
 
 using namespace SFF::SEGY;

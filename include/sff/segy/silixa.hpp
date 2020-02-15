@@ -2,129 +2,87 @@
 #define SFF_SEGY_SILIXA_HPP
 #include <memory>
 #include <string>
+#include "sff/abstractBaseClass/trace.hpp"
+#include "sff/segy/textualFileHeader.hpp"
+#include "sff/segy/silixa/binaryFileHeader.hpp"
+#include "sff/segy/silixa/traceHeader.hpp"
+#include "sff/utilities/time.hpp"
+
 namespace SFF::SEGY::Silixa
 {
 
 /*!
- * @brief Defines the custom Silixa binary file header.
- * @copyright Ben Baker (University of Utah) distributed under the MIT license.
+ * @brief This is a container for the time series data.
  */
-class BinaryFileHeader
+class Trace //: public SFF::AbstractBaseClass::ITrace
 {
 public:
     /*! @name Constructors
      * @{
      */
-    BinaryFileHeader();
-    BinaryFileHeader(const BinaryFileHeader &header);
-    BinaryFileHeader(BinaryFileHeader &&header) noexcept;
+    Trace();
+    Trace(const Trace &trace);
+    Trace(Trace &&trace) noexcept;
     /*! @} */
+
     /*! @name Operators
      * @{
      */
-    BinaryFileHeader& operator=(const BinaryFileHeader &header);
-    BinaryFileHeader& operator=(BinaryFileHeader &&header) noexcept;
+    Trace& operator=(const Trace &trace);
+    Trace& operator=(Trace &&trace) noexcept;
     /*! @} */
- 
+
     /*! @name Destructors
      * @{
      */
-    /*!
-     * @brief Destructor.
-     */
-    ~BinaryFileHeader();
-    /*!
-     * @brief Resets all variables and releases memory.
-     */
+    ~Trace();
     void clear() noexcept;
     /*! @} */
 
     /*!
-     * @brief Sets the binary file header.
-     * @param[in] header   The binary header.  This is assumed to be in 
-     *                     big-endian byte order.
+     * @brief Sets the trace header.
+     * @note The number of samples in the trace header will be made consistent
+     *       with the number of samples set in \c setData().
      */
-    void set(const char header[400]);
+    //void setTraceHeader( );
     /*!
-     * @brief Gets the binary file header in string format.
-     * @result The binary file header.  This will be in big-endian order.
+     * @brief Sets the time series.
+     * @param[in] nSamples   The number of samples in the time series.
+     * @param[in] x          The time series to set.  This is an array whose
+     *                       dimension is [nSamples].
      */
-    std::string get() const;
-    /*!
-     * @brief Packs a binary header for writing to disk.
-     * @param[out] header  The binary header.  This will be in big-endian order.
-     */
-    void get(char *header[]) const;
+    void setData(int nSamples, const double x[]);
+    /*! @copydoc setData */
+    void setData(int nSamples, const float x[]);
 
     /*!
-     * @brief Sets the number of traces in the file.
-     * @param[in] nTraces  The number of traces in the file.  
-     * @throws std::invalid_argument if this is negative.
+     * @brief Gets the time series data.
+     * @param[in] nSamples  The number of samples in x.  This must match
+     *                      the result of \c getNumberOfSamples().
+     * @param[out] x        The time series.  This is an array whose dimension
+     *                      is [nSamples]. 
      */
-    void setNumberOfTraces(int16_t nTraces);
-    /*!
-     * @brief Gets the number of traces in the file.
-     * @result The number of traces in the file.
-     */
-    int getNumberOfTraces() const;
+    void getData(int nSamples, double *x[]) const;
+    /*! @copydoc getData */
+    void getData(int nSamples, float *x[]) const;
 
     /*!
-     * @brief Sets the temporal sample interval.
-     * @param[in] sampleInterval  The temporal sampling interval in
-     *                            microseconds.
-     * @throws std::invalid_argument if this is negative.
+     * @brief Gets the number of samples in the trace.
+     * @result The number of samples in the trace.
      */
-    void setSampleInterval(int16_t sampleInterval);
-    /*!
-     * @brief Gets the temporal sample interval.
-     * @result The temporal sampling interval in microseconds.
-     */
-    int getSampleInterval() const;
-
-    /*!
-     * @brief Sets the number of samples in each trace.
-     * @param[in] nSamples  The number of samples per trace.
-     * @throws std::invalid_argument if this is not positive.
-     */
-    void setNumberOfSamplesPerTrace(int16_t nSamples);
-    /*!
-     * @brief Gets the number of samples in each trace.
-     * @result The number of samples per trace.
-     */
-    int getNumberOfSamplesPerTrace() const;
-    /*!
-     * @brief Determines whether or not a valid binary file header.
-     */
-    bool isValid() const noexcept;
+    int getNumberOfSamples() const;
 private:
-    class BinaryFileHeaderImpl;
-    std::unique_ptr<BinaryFileHeaderImpl> pImpl;
+    class TraceImpl; 
 };
-
-/*
-class SilixaTraceHeader
-{
-
-};
-*/
 
 /*!
  * @class Silixa silixa.hpp "sff/segy/silixa.hpp"
- * @brief Defines the Silixa's custom SEGY file format.
+ * @brief Defines Silixa's custom SEGY file format.
  * @copyright Ben Baker (University of Utah) distributed under the MIT license.
  */
 class Silixa
 {
 public:
-    /*!
-     * @brief Defines the Silixa binary header values.
-     */
-    //enum BinaryHeaderValue
-    //{
-    //    NUMBER_OF_TRACES_IN_FILE,  /*! The number of traces in the file. */
-    //    SAMPLE_INTERVAL,           /*! The sample interval in micro-seconds. */
-    //    SAMPLES_PER_TRACE          /*! The number of samples per trace. */
-    //};
     /*!
      * @brief Defines the Silixa trace header values.
      */
@@ -196,6 +154,14 @@ public:
      * @brief Default destructor.
      */
     ~Silixa();
+    /*!
+     * @brief Clears the class and releases memory.
+     */
+    void clear() noexcept;
+    /*!
+     * @brief Clears the traces from memory.
+     */
+    void clearTraces() noexcept;
     /*! @} */
 
     /*!
@@ -205,7 +171,7 @@ public:
      */
     void read(const std::string &fileName);
 
-    /*! @name Text Header
+    /*! @name Textual Header
      * @{
      */
     /*!
@@ -214,17 +180,26 @@ public:
      *                   than 3200 then it will be padded with NULL terminators.
      *                   If the length exceeds 3200 then it will be truncated.
      */
-    void setTextHeader(const std::string &text);
+    void setTextualHeader(const SFF::SEGY::TextualFileHeader &textFileHeader);
+    SFF::SEGY::TextualFileHeader getTextualFileHeader() const;
     /*!
      * @brief Gets the text header.
      * @throws std::runtime_error if the file is not loaded.
      */
-    std::string getTextHeader() const;
+    //std::string getTextHeader() const;
     /*! @} */
 
-    int getBinaryFileHeaderValue( ) const;
-    void setBinaryFileHeaderValue(int value);
+    BinaryFileHeader getBinaryFileHeader() const;
     
+    /*!
+     * @brief Determines the number of traces.
+     * @result the number of traces.
+     */
+    int getNumberOfTraces() const;
+
+    //void addTrace(const std::pair<TraceHeader, Trace> &trace);
+    //std::pair<TraceHeader, Trace> getTrace(int traceNumber) const;
+    //Trace getTrace(int traceNumber) const;
     /*! 
      * @brief Checks if this class is a valid representation of a Silixa SEGY
      *        file.  This means that the text header and  binary file header are

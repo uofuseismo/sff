@@ -64,6 +64,10 @@ include_directories(
 
 configure_file(${CMAKE_SOURCE_DIR}/include/sff/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/sff/version.hpp)
+set(PUBLIC_HEADER_DIRECTORIES
+    include/sff)
+set(PRIVATE_HEADER_DIRECTORIES
+    include/private)
 
 ################################################################################
 #                               Set Source and Libraries                       #
@@ -74,12 +78,18 @@ set(SRC
     src/sac/header.cpp
     src/sac/waveform.cpp
     src/segy/silixaBinaryFileHeader.cpp
+    src/segy/silixaTraceHeader.cpp
     src/segy/textualFileHeader.cpp)
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
 set(BUILD_SHARED_LIBS YES)
 add_library(sff ${SRC})
-set_property(TARGET sff PROPERTY CXX_STANDARD 17)
+#set_target_properties(sff PROPERTIES
+#                      CXX_STANDARD 17
+#                      CXX_STANDARD_REQUIRED YES 
+#                      CXX_EXTENSIONS NO) 
+target_include_directories(sff PUBLIC  ${PUBLIC_HEADER_FILES})
+target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES})
 
 if (WRAP_PYTHON)
    add_library(pysff MODULE
@@ -119,12 +129,14 @@ if (MFLIB_WRAP_PYTHON)
    install(TARGETS sff pysff
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 else()
    install(TARGETS sff
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
 ##########################################################################################

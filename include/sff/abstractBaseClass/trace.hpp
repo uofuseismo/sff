@@ -4,12 +4,6 @@
 #include <vector>
 #include "sff/utilities/time.hpp"
 #include "sff/formats.hpp"
-
-// Forward declarations
-namespace SFF::Utilities
-{
-class Time;
-}
 namespace SFF::AbstractBaseClass
 {
 /*!

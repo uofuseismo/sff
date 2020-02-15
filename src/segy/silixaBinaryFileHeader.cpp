@@ -2,7 +2,8 @@
 #include <cstdlib>
 #include <string>
 #include <array>
-#include "sff/segy/silixa.hpp"
+#include "sff/segy/silixa/binaryFileHeader.hpp"
+#include "private/byteSwap.hpp"
 
 using namespace SFF::SEGY::Silixa;
 
@@ -84,7 +85,7 @@ struct HeaderData
 };
 */
 
-
+/*
 #ifndef BIG_ENDIAN
 #define BIG_ENDIAN 0
 #endif
@@ -186,17 +187,34 @@ void packInt(const int valIn, char c[4], const bool lswap)
         c[3] = c4[3];
     }
 }
+*/
 
 }
 
 class BinaryFileHeader::BinaryFileHeaderImpl
 {
 public:
+    BinaryFileHeaderImpl()
+    {
+        std::fill(mHeader.begin(), mHeader.end(), 0);
+        packShort(mByteFormat, mHeader.begin()+24, mSwapBytes);
+    }
+    void updateValid()
+    {
+        mIsValid = false;
+        if (mTracesInFile >= 0 && mSampleInterval > 0 &&
+            mSamplesPerTrace >= 0 && mByteFormat == 5)
+        {
+            mIsValid = true;
+        }
+    }
+    
     //HeaderData mHeader;
     std::array<char, 400> mHeader;
     int mTracesInFile = 0;
     int mSampleInterval = 0;
     int mSamplesPerTrace = 0;
+    const int16_t mByteFormat = 5;
     bool mIsValid = false;
     /// File is in big endian format
     const bool mSwapBytes = testByteOrder() == LITTLE_ENDIAN ? true : false;
@@ -247,6 +265,8 @@ void BinaryFileHeader::clear() noexcept
     pImpl->mTracesInFile = 0;
     pImpl->mSampleInterval = 0;
     pImpl->mSamplesPerTrace = 0;
+    //pImpl->mByteFormat = 5;
+    packShort(pImpl->mByteFormat, pImpl->mHeader.begin()+24, pImpl->mSwapBytes);
     pImpl->mIsValid = false;
 }
 
@@ -261,14 +281,14 @@ void BinaryFileHeader::set(const char *header)
     std::copy(header, header+400, pImpl->mHeader.begin());
     pImpl->mTracesInFile = unpackShort(header+12, pImpl->mSwapBytes);
     pImpl->mSampleInterval = unpackShort(header+16, pImpl->mSwapBytes);
+    //pImpl->mByteFormat = unpackShort(header+24, pImpl->mSwapBytes);
+    if (unpackShort(header+24, pImpl->mSwapBytes) != 5)
+    {
+        throw std::invalid_argument("Only IEEE floats supported\n");
+    }
     // N.B. 20:21 is also samples per trace but this is more robust
     pImpl->mSamplesPerTrace =  unpackInt(header+62, pImpl->mSwapBytes);
-    if (pImpl->mTracesInFile >= 0 && 
-        pImpl->mSampleInterval >= 0 &&
-        pImpl->mSamplesPerTrace >= 0)
-    {
-        pImpl->mIsValid = true;
-    }
+    pImpl->updateValid();
 }
 
 /// Gets the header
@@ -298,6 +318,7 @@ void BinaryFileHeader::setNumberOfSamplesPerTrace(const int16_t nSamples)
                                   + " must be positive\n");
     }
     pImpl->mSamplesPerTrace = nSamples;
+    pImpl->updateValid();
     packShort(nSamples, pImpl->mHeader.begin()+20, pImpl->mSwapBytes);
     packInt(pImpl->mSamplesPerTrace, pImpl->mHeader.begin()+62,
             pImpl->mSwapBytes);
@@ -318,6 +339,7 @@ void BinaryFileHeader::setNumberOfTraces(const int16_t nTraces)
                                   + " must be positive\n");
     }
     pImpl->mTracesInFile = nTraces;
+    pImpl->updateValid();
     packShort(nTraces, pImpl->mHeader.begin()+12, pImpl->mSwapBytes);
 
 }
@@ -338,6 +360,7 @@ void BinaryFileHeader::setSampleInterval(const int16_t sampleInterval)
                                   + " must be positive\n");
     }
     pImpl->mSampleInterval = sampleInterval;
+    pImpl->updateValid();
     packShort(sampleInterval, pImpl->mHeader.begin()+16, pImpl->mSwapBytes);
 }
 
@@ -349,5 +372,5 @@ int BinaryFileHeader::getSampleInterval() const
 
 bool BinaryFileHeader::isValid() const noexcept
 {
-    return pImpl->mIsValid = true;
+    return pImpl->mIsValid;
 }

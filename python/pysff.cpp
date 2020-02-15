@@ -1,6 +1,7 @@
 #include "sff/version.hpp"
 #include "time.hpp"
 #include "sac.hpp"
+#include "silixaSEGY.hpp"
 #include <pybind11/pybind11.h>
 
 PYBIND11_MODULE(pysff, m)

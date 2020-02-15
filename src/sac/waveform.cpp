@@ -20,7 +20,22 @@
 
 using namespace SFF::SAC;
 
-static double *alignedAllocDouble(const int npts);
+namespace
+{
+static double *alignedAllocDouble(const int npts)
+{
+    size_t nbytes = static_cast<size_t> (npts)*sizeof(double);
+#ifdef HAVE_ALIGNED_ALLOC
+    double *data = static_cast<double *> (std::aligned_alloc(64, nbytes));
+#else
+    void *dataTemp = malloc(nbytes);
+    posix_memalign(&dataTemp, 64, nbytes);
+    auto data = static_cast<double *> (dataTemp);
+#endif
+    return data;
+}
+}
+//static double *alignedAllocDouble(const int npts);
 
 class Waveform::WaveformImpl
 {
@@ -487,7 +502,7 @@ void Waveform::setData(const int npts, const double x[])
 }
 
 //============================================================================//
-
+/*
 static double *alignedAllocDouble(const int npts)
 {
     size_t nbytes = static_cast<size_t> (npts)*sizeof(double);
@@ -500,3 +515,4 @@ static double *alignedAllocDouble(const int npts)
 #endif
     return data;
 }
+*/
