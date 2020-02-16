@@ -88,6 +88,7 @@ set(SRC
     src/sac/waveform.cpp
     src/segy/silixaBinaryFileHeader.cpp
     src/segy/silixaTraceHeader.cpp
+    src/segy/silixaTrace.cpp
     src/segy/textualFileHeader.cpp)
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
