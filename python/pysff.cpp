@@ -9,4 +9,7 @@ PYBIND11_MODULE(pysff, m)
     m.attr("__version__") = SFF_VERSION;
     PBSFF::initializeTime(m);
     PBSFF::initializeSAC(m);
+
+    pybind11::module silixaSegyModule = m.def_submodule("SilixaSEGY");
+    PBSFF::SEGY::Silixa::initializeTrace(silixaSegyModule);
 }

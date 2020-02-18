@@ -110,9 +110,16 @@ public:
      * @{
      */
     /*!
+     * @brief Sets the sampling rate in Hz.
+     * @param[in] df  The sampling rate in Hz.  Silixa should sample at 2000 Hz.
+     * @throws std::invalid_argument if df is not positive.
+     */
+    void setSamplingRate(double df);
+    /*!
      * @brief Sets the sampling period in seconds.
      * @param[in] dt  The sampling period in seconds.  Silixa should sample at 
      *                0.0005 seconds. 
+     * @throws std::invalid_argument if dt is not positive.
      */
     void setSamplingPeriod(double dt);
     /*!
@@ -139,6 +146,28 @@ public:
      * @result The start time of the trace in UTC.
      */
     SFF::Utilities::Time getStartTime() const override;
+
+    /*! 
+     * @brief Sets the trace number.
+     * @param[in] traceNumber  The trace number.
+     */
+    void setTraceNumber(int traceNumber);
+    /*! 
+     * @brief Gets the trace number.
+     * @result The trace number.
+     */
+    int getTraceNumber() const;
+
+    /*! 
+     * @brief Toggles whether or not the traces are correleated.
+     * @param[in] isCorrelated   If true then the traces are correlated.
+     */
+    void setIsCorrelated(const bool isCorrelated);
+    /*! 
+     * @brief Determines whether or not the traces are correlated.
+     * @result True indicates that the traces are correlated.
+     */
+    bool getIsCorrelated() const;
 
     /*!
      * @brief Gets the data format e.g., SILIXA_SEGY.

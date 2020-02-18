@@ -184,13 +184,14 @@ std::string TraceHeader::get() const noexcept
     return result;
 }
 
-/// Get the trace number
+/// Set the trace number
 void TraceHeader::setTraceNumber(const int traceNumber)
 {
     packInt(traceNumber, pImpl->mHeader.data()+0,  pImpl->mSwapBytes);
     pImpl->mTraceNumber = traceNumber;
 }
 
+/// Get the trace number
 int TraceHeader::getTraceNumber() const
 {
     return pImpl->mTraceNumber;

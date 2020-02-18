@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <algorithm>
 #include "sff/segy/silixa/traceHeader.hpp"
 #include "sff/segy/silixa/trace.hpp"
 #include "private/byteSwap.hpp"
@@ -118,6 +119,59 @@ void Trace::clear() noexcept
     pImpl->clear();
 }
 
+/// Sets the waveform data
+void Trace::setData(const int nSamples, const double x[])
+{
+    if (nSamples < 0) 
+    {
+        throw std::invalid_argument("Number of samples = " 
+                                  + std::to_string(nSamples)
+                                  + " must be positive\n");
+    }
+    if (nSamples > 0 && x == nullptr)
+    {
+        throw std::invalid_argument("x is NULL\n");
+    }
+    // Update and release memory
+    pImpl->mSamples = nSamples;
+    pImpl->mHeader.setNumberOfSamples(nSamples);
+    if (pImpl->mData){free(pImpl->mData);}
+    pImpl->mData = nullptr;
+    if (nSamples == 0){return;} // Done early
+    // Now resize and copy
+    pImpl->mData = alignedAllocFloat(nSamples);
+    auto data = pImpl->mData;
+    #pragma omp simd 
+    for (int i=0; i<nSamples; ++i)
+    {
+        data[i] = static_cast<float> (x[i]);
+    }
+}
+
+void Trace::setData(const int nSamples, const float x[])
+{
+    if (nSamples < 0)
+    {
+        throw std::invalid_argument("Number of samples = " 
+                                  + std::to_string(nSamples)
+                                  + " must be positive\n");
+    }
+    if (nSamples > 0 && x == nullptr)
+    {
+        throw std::invalid_argument("x is NULL\n");
+    }
+    // Update and release memory
+    pImpl->mSamples = nSamples;
+    pImpl->mHeader.setNumberOfSamples(nSamples);
+    if (pImpl->mData){free(pImpl->mData);}
+    pImpl->mData = nullptr;
+    if (nSamples == 0){return;} // Done early
+    // Now resize and copy
+    pImpl->mData = alignedAllocFloat(nSamples);
+    auto data = pImpl->mData;
+    std::copy(x, x+nSamples, data);
+}
+
 /// Gets the data
 void Trace::getData(const int nSamples, float *xIn[]) const
 {
@@ -174,16 +228,45 @@ void Trace::set(int len, const char x[])
                                   + " should equal "
                                   + std::to_string(lenEst) + "\n");
     }
+    pImpl->mHeader = header;
     pImpl->mSamples = nSamplesEst;
     if (pImpl->mData){free(pImpl->mData);}
     pImpl->mData = alignedAllocFloat(pImpl->mSamples);
+    const char *xOff = x+240;
     auto data = pImpl->mData;
     auto lswap = pImpl->mSwapBytes;
+    char *__attribute__((aligned(64))) cdata = reinterpret_cast<char *> (data);
+    if (lswap)
+    {
+        #pragma omp simd aligned(cdata: 64)
+        for (int i=0; i<nSamplesEst; ++i)
+        {
+            auto index = 4*i;
+            cdata[index]   = xOff[index+3];
+            cdata[index+1] = xOff[index+2];
+            cdata[index+2] = xOff[index+1];
+            cdata[index+3] = xOff[index];
+        }
+    }
+    else
+    {
+        std::copy(xOff, xOff+4*nSamplesEst, cdata);
+    }
+/*
+    // N.B. The if statement in the inner loop is tanking the performance
     #pragma omp simd aligned(data: 64)
     for (int i=0; i<nSamplesEst; ++i)
     {
         data[i] = unpackFloat(x+240+4*i, lswap);;
     } 
+*/
+}
+
+/// Sets the sampling rate in Hz
+void Trace::setSamplingRate(const double df)
+{
+    auto dtMicroSeconds = static_cast<int16_t> (1000000./df* + 0.5);
+    pImpl->mHeader.setSampleInterval(dtMicroSeconds);
 }
 
 /// Sets the sampling period in micro-seconds
@@ -219,6 +302,28 @@ void Trace::setStartTime(const SFF::Utilities::Time &time)
 SFF::Utilities::Time Trace::getStartTime() const
 {
     return pImpl->mHeader.getStartTime();
+}
+
+/// Sets/gets the trace number
+void Trace::setTraceNumber(const int traceNumber)
+{
+    pImpl->mHeader.setTraceNumber(traceNumber);
+}
+
+int Trace::getTraceNumber() const
+{
+    return pImpl->mHeader.getTraceNumber();
+}
+
+/// Sets/gets the trace being correlated
+void Trace::setIsCorrelated(const bool correlated)
+{
+    pImpl->mHeader.setIsCorrelated(correlated);
+}
+
+bool Trace::getIsCorrelated() const
+{
+    return pImpl->mHeader.getIsCorrelated();
 }
 
 /// Gets the format

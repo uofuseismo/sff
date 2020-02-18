@@ -7,11 +7,25 @@
 
 namespace SFF::SEGY::Silixa
 {
+class TraceGroup;
 class Trace;
 }
 
 namespace PBSFF::SEGY::Silixa
 {
+class TraceGroup
+{
+public:
+    /// C'tor
+    TraceGroup();
+    /// Copy c'tor
+    TraceGroup& operator=(const TraceGroup &group);
+    TraceGroup& operator=(const SFF::SEGY::Silixa::TraceGroup &group); 
+    /// Destructor
+    ~TraceGroup();
+private:
+    std::unique_ptr<SFF::SEGY::Silixa::TraceGroup> pImpl;
+};
 class Trace
 {
 public:
@@ -41,5 +55,6 @@ public:
 private:
     std::unique_ptr<SFF::SEGY::Silixa::Trace> mWaveform;
 };
+void initializeTrace(pybind11::module &m);
 }
 #endif

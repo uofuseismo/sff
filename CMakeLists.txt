@@ -89,6 +89,7 @@ set(SRC
     src/segy/silixaBinaryFileHeader.cpp
     src/segy/silixaTraceHeader.cpp
     src/segy/silixaTrace.cpp
+    src/segy/silixaTraceGroup.cpp
     src/segy/textualFileHeader.cpp)
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
@@ -105,6 +106,7 @@ if (WRAP_PYTHON)
    add_library(pysff MODULE
                python/time.cpp
                python/sac.cpp
+               python/silixaSEGY.cpp
                #python/multiChannelMatchedFilterParameters.cpp
                #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)

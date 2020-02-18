@@ -153,7 +153,7 @@ void Waveform::clear() noexcept
 void Waveform::read(const std::string &fileName)
 {
     clear();
-#if TEMBLOR_USE_FILESYSTEM == 1
+#if USE_FILESYSTEM == 1
     if (!fs::exists(fileName))
     {
         std::string errmsg = "SAC file = " + fileName + " does not exist";
@@ -242,7 +242,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
         throw std::runtime_error("SAC waveform is not valid");
     }
     // Make sure the root directory exists
-#if TEMBLOR_USE_FILESYSTEM == 1
+#if USE_FILESYSTEM == 1
     fs::path path(fileName);
     if (!path.has_relative_path())
     {
