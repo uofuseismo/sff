@@ -13,19 +13,7 @@ class Trace;
 
 namespace PBSFF::SEGY::Silixa
 {
-class TraceGroup
-{
-public:
-    /// C'tor
-    TraceGroup();
-    /// Copy c'tor
-    TraceGroup& operator=(const TraceGroup &group);
-    TraceGroup& operator=(const SFF::SEGY::Silixa::TraceGroup &group); 
-    /// Destructor
-    ~TraceGroup();
-private:
-    std::unique_ptr<SFF::SEGY::Silixa::TraceGroup> pImpl;
-};
+
 class Trace
 {
 public:
@@ -52,9 +40,36 @@ public:
     PBSFF::Time getStartTime() const;
     /// Gets the number of samples
     int getNumberOfSamples() const;
+    /// Gets the trace number
+    int getTraceNumber() const;
+    /// Determines if this correlated
+    bool getIsCorrelated() const;
 private:
     std::unique_ptr<SFF::SEGY::Silixa::Trace> mWaveform;
 };
+
+class TraceGroup
+{
+public:
+    /// C'tor
+    TraceGroup();
+    TraceGroup(const TraceGroup &group);
+    TraceGroup(const SFF::SEGY::Silixa::TraceGroup &group);
+    /// Copy c'tor
+    TraceGroup& operator=(const TraceGroup &group);
+    TraceGroup& operator=(const SFF::SEGY::Silixa::TraceGroup &group); 
+    /// Destructor
+    ~TraceGroup();
+    /// Gets the it'th trace
+    Trace getTrace(const int it) const;
+    /// Reads the data
+    void read(const std::string &fileName);
+    /// Gets the number of traces in the group
+    int getNumberOfTraces() const;
+private:
+    std::unique_ptr<SFF::SEGY::Silixa::TraceGroup> mGroup;
+};
+
 void initializeTrace(pybind11::module &m);
 }
 #endif

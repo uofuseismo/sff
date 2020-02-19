@@ -93,6 +93,16 @@ def test_sac():
     data = sac.get_data()
     assert np.max(ref - data) < 1.e-7, 'couldnt recover data'
 
+def test_silixa_segy():
+    tg = pysff.SilixaSEGY.TraceGroup()
+    tg.read("data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy")
+    assert tg.get_number_of_traces() == 1280, 'number of traces is wrong'
+    trace = tg.get_trace(0)
+    ts = trace.get_data()
+    assert trace.get_sampling_rate() == 2000, 'sampling rate is wrong'
+    assert len(ts) == 30000, 'number of samples is wrong'
+
 if __name__ == "__main__":
     test_time()
     test_sac()
+    test_silixa_segy()
