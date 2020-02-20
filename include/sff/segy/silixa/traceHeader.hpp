@@ -141,6 +141,18 @@ public:
      * @result The UTC time corresponding to the first sample in the trace.
      */
     SFF::Utilities::Time getStartTime() const;
+
+    /*!
+     * @brief Sets the distance along the fiber of the trace.
+     * @param[in] distance  The distance along fiber in millimeters of
+     *                      the trace.
+     */
+    void setDistanceAlongFiber(int distance);
+    /*!
+     * @brief Gets the distance along the fiber of the trace.
+     * @result The distance along the fiber of the trace in millimeters.
+     */
+    int getDistanceAlongFiber() const;
 private:
     class TraceHeaderImpl;
     std::unique_ptr<TraceHeaderImpl> pImpl;

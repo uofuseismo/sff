@@ -99,7 +99,7 @@ public:
 
 //private:
     class Header mHeader;
-    double *mData = nullptr;
+    double *__attribute__((aligned(64))) mData = nullptr;
 };
 
 /// Constructor
@@ -160,17 +160,24 @@ void Waveform::read(const std::string &fileName)
         throw std::invalid_argument(errmsg);
     }
 #endif
+    // Old way
+    //std::ifstream sacfl(fileName, std::ios::in | std::ios::binary);
+    //std::vector<char> buffer(std::istreambuf_iterator<char> (sacfl), {});
+    //size_t nbytes = buffer.size();
     // Read the binary file
     std::ifstream sacfl(fileName, std::ios::in | std::ios::binary);
-    std::vector<char> buffer(std::istreambuf_iterator<char> (sacfl), {});
-    sacfl.close();
-    size_t nbytes = buffer.size();
+    sacfl.seekg(0, sacfl.end);
+    size_t nbytes = sacfl.tellg();
     if (nbytes < 632)
     {
         std::string errmsg = "SAC file has less than 632 bytes; nbytes = "
                            + std::to_string(nbytes);
         throw std::invalid_argument(errmsg);
-    }
+    } 
+    sacfl.seekg(0, sacfl.beg);
+    std::vector<char> buffer(nbytes); 
+    sacfl.read(buffer.data(), nbytes);
+    sacfl.close();
     // Figure out the byte order
     const char *cdat = buffer.data();
     union
@@ -207,10 +214,11 @@ void Waveform::read(const std::string &fileName)
     if (!lswap)
     {
         auto fdata = reinterpret_cast<const float *> (buffer.data() + 632);
-        #pragma omp simd
+        auto *mData = pImpl->mData;
+        #pragma omp simd aligned(mData: 64)
         for (auto i=0; i<npts; i++)
         {
-            pImpl->mData[i] = static_cast<double> (fdata[i]);
+            mData[i] = static_cast<double> (fdata[i]);
         }
     }
     else
@@ -221,6 +229,7 @@ void Waveform::read(const std::string &fileName)
             char crev[4];
             float f4;
         };
+        #pragma omp simd
         for (auto i=0; i<npts; i++)
         {
             auto indx = 632 + 4*i;
@@ -277,6 +286,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
             char c4[4];
             float f4; 
         };
+        #pragma omp simd
         for (int i=0; i<npts; ++i)
         {
             f4 = static_cast<float> (pImpl->mData[i]);

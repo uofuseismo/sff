@@ -259,4 +259,14 @@ bool TraceHeader::getIsCorrelated() const
     return (pImpl->mCorrelated == 2);
 }
 
+/// Sets/gets the distance along fiber
+void TraceHeader::setDistanceAlongFiber(const int distance)
+{
+    packInt(distance, pImpl->mHeader.data()+236, pImpl->mSwapBytes);
+    pImpl->mDistanceAlongFiber = distance;
+}
 
+int TraceHeader::getDistanceAlongFiber() const
+{
+    return pImpl->mDistanceAlongFiber;
+}
