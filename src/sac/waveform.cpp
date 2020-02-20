@@ -273,10 +273,11 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
     if (!lswap)
     {
         auto fdata = reinterpret_cast<float *> (cdata.data() + 632);
-        #pragma omp simd
+        auto mData = pImpl->mData;
+        #pragma omp simd aligned(mData: 64)
         for (auto i=0; i<npts; ++i)
         {
-            fdata[i] = static_cast<float> (pImpl->mData[i]);
+            fdata[i] = static_cast<float> (mData[i]);//pImpl->mData[i]);
         }
     }
     else
@@ -286,10 +287,11 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
             char c4[4];
             float f4; 
         };
-        #pragma omp simd
+        auto mData = pImpl->mData;
+        #pragma omp simd aligned(mData: 64)
         for (int i=0; i<npts; ++i)
         {
-            f4 = static_cast<float> (pImpl->mData[i]);
+            f4 = static_cast<float> (mData[i]); //pImpl->mData[i]);
             auto indx = 632 + i*4;
             cdata[indx]   = c4[3];
             cdata[indx+1] = c4[2];
