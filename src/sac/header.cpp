@@ -1632,7 +1632,17 @@ void Header::setFromBinaryHeader(const char header[632], const bool lswap)
     if (pImpl->delta <= 0)
     {
         clear();
-        throw std::invalid_argument("Header has non-positive sampling period");
+        auto errmsg = "Header has non-positive sampling period\n";
+        throw std::invalid_argument(errmsg);
+    }
+    // Delta is stored natively as a float but this stores as a double.
+    // This can result in slightly wrong doubles whose value can matter
+    // on very long time series.  To mitigate this we round delta to the
+    // nearest microsecond.
+    if (pImpl->delta < 1)
+    {   
+        pImpl->delta = static_cast<double>
+                       (static_cast<int> (pImpl->delta*1.e6 + 0.5))*1.e-6;
     }
     pImpl->depmin     = unpackf4(  &header[4], lswap);
     pImpl->depmax     = unpackf4(  &header[8], lswap);

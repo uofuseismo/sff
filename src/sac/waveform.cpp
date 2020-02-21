@@ -173,7 +173,7 @@ void Waveform::read(const std::string &fileName)
         std::string errmsg = "SAC file has less than 632 bytes; nbytes = "
                            + std::to_string(nbytes);
         throw std::invalid_argument(errmsg);
-    } 
+    }
     sacfl.seekg(0, sacfl.beg);
     std::vector<char> buffer(nbytes); 
     sacfl.read(buffer.data(), nbytes);
@@ -412,12 +412,6 @@ double Waveform::getSamplingPeriod() const
 {
     auto dt = pImpl->mHeader.getHeader(Double::DELTA);
     if (dt <= 0){throw std::runtime_error("Sampling rate not yet set\n");}
-    // Do some trickery to get this safely as a double by rounding to the
-    // nearest microsecond
-    if (dt < 1)
-    {
-        dt = static_cast<double> (static_cast<int> (dt*1.e6 + 0.5))*1.e-6;
-    } 
     return dt;
 }
 
