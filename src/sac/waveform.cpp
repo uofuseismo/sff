@@ -415,6 +415,26 @@ double Waveform::getSamplingPeriod() const
     return dt;
 }
 
+/// Sets the sampling period
+void Waveform::setSamplingPeriod(const double dt)
+{
+    if (dt <= 0)
+    {
+        throw std::invalid_argument("Sampling period must be positive\n");
+    }
+    pImpl->mHeader.setHeader(Double::DELTA, dt);
+}
+
+/// Sets the waveform sampling rate
+void Waveform::setSamplingRate(const double df)
+{
+    if (df <= 0)
+    {
+        throw std::invalid_argument("Sampling rate must be positive\n");
+    }
+    pImpl->mHeader.setHeader(Double::DELTA, 1./df);
+}
+
 /// Gets the waveform sampling rate
 double Waveform::getSamplingRate() const
 {

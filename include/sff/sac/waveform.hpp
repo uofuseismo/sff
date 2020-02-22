@@ -151,6 +151,12 @@ public:
      */
     bool isValid() const noexcept;
     /*!
+     * @brief Sets the sampling period.
+     * @param[in] dt   The sampling period in seconds.
+     * @throws std::invalid_argument if dt is not positive.
+     */
+    void setSamplingPeriod(double dt);
+    /*!
      * @brief Gets the sampling period.
      * @result The sampling period in seconds of the waveform.
      * @throws std::runtime_error if the sampling period was never properly
@@ -158,6 +164,12 @@ public:
      * @sa isValid()
      */
     double getSamplingPeriod() const override;
+    /*!
+     * @brief Sets the sampling rate.
+     * @param[in] df   The sampling period in Hz.
+     * @throws std::invalid_argument if df is not positive.
+     */
+    void setSamplingRate(double df);
     /*! 
      * @brief Gets the sampling rate.
      * @result The sampling rate in Hz of the waveform.

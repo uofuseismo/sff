@@ -420,6 +420,12 @@ TEST(SAC, waveform)
     EXPECT_EQ(startTime.getMinute(), 21);
     EXPECT_EQ(startTime.getSecond(), 59);
     EXPECT_EQ(startTime.getMicroSecond(), 850000);
+
+    EXPECT_NO_THROW(waveform.setSamplingRate(45));
+    EXPECT_NEAR(waveform.getSamplingRate(), 45, 1.e-10);
+    EXPECT_NO_THROW(waveform.setSamplingPeriod(0.4));
+    EXPECT_NEAR(waveform.getSamplingPeriod(), 0.4, 1.e-10);
+
 }
 
 }
