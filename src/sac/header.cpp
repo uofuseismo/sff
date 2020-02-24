@@ -39,13 +39,13 @@ inline double unpackf4(const char c4[4], const bool lswap);
 
 inline std::string returnString8(const char c[])
 {
-    std::string result(c, 8);
+    std::string result(c, strnlen(c, 8));
     return result; 
 }
 
 inline std::string returnString16(const char c[])
 {
-    std::string result(c, 16);
+    std::string result(c, strnlen(c, 16));
     return result;
 }
 

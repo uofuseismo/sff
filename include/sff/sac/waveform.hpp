@@ -214,6 +214,8 @@ public:
      * @throws std::invalid_argument if npts is not positive or data is NULL.
      */
     void setData(int npts, const double data[]);
+    /*! @copydoc setData */
+    void setData(int npts, const float data[]);
     /*!
      * @brief Returns a pointer to the data.
      * @result A pointer to the data.  This can be NULL.  The length of

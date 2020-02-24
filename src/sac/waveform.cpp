@@ -533,6 +533,24 @@ void Waveform::setData(const int npts, const double x[])
     std::memcpy(pImpl->mData, x, static_cast<size_t> (npts)*sizeof(double));
 }
 
+void Waveform::setData(const int npts, const float x[])
+{
+    pImpl->freeData();
+    if (npts <= 0)
+    {
+        throw std::invalid_argument("npts = " + std::to_string(npts)
+                                  + " must be positive\n");
+    }
+    if (x == nullptr)
+    {
+        throw std::invalid_argument("x is NULL");
+    }
+    pImpl->mHeader.setHeader(Integer::NPTS, npts);
+    pImpl->mData = alignedAllocDouble(npts);
+    auto mData = pImpl->mData;
+    std::copy(x, x+npts, mData); 
+}
+
 //============================================================================//
 /*
 static double *alignedAllocDouble(const int npts)
