@@ -221,7 +221,7 @@ public:
      * @result A pointer to the data.  This can be NULL.  The length of
      *         the pointer is given by \c getNumberOfSamples().
      */
-    const double *getDataPointer() const noexcept;
+    const float *getDataPointer() const noexcept;
 
     void getData(int npts, double *data[]) const override;
     void getData(int npts, float *data[]) const override;

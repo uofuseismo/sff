@@ -356,23 +356,23 @@ TEST(SAC, waveform)
     ASSERT_STREQ(waveform.getHeader(SAC::Character::KSTNM).c_str(),  "NEW");
     ASSERT_STREQ(waveform.getHeader(SAC::Character::KCMPNM).c_str(), "HHZ");
     ASSERT_STREQ(waveform.getHeader(SAC::Character::KHOLE).c_str(),  "10");
-    const double *dPtr = waveform.getDataPointer();
-    double resmax = 0;
+    const float *dPtr = waveform.getDataPointer();
+    float resmax = 0;
     for (int i=0; i<waveform.getNumberOfSamples(); ++i)
     {
-        double res = dPtr[i] - static_cast<double> (i + 1);
+        float res = dPtr[i] - static_cast<float> (i + 1);
         resmax = std::max(std::abs(res), resmax);
     }
     ASSERT_NEAR(resmax, 0.0, 1.e-7);
 
     std::vector<double> dVec = waveform.getData();
-    resmax = 0;
+    double resmax8 = 0;
     for (int i=0; i<waveform.getNumberOfSamples(); ++i)
     {
         double res = dVec[i] - static_cast<double> (i + 1);
-        resmax = std::max(std::abs(res), resmax);
+        resmax8 = std::max(std::abs(res), resmax8);
     }
-    ASSERT_NEAR(resmax, 0.0, 1.e-7);
+    ASSERT_NEAR(resmax8, 0.0, 1.e-7);
 
     // Let's try writing and reading the waveform
 #ifdef USE_FILESYSTEM
@@ -396,19 +396,19 @@ TEST(SAC, waveform)
     resmax = 0;
     for (int i=0; i<waveform.getNumberOfSamples(); ++i)
     {   
-        double res = dPtr[i] - static_cast<double> (i + 1); 
+        float res = dPtr[i] - static_cast<float> (i + 1); 
         resmax = std::max(std::abs(res), resmax);
     }   
     ASSERT_NEAR(resmax, 0.0, 1.e-7);
 
     dVec = waveform.getData();
-    resmax = 0;
+    resmax8 = 0;
     for (int i=0; i<waveform.getNumberOfSamples(); ++i)
     {
         double res = dVec[i] - static_cast<double> (i + 1); 
-        resmax = std::max(std::abs(res), resmax);
+        resmax8 = std::max(std::abs(res), resmax8);
     }
-    ASSERT_NEAR(resmax, 0.0, 1.e-7);
+    ASSERT_NEAR(resmax8, 0.0, 1.e-7);
     
     SFF::Utilities::Time startTime;
     EXPECT_NO_THROW(startTime = waveform.getStartTime());

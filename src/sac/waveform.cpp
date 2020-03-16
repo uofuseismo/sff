@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstring>
 #include <string>
+#include <array>
 #include <algorithm>
 #include <fstream>
 #include "sff/utilities/time.hpp"
@@ -31,6 +32,19 @@ static double *alignedAllocDouble(const int npts)
     void *dataTemp = malloc(nbytes);
     posix_memalign(&dataTemp, 64, nbytes);
     auto data = static_cast<double *> (dataTemp);
+#endif
+    return data;
+}
+
+static float *alignedAllocFloat(const int npts)
+{
+    size_t nbytes = static_cast<size_t> (npts)*sizeof(float);
+#ifdef HAVE_ALIGNED_ALLOC
+    float *data = static_cast<float *> (std::aligned_alloc(64, nbytes));
+#else
+    void *dataTemp = malloc(nbytes);
+    posix_memalign(&dataTemp, 64, nbytes);
+    auto data = static_cast<float *> (dataTemp);
 #endif
     return data;
 }
@@ -74,8 +88,8 @@ public:
         int npts = mHeader.getHeader(Integer::NPTS);
         if (npts > 0 && waveform.mData)
         {
-            mData = alignedAllocDouble(npts);
-            auto nbytes = static_cast<size_t> (npts)*sizeof(double);
+            mData = alignedAllocFloat(npts);
+            auto nbytes = static_cast<size_t> (npts)*sizeof(float);
             std::memcpy(mData, waveform.mData, nbytes);
         }
         return *this;
@@ -99,7 +113,7 @@ public:
 
 //private:
     class Header mHeader;
-    double *__attribute__((aligned(64))) mData = nullptr;
+    float *__attribute__((aligned(64))) mData = nullptr;
 };
 
 /// Constructor
@@ -174,12 +188,14 @@ void Waveform::read(const std::string &fileName)
                            + std::to_string(nbytes);
         throw std::invalid_argument(errmsg);
     }
+    std::array<char, 632> cheader;
     sacfl.seekg(0, sacfl.beg);
-    std::vector<char> buffer(nbytes); 
-    sacfl.read(buffer.data(), nbytes);
-    sacfl.close();
+    //std::vector<char> buffer(nbytes); 
+    sacfl.read(cheader.data(), cheader.size()*sizeof(char)); //buffer.data(), nbytes);
+    auto nbytesRemaining = nbytes - cheader.size()*sizeof(char);
+    //sacfl.close();
     // Figure out the byte order
-    const char *cdat = buffer.data();
+    const char *cdat = cheader.data(); //buffer.data();
     union
     {
         char c4[4];
@@ -187,6 +203,7 @@ void Waveform::read(const std::string &fileName)
     };
     std::memcpy(c4, &cdat[316], 4*sizeof(char));
     size_t nbytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
+printf("%ld, %ld\n", nbytesEst, nbytes);
     bool lswap = false;
     if (nbytesEst != nbytes)
     {
@@ -210,9 +227,12 @@ void Waveform::read(const std::string &fileName)
         throw std::invalid_argument(ia);
     }
     // Unpack the data
-    pImpl->mData = alignedAllocDouble(npts);
+    pImpl->mData = alignedAllocFloat(npts);
     if (!lswap)
     {
+        auto cdata = reinterpret_cast<char *> (pImpl->mData);
+        sacfl.read(cdata, nbytesRemaining);
+/*
         auto fdata = reinterpret_cast<const float *> (buffer.data() + 632);
         auto *mData = pImpl->mData;
         #pragma omp simd aligned(mData: 64)
@@ -220,9 +240,13 @@ void Waveform::read(const std::string &fileName)
         {
             mData[i] = static_cast<double> (fdata[i]);
         }
+*/
     }
     else
     {
+        std::vector<char> buffer(nbytesRemaining);
+        sacfl.read(buffer.data(), nbytesRemaining);
+        auto cdata = reinterpret_cast<const char *> (buffer.data() + 632);
         // Reverse the byte order
         union
         {
@@ -233,12 +257,12 @@ void Waveform::read(const std::string &fileName)
         for (auto i=0; i<npts; i++)
         {
             auto indx = 632 + 4*i;
-            crev[0] = cdat[indx+3];
-            crev[1] = cdat[indx+2];
-            crev[2] = cdat[indx+1];
-            crev[3] = cdat[indx+0];
+            crev[0] = cdata[indx+3];
+            crev[1] = cdata[indx+2];
+            crev[2] = cdata[indx+1];
+            crev[3] = cdata[indx+0];
             //std::reverse_copy(&cdat[632+4*i], &cdat[632+4*i]+4, crev);
-            pImpl->mData[i] = static_cast<double> (f4);
+            pImpl->mData[i] = f4; //static_cast<double> (f4);
         }
     }
 }
@@ -464,7 +488,7 @@ bool Waveform::isValid() const noexcept
 }
 
 /// Gets a pointer to the data
-const double *Waveform::getDataPointer() const noexcept
+const float *Waveform::getDataPointer() const noexcept
 {
     return pImpl->mData;
 }
@@ -529,8 +553,10 @@ void Waveform::setData(const int npts, const double x[])
         throw std::invalid_argument("x is NULL");
     }
     pImpl->mHeader.setHeader(Integer::NPTS, npts);
-    pImpl->mData = alignedAllocDouble(npts);
-    std::memcpy(pImpl->mData, x, static_cast<size_t> (npts)*sizeof(double));
+    pImpl->mData = alignedAllocFloat(npts);
+    auto mData = pImpl->mData;
+    std::copy(x, x+npts, mData); 
+    //std::memcpy(pImpl->mData, x, static_cast<size_t> (npts)*sizeof(double));
 }
 
 void Waveform::setData(const int npts, const float x[])
@@ -546,7 +572,7 @@ void Waveform::setData(const int npts, const float x[])
         throw std::invalid_argument("x is NULL");
     }
     pImpl->mHeader.setHeader(Integer::NPTS, npts);
-    pImpl->mData = alignedAllocDouble(npts);
+    pImpl->mData = alignedAllocFloat(npts);
     auto mData = pImpl->mData;
     std::copy(x, x+npts, mData); 
 }
