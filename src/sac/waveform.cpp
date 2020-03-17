@@ -23,19 +23,6 @@ using namespace SFF::SAC;
 
 namespace
 {
-static double *alignedAllocDouble(const int npts)
-{
-    size_t nbytes = static_cast<size_t> (npts)*sizeof(double);
-#ifdef HAVE_ALIGNED_ALLOC
-    double *data = static_cast<double *> (std::aligned_alloc(64, nbytes));
-#else
-    void *dataTemp = malloc(nbytes);
-    posix_memalign(&dataTemp, 64, nbytes);
-    auto data = static_cast<double *> (dataTemp);
-#endif
-    return data;
-}
-
 static float *alignedAllocFloat(const int npts)
 {
     size_t nbytes = static_cast<size_t> (npts)*sizeof(float);
@@ -203,7 +190,6 @@ void Waveform::read(const std::string &fileName)
     };
     std::memcpy(c4, &cdat[316], 4*sizeof(char));
     size_t nbytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
-printf("%ld, %ld\n", nbytesEst, nbytes);
     bool lswap = false;
     if (nbytesEst != nbytes)
     {
@@ -246,7 +232,7 @@ printf("%ld, %ld\n", nbytesEst, nbytes);
     {
         std::vector<char> buffer(nbytesRemaining);
         sacfl.read(buffer.data(), nbytesRemaining);
-        auto cdata = reinterpret_cast<const char *> (buffer.data() + 632);
+        auto cdata = buffer.data(); //reinterpret_cast<const char *> (buffer.data() + 632);
         // Reverse the byte order
         union
         {
@@ -256,7 +242,7 @@ printf("%ld, %ld\n", nbytesEst, nbytes);
         #pragma omp simd
         for (auto i=0; i<npts; i++)
         {
-            auto indx = 632 + 4*i;
+            auto indx = 4*i; //632 + 4*i;
             crev[0] = cdata[indx+3];
             crev[1] = cdata[indx+2];
             crev[2] = cdata[indx+1];
@@ -265,6 +251,7 @@ printf("%ld, %ld\n", nbytesEst, nbytes);
             pImpl->mData[i] = f4; //static_cast<double> (f4);
         }
     }
+    sacfl.close();
 }
 
 /// Writes a waveform
@@ -290,12 +277,21 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
 #endif
     // Pack the header
     int npts = getNumberOfSamples();
-    size_t nbytes = 632 + sizeof(float)*static_cast<size_t> (npts);
-    std::vector<char> cdata(nbytes);
-    pImpl->mHeader.getBinaryHeader(cdata.data(), lswap);
+    size_t nbytes = sizeof(float)*static_cast<size_t> (npts);;//632 + sizeof(float)*static_cast<size_t> (npts);
+    //std::vector<char> cdata(nbytes);
+    std::array<char, 632> cheader;
+    pImpl->mHeader.getBinaryHeader(cheader.data(), lswap); //cdata.data(), lswap);
+    // Write header 
+    std::ofstream outfile(fileName,
+                          std::ofstream::binary | std::ofstream::trunc);
+    outfile.write(cheader.data(), cheader.size()*sizeof(char)); //nbytes);
     // Pack the data
     if (!lswap)
     {
+        auto cdata = reinterpret_cast<const char *> (pImpl->mData);
+        outfile.write(cdata, nbytes);
+        outfile.close();
+/*
         auto fdata = reinterpret_cast<float *> (cdata.data() + 632);
         auto mData = pImpl->mData;
         #pragma omp simd aligned(mData: 64)
@@ -303,6 +299,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
         {
             fdata[i] = static_cast<float> (mData[i]);//pImpl->mData[i]);
         }
+*/
     }
     else
     {
@@ -311,23 +308,28 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
             char c4[4];
             float f4; 
         };
+        std::vector<char> cdata(nbytes); 
         auto mData = pImpl->mData;
         #pragma omp simd aligned(mData: 64)
         for (int i=0; i<npts; ++i)
         {
             f4 = static_cast<float> (mData[i]); //pImpl->mData[i]);
-            auto indx = 632 + i*4;
+            auto indx = i*4; //632 + i*4;
             cdata[indx]   = c4[3];
             cdata[indx+1] = c4[2];
             cdata[indx+2] = c4[1];
             cdata[indx+3] = c4[0];
         }
+        outfile.write(cdata.data(), nbytes);
+        outfile.close();
     }
+/*
     // Write it 
     std::ofstream outfile(fileName,
                           std::ofstream::binary | std::ofstream::trunc);
     outfile.write(cdata.data(), nbytes);
     outfile.close();
+*/
 }
 
 /// Gets the trace start time
