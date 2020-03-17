@@ -38,8 +38,6 @@ After successfully installing the dependencies and obtaining the source code nex
     -DWRAP_PYTHON=TRUE
     cd ..
 
-For OSX you may have to disable std::filesystem by specifying -DDISABLE\_FILESYSTEM.
-
 ## Building
 
 Following a successful configuration descend into the build directory and type
