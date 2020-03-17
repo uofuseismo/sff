@@ -56,7 +56,7 @@ int32_t unpackInt(const char c[4], const bool lswap)
 {
     union
     {
-        char c4[2];
+        char c4[4];
         int32_t val;
     };
     if (lswap)
@@ -81,7 +81,7 @@ float unpackFloat(const char c[4], const bool lswap)
 {
     union
     {
-        char c4[2];
+        char c4[4];
         float val;
     };
     if (lswap)
@@ -164,7 +164,7 @@ void packInt(const int32_t valIn, char c[4], const bool lswap)
 {
     union
     {
-        char c4[2];
+        char c4[4];
         int32_t val;
     };
     val = valIn;
@@ -189,7 +189,7 @@ void packFloat(const float valIn, char c[4], const bool lswap)
 {
     union
     {
-        char c4[2];
+        char c4[4];
         float val;
     };
     val = valIn;
