@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <climits>
 #include <cmath>
+#include <array>
 #include <fstream>
 #include <algorithm>
 #include "sff/segy/textualFileHeader.hpp"
