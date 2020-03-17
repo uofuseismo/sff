@@ -37,9 +37,32 @@ int main () {
 if (${HAVE_ALIGNED_ALLOC})
    message("Using standard aligned_alloc")
    add_definitions(-DHAVE_ALIGNED_ALLOC)
+else()
+   message("Using custom aligned_alloc")
 endif()
+check_cxx_source_compiles("
+#if __has_include(<filesystem>)
+ #include <filesystem>
+ namespace fs = std::filesystem;
+#elif __has_include(<experimental/filesystem>)
+ #include <experimental/filesystem>
+ namespace fs = std::experimental::filesystem;
+#endif
+int main () {
+    std::string fname;
+    if (fs::exists(fname)){return EXIT_SUCCESS;}
+    return EXIT_FAILURE;
+}
+"
+  HAVE_FILESYSTEM
+)
 # Requiring CXX17 means this will exist
-link_libraries(stdc++fs)
+if (${HAVE_FILESYSTEM})
+   message("Using std::filesystem")
+   link_libraries(stdc++fs)
+else()
+   message("No standard filesystem detected")
+endif()
 
 ################################################################################
 #                           Download the test data file                        #
