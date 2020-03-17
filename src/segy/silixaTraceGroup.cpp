@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <array>
 #include <fstream>
 #include <limits>
 #include "sff/segy/silixa/traceGroup.hpp"
