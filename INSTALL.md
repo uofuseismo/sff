@@ -12,7 +12,8 @@ The following are the required prerequisites:
 
 The following are the optional prerequisites:
  
-   1. Python3, pytest3, and [pybind11](https://github.com/pybind/pybind11) if Python bindings are required.
+   1. [libmseed](https://github.com/iris-edu/libmseed) for reading miniSEED files.  This library requires libmseed v3 or greater.
+   2. Python3, pytest3, and [pybind11](https://github.com/pybind/pybind11) if Python bindings are required.
 
 ## Getting the Source
 
@@ -37,6 +38,10 @@ After successfully installing the dependencies and obtaining the source code nex
     -DCMAKE_CXX_FLAGS="-g -Wall -Wextra" \
     -DWRAP_PYTHON=TRUE
     cd ..
+
+If libmseed is installed in a non-standard behavior you can influence CMake's behavior by adding
+
+    export MINISEED_ROOT=/path/to/mseed
 
 ## Building
 
