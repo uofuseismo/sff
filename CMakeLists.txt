@@ -120,6 +120,7 @@ if (${MINISEED_FOUND})
        src/miniseed/sncl.cpp
        src/miniseed/trace.cpp
        src/miniseed/traceGroup.cpp)
+   set(MINISEED_TEST_SRC testing/miniseed/miniseed.cpp)
 endif()
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
@@ -154,7 +155,8 @@ add_executable(tests
                testing/main.cpp
                testing/utilities/time.cpp
                testing/sac/sac.cpp
-               testing/segy/silixa.cpp)
+               testing/segy/silixa.cpp
+               ${MINISEED_TEST_SRC})
 target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
 target_include_directories(tests PRIVATE ${GTEST_INCLUDE_DIRS})
 add_test(NAME tests
