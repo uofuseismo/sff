@@ -70,6 +70,13 @@ file(DOWNLOAD
 #                         Look For Some Required Libraries                     #
 ################################################################################
 find_package(GTest REQUIRED)
+set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+find_package(FindMiniSEED)
+
+if (${MINISEED_FOUND})
+   message("Found miniSEED")
+   link_libraries(${MINISEED_LIBRARY})
+endif()
 
 if (WRAP_PYTHON)
    find_package(PythonInterp 3)
@@ -85,6 +92,7 @@ endif()
 ################################################################################
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${MINISEED_INCLUDE_DIR}
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/include/sff/version.hpp.in
@@ -107,10 +115,16 @@ set(SRC
     src/segy/silixaTrace.cpp
     src/segy/silixaTraceGroup.cpp
     src/segy/textualFileHeader.cpp)
+if (${MINISEED_FOUND})
+   set(MINISEED_SRC
+       src/miniseed/sncl.cpp
+       src/miniseed/trace.cpp
+       src/miniseed/traceGroup.cpp)
+endif()
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
 set(BUILD_SHARED_LIBS YES)
-add_library(sff ${SRC})
+add_library(sff ${SRC} ${MINISEED_SRC})
 #set_target_properties(sff PROPERTIES
 #                      CXX_STANDARD 17
 #                      CXX_STANDARD_REQUIRED YES 
@@ -127,7 +141,7 @@ if (WRAP_PYTHON)
                #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)
    target_link_libraries(pysff PRIVATE
-                         pybind11::module sff OpenMP::OpenMP_CXX)
+                         pybind11::module sff ${MINISEED_LIBRARY} OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
    set_property(TARGET pysff PROPERTY PREFIX "")
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_tests.py DESTINATION .)
