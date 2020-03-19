@@ -92,7 +92,6 @@ endif()
 ################################################################################
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${MINISEED_INCLUDE_DIR}
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/include/sff/version.hpp.in
@@ -132,6 +131,9 @@ add_library(sff ${SRC} ${MINISEED_SRC})
 #                      CXX_EXTENSIONS NO) 
 target_include_directories(sff PUBLIC  ${PUBLIC_HEADER_FILES})
 target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES})
+if (${MINISEED_FOUND})
+    target_include_directories(sff PRIVATE ${MINISEED_INCLUDE_DIR})
+endif()
 
 if (WRAP_PYTHON)
    add_library(pysff MODULE
@@ -142,7 +144,7 @@ if (WRAP_PYTHON)
                #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)
    target_link_libraries(pysff PRIVATE
-                         pybind11::module sff ${MINISEED_LIBRARY} OpenMP::OpenMP_CXX)
+                         pybind11::module sff OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
    set_property(TARGET pysff PROPERTY PREFIX "")
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_tests.py DESTINATION .)
