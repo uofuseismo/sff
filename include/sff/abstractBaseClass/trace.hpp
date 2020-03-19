@@ -21,6 +21,7 @@ public:
     virtual double getSamplingPeriod() const = 0;
     virtual void getData(int npts, double *data[]) const = 0;
     virtual void getData(int npts, float *data[]) const = 0;
+    //virtual void getData(int npts, int *data[]) const = 0;
     virtual SFF::Utilities::Time getStartTime() const = 0;
     virtual SFF::Format getFormat() const noexcept = 0;
 };

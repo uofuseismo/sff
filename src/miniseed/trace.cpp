@@ -19,7 +19,7 @@
 #include "sff/miniseed/trace.hpp"
 #include "sff/utilities/time.hpp"
 
-using namespace SFF;
+//using namespace SFF;
 using namespace SFF::MiniSEED;
 
 namespace
@@ -276,7 +276,7 @@ Precision Trace::getPrecision() const
 }
 
 /// Start time
-Utilities::Time Trace::getStartTime() const noexcept
+SFF::Utilities::Time Trace::getStartTime() const
 {
     return pImpl->mStartTime;
 }
@@ -303,10 +303,21 @@ double Trace::getSamplingRate() const
     return pImpl->mSamplingRate;
 }
 
+double Trace::getSamplingPeriod() const
+{
+    return 1.0/getSamplingRate();
+}
+
 /// Number of samples
 int Trace::getNumberOfSamples() const noexcept
 {
     return static_cast<int> (pImpl->mNumberOfSamples);
+}
+
+/// Trace type
+SFF::Format Trace::getFormat() const noexcept
+{
+    return SFF::Format::MINISEED;
 }
 
 /// SNCL

@@ -225,6 +225,7 @@ public:
 
     void getData(int npts, double *data[]) const override;
     void getData(int npts, float *data[]) const override;
+    //void getData(int npts, int *data[]) const override;
     /*!
      * @brief Returns a copy of the data.
      * @result A copy of the waveform data.

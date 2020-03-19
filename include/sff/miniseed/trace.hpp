@@ -1,6 +1,7 @@
 #ifndef SFF_MINISEED_TRACE_HPP
 #define SFF_MINISEED_TRACE_HPP 1
 #include <memory>
+#include "sff/abstractBaseClass/trace.hpp"
 #include "sff/utilities/time.hpp"
 #include "sff/miniseed/enums.hpp"
 #include "sff/miniseed/sncl.hpp"
@@ -11,7 +12,7 @@ namespace SFF::MiniSEED
  * @brief Defines a miniSEED trace.
  * @copyright Ben Baker (University of Utah) distributed under the MIT license.
  */
-class Trace
+class Trace : public SFF::AbstractBaseClass::ITrace
 {
 public:
     /*! @name Constructors
@@ -91,7 +92,7 @@ public:
      * @result The start time of the trace.
      * @note If this was not set then it will correspond to January 1, 1970.
      */
-    SFF::Utilities::Time getStartTime() const noexcept;
+    SFF::Utilities::Time getStartTime() const override;
     /*!
      * @brief Gets the end time of the trace.
      * @result The end time of the trace.
@@ -117,7 +118,13 @@ public:
      * @result The sampling rate in Hz.
      * @throws std::runtime_error if the sampling rate was not set.
      */
-    double getSamplingRate() const;    
+    double getSamplingRate() const override;
+    /*!
+     * @brief Gets the sampling period.
+     * @result The sampling period in Hz.
+     * @throws std::runtime_error if the sampling rate was not set.
+     */
+    double getSamplingPeriod() const override;
     /*! !} */
 
     /*! @name Number of Samples
@@ -127,7 +134,7 @@ public:
      * @brief Sets the number of samples.
      * @result The number of samples in the trace.
      */
-    int getNumberOfSamples() const noexcept;
+    int getNumberOfSamples() const noexcept override;
     /*! @} */
 
     /*! @name Precision
@@ -183,8 +190,8 @@ public:
      *         or read from disk.
      * @sa \c getNumberOfSamples()
      */ 
-    void getData(const int length, double *x[]) const;
-    void getData(const int length, float *x[]) const;
+    void getData(const int length, double *x[]) const override;
+    void getData(const int length, float *x[]) const override;
     void getData(const int length, int *x[]) const;
     /*!
      * @brief Sets the time series data.
@@ -229,6 +236,12 @@ public:
      */
     const int *getDataPointer32i() const;
     /*! @} */
+
+    /*!
+     * @brief Gets the seismic data format.
+     * @result The seismic data format which in this instance is MINISEED.
+     */
+    SFF::Format getFormat() const noexcept override;
 private:
     class TraceImpl;
     std::unique_ptr<TraceImpl> pImpl;

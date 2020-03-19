@@ -505,9 +505,26 @@ void Waveform::getData(const int npts, double *dataIn[]) const
                                   + " must be at least "
                                   + std::to_string(n) + "\n");
     }
-    double *data = *dataIn;
-    std::copy(pImpl->mData, pImpl->mData+n, data); 
+    auto *mData = pImpl->mData;
+    auto *data = *dataIn;
+    std::copy(mData, mData+n, data); 
 }
+
+/*
+void Waveform::getData(const int npts, int *dataIn[]) const
+{
+    int n = getNumberOfSamples();
+    if (npts < n)
+    {
+        throw std::invalid_argument("npts = " + std::to_string(npts)
+                                  + " must be at least "
+                                  + std::to_string(n) + "\n");
+    }
+    auto *mData = pImpl->mData;
+    auto *data = *dataIn;
+    std::copy(mData, mData+n, data);
+}
+*/
 
 void Waveform::getData(const int npts, float *dataIn[]) const
 {
@@ -518,9 +535,9 @@ void Waveform::getData(const int npts, float *dataIn[]) const
                                   + " must be at least "
                                   + std::to_string(n) + "\n");
     }
-    float *data = *dataIn;
-    #pragma omp simd
-    for (int i=0; i<n; ++i){data[i] = static_cast<float> (pImpl->mData[i]);}
+    auto *mData = pImpl->mData;
+    auto *data = *dataIn;
+    std::copy(mData, mData+n, data);
 }
 
 /// Gets a copy of the data

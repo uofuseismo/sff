@@ -8,8 +8,9 @@ namespace SFF
  */ 
 enum class Format
 {
-    SAC,        /*!< Seismic Analysis Code (SAC) format. */
-    SILIXA_SEGY /*!< Silixa's custom SEGY format. */
+    SAC,         /*!< Seismic Analysis Code (SAC) format. */
+    SILIXA_SEGY, /*!< Silixa's custom SEGY format. */
+    MINISEED     /*!< MiniSEED format. */
 };
 }
 #endif

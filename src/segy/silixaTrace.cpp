@@ -189,6 +189,24 @@ void Trace::getData(const int nSamples, float *xIn[]) const
     std::copy(data, data+nSamplesRef, x);
 }
 
+/*
+void Trace::getData(const int nSamples, int *xIn[]) const
+{
+    auto nSamplesRef = getNumberOfSamples();
+    if (nSamples != nSamplesRef)
+    {
+        throw std::invalid_argument("nSamples = " + std::to_string(nSamples)
+                                  + " must equal " + std::to_string(nSamplesRef)
+                                  + "\n");
+    }
+    if (nSamples == 0){return;}
+    auto x = *xIn;
+    if (x == nullptr){throw std::invalid_argument("x is NULL\n");}
+    auto data = pImpl->mData;
+    std::copy(data, data+nSamplesRef, x);
+}
+*/
+
 /// Gets the data
 void Trace::getData(const int nSamples, double *xIn[]) const
 {
