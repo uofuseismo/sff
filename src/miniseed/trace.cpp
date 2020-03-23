@@ -182,7 +182,7 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
              segment != NULL;
              segment = segment->next)
         {
-            // Check the pointer isn't NULL and this is fthe first go
+            // Check the pointer isn't NULL and this is the first go
             if (!segment->recordlist){continue;}
             if (!segment->recordlist->first){continue;}
             // Determine the sample size and type
