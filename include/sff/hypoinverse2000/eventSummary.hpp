@@ -220,6 +220,22 @@ public:
      * @{
      */
     /*!
+     * @param[in] distance  Sets the distance from the source to the closest
+     *                      station in kilometers.
+     * @throws std::invalid_argument if distance is not positive.
+     */
+    void setDistanceToClosestStation(double distance);
+    /*!
+     * @return The distance from the source to the closest station in
+     *         kilometers.
+     */
+    [[nodiscard]] double getDistanceToClosestStation() const;
+    /*!
+     * @return True indicates the distance to the closest station was set.
+     */
+    [[nodiscard]] bool haveDistanceToClosestStation() const noexcept;
+
+    /*!
      * @brief Sets the azimuthal gap.
      * @param gap   The azimuthal gap in degrees.  This must be in the
      *              range [0,360)
@@ -253,10 +269,27 @@ public:
      */
     [[nodiscard]] int getNumberOfWeightedResiduals() const;
     /*!
-     * @brief Determines if the number of weighted residuals was set.
-     * @result The number of weighted residuals.
+     * @result True indicates the number of weighted residuals was set.
      */
     [[nodiscard]] bool haveNumberOfWeightedResiduals() const noexcept;
+
+    /*!
+     * @brief Sets the number of S weighted residuals
+     *        contributing to the location.
+     * @param nResiduals  The number of S weighted residuals.
+     * @throws std::invalid_argument if this is not positive.
+     */
+    void setNumberOfSWeightedResiduals(int nResiduals);
+    /*!
+     * @brief Gets the number of S weighted residuals.
+     * @result The number of S weighted residuals contributing to the solution.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] int getNumberOfSWeightedResiduals() const;
+    /*!
+     * @result True indicates the number of S weighted residuals was set.
+     */
+    [[nodiscard]] bool haveNumberOfSWeightedResiduals() const noexcept;
 
     /*!
      * @brief Sets the residual travel time RMS.

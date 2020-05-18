@@ -126,8 +126,10 @@ public:
         mLatitude = 0;
         mLongitude = 0;
         mDepth = 0;
+        mDistanceToClosestStation =-1;
         mAzimuthalGap = 0;
         mWeightedResiduals =-1;
+        mSWeightedResiduals =-1;
         mTravelTimeRMS =-1;
         mEventIdentifier = 0;
         mPreferredMagnitude = 0;
@@ -147,11 +149,13 @@ public:
     double mLatitude = 0;
     double mLongitude = 0;
     double mDepth = 0;
+    double mDistanceToClosestStation =-1;
     double mAzimuthalGap = 0;
     double mPreferredMagnitude = 0;
     double mTravelTimeRMS = -1;
     uint64_t mEventIdentifier = 0;
     int mWeightedResiduals =-1;
+    int mSWeightedResiduals =-1;
     int mNumberOfFirstMotions =-1;
     char mHavePreferredMagnitudeLabel = ' ';
     bool mHaveOriginTime = false;
@@ -307,12 +311,21 @@ void EventSummary::unpackString(const std::string &line)
         result.setAzimuthalGap(azimuthalGap.second);
     }
     auto distanceToClosestStation = unpackIntPair(45, 48, headerPtr, lenos);
+    if (distanceToClosestStation.first && distanceToClosestStation.second >= 0)
+    {
+        result.setDistanceToClosestStation(distanceToClosestStation.second);
+    }
     auto rms = unpackDoublePair(48, 52, 2, 2, headerPtr, lenos);
     if (rms.first && rms.second >= 0)
     {
         result.setResidualTravelTimeRMS(rms.second);
     }
 
+    auto nSWeightedResiduals = unpackIntPair(82, 85, headerPtr, lenos);
+    if (nSWeightedResiduals.first && nSWeightedResiduals.second >= 0)
+    {
+        result.setNumberOfSWeightedResiduals(nSWeightedResiduals.second);
+    }
     auto nFirstMotions = unpackIntPair(93, 96, headerPtr, lenos);
     if (nFirstMotions.first && nFirstMotions.second >= 0)
     {
@@ -449,6 +462,29 @@ bool EventSummary::haveNumberOfWeightedResiduals() const noexcept
     return pImpl->mWeightedResiduals >= 0;
 }
 
+void EventSummary::setNumberOfSWeightedResiduals(int nResiduals)
+{
+    if (nResiduals < 0)
+    {
+        throw std::invalid_argument("nResiduals cannot be negative");
+    }
+    pImpl->mSWeightedResiduals = nResiduals;
+}
+
+int EventSummary::getNumberOfSWeightedResiduals() const
+{
+    if (!haveNumberOfSWeightedResiduals())
+    {
+        throw std::runtime_error("Number of weighted residuals not set");
+    }
+    return pImpl->mSWeightedResiduals;
+}
+
+bool EventSummary::haveNumberOfSWeightedResiduals() const noexcept
+{
+    return pImpl->mSWeightedResiduals >= 0;
+}
+
 /// Azimuthal gap
 void EventSummary::setAzimuthalGap(double gap)
 {
@@ -583,4 +619,28 @@ uint64_t EventSummary::getEventIdentifier() const
 bool EventSummary::haveEventIdentifier() const noexcept
 {
     return pImpl->mHaveEventIdentifier;
+}
+
+/// Distance to closest station
+void EventSummary::setDistanceToClosestStation(const double dist)
+{
+    if (dist < 0)
+    {
+        throw std::invalid_argument("distance must be positive");
+    }
+    pImpl->mDistanceToClosestStation = dist;
+}
+
+double EventSummary::getDistanceToClosestStation() const
+{
+    if (!haveDistanceToClosestStation())
+    {
+        throw std::runtime_error("Distance to closest station not set");
+    }
+    return pImpl->mDistanceToClosestStation;
+}
+
+bool EventSummary::haveDistanceToClosestStation() const noexcept
+{
+    return pImpl->mDistanceToClosestStation >= 0;
 }

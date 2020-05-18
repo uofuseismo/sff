@@ -33,11 +33,13 @@ TEST(Hypo2000, EventSummary)
     EXPECT_NEAR(lon, -112.066, 1.e-3);
     EXPECT_NEAR(summary.getDepth(), 7.71, 1.e-2);
     EXPECT_EQ(summary.getNumberOfWeightedResiduals(), 24);
+    EXPECT_NEAR(summary.getDistanceToClosestStation(), 4, 1.e-1);
     EXPECT_NEAR(summary.getAzimuthalGap(), 83, 1.e-1);
     EXPECT_NEAR(summary.getResidualTravelTimeRMS(), 0.16, 1.e-2);
     EXPECT_NEAR(summary.getPreferredMagnitude(), 2.37, 1.e-2);
 
     EXPECT_EQ(summary.getPreferredMagnitudeLabel(), 'L');
+    EXPECT_EQ(summary.getNumberOfSWeightedResiduals(), 1);
     EXPECT_EQ(summary.getNumberOfFirstMotions(), 4);
     EXPECT_EQ(summary.getEventIdentifier(),
               static_cast<uint64_t> (60363637));
