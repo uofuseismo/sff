@@ -4,6 +4,7 @@
 #include <string>
 #include <cmath>
 #include <mutex>
+#include <ostream>
 #include <stdexcept>
 #include "sff/utilities/time.hpp"
 
@@ -365,6 +366,18 @@ Time SFF::Utilities::operator-(const Time &x, const double y)
     auto t = x.getEpochalTime() - y;
     Time tout(t);
     return tout;
+}
+
+std::ostream&
+SFF::Utilities::operator<<(std::ostream &os, const Time &time)
+{
+    char result[26];
+    std::fill(result, result+26, '\0');
+    sprintf(result, "%04d-%02d-%02dT%02d:%02d:%02d.%06d",
+            time.getYear(), time.getMonth(), time.getDayOfMonth(),
+            time.getHour(), time.getMinute(), time.getSecond(),
+            time.getMicroSecond());
+    return os << result;
 }
 
 void calendar2epoch(
