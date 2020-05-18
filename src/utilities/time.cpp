@@ -371,8 +371,8 @@ Time SFF::Utilities::operator-(const Time &x, const double y)
 std::ostream&
 SFF::Utilities::operator<<(std::ostream &os, const Time &time)
 {
-    char result[26];
-    std::fill(result, result+26, '\0');
+    char result[27];
+    std::fill(result, result+27, '\0');
     sprintf(result, "%04d-%02d-%02dT%02d:%02d:%02d.%06d",
             time.getYear(), time.getMonth(), time.getDayOfMonth(),
             time.getHour(), time.getMinute(), time.getSecond(),
