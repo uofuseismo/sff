@@ -36,6 +36,11 @@ TEST(Hypo2000, EventSummary)
     EXPECT_NEAR(summary.getAzimuthalGap(), 83, 1.e-1);
     EXPECT_NEAR(summary.getResidualTravelTimeRMS(), 0.16, 1.e-2);
     EXPECT_NEAR(summary.getPreferredMagnitude(), 2.37, 1.e-2);
+
+    EXPECT_EQ(summary.getPreferredMagnitudeLabel(), 'L');
+    EXPECT_EQ(summary.getNumberOfFirstMotions(), 4);
+    EXPECT_EQ(summary.getEventIdentifier(),
+              static_cast<uint64_t> (60363637));
 }
 
 }

@@ -51,7 +51,7 @@ public:
     EventSummary& operator=(EventSummary &&summary) noexcept;
     /*! @} */
 
-    /*! @name Destructors
+    /*! @name Destructor
      * @{
      */
     /*!
@@ -64,34 +64,13 @@ public:
     void clear() noexcept;
     /*! @} */
 
-    /*! @name Origin Time
-     * @{
-     */
-    /*!
-     * @brief Sets the origin time.
-     * @param[in] originTime  The event's origin time.
-     */
-    void setOriginTime(const SFF::Utilities::Time &originTime) noexcept;
-    /*!
-     * @brief Gets the event origin time.
-     * @result The origin time of the event.
-     * @throws std::runtime_error if the event origin time was not set.
-     */
-    [[nodiscard]] SFF::Utilities::Time getOriginTime() const;
-    /*!
-     * @brief Determines if the event origin time was set.
-     * @result True indicates that the event origin time was set.
-     */
-    [[nodiscard]] bool haveOriginTime() const noexcept;
-    /*! @} */
-
     /*!
      * @brief Sets the event information from a header line read from an
      *        archive file.
      */
     void unpackString(const std::string &line);
 
-    /*! @brief Hypocenter
+    /*! @brief Hypocenter and Origin Time
      * @{
      */
     /*!
@@ -149,11 +128,43 @@ public:
      * @result True indicates that the depth was set.
      */
     [[nodiscard]] bool haveDepth() const noexcept;
+
+    /*!
+     * @brief Sets the origin time.
+     * @param[in] originTime  The event's origin time.
+     */
+    void setOriginTime(const SFF::Utilities::Time &originTime) noexcept;
+    /*!
+     * @brief Gets the event origin time.
+     * @result The origin time of the event.
+     * @throws std::runtime_error if the event origin time was not set.
+     */
+    [[nodiscard]] SFF::Utilities::Time getOriginTime() const;
+    /*!
+     * @brief Determines if the event origin time was set.
+     * @result True indicates that the event origin time was set.
+     */
+    [[nodiscard]] bool haveOriginTime() const noexcept;
     /*! @} */
 
     /*! @name Magnitudes
      * @{
      */
+    /*!
+     * @brief Sets the preferred magnitude label.
+     * @param[in] label  The preferred magnitude label.
+     * @throws std::invalid_argument if this is blank.
+     */
+    void setPreferredMagnitudeLabel(char label);
+    /*!
+     * @return Gets the preferred magnitude label.
+     * @throws std::runtime_error if the preferred magnitude label was not set.
+     */
+    [[nodiscard]] char getPreferredMagnitudeLabel() const;
+    /*!
+     * @result True indicates that the preferred magnitude labelw as set.
+     */
+    [[nodiscard]] bool havePreferredMagnitudeLabel() const noexcept;
     /*!
      * @brief Sets the preferred magnitude.
      * @param magnitude   The preferred magnitude.
@@ -171,6 +182,39 @@ public:
      */
     [[nodiscard]] bool havePreferredMagnitude() const noexcept;
     /*! @} */
+
+    /*!
+     * @brief Sets the event identifier.
+     * @param evid  The event identifier.
+     */
+    void setEventIdentifier(uint64_t evid) noexcept;
+    /*!
+     * @return Gets the event identifier.
+     * @throws std::runtime_error if the event identifier was not set.
+     */
+    [[nodiscard]] uint64_t getEventIdentifier() const;
+    /*!
+     * @return True indicates that the event identifier was set.
+     */
+    [[nodiscard]] bool haveEventIdentifier() const noexcept;
+
+    /*!
+     * @brief Sets the number of picks with first motions.
+     * @param[in] nFirstMotions  The number of first motions.
+     * @throws std::invalid_argument if the number of first motions is
+     *         not positive.
+     */
+    void setNumberOfFirstMotions(int nFirstMotions);
+    /*!
+     * @return Gets the number of first motions.
+     * @throws std::invalid_argument if the number of first motions was
+     *         not set.
+     */
+    [[nodiscard]] int getNumberOfFirstMotions() const;
+    /*!
+     * @return True indicates that the number of first motions was set.
+     */
+    [[nodiscard]] bool haveNumberOfFirstMotions() const noexcept;
 
     /*! @name Quality Metrics
      * @{

@@ -94,7 +94,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-configure_file(${CMAKE_SOURCE_DIR}/include/sff/version.hpp.in
+configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/sff/version.hpp)
 set(PUBLIC_HEADER_DIRECTORIES
     include/sff)
@@ -113,7 +113,8 @@ set(SRC
     src/segy/silixaTraceHeader.cpp
     src/segy/silixaTrace.cpp
     src/segy/silixaTraceGroup.cpp
-    src/segy/textualFileHeader.cpp)
+    src/segy/textualFileHeader.cpp
+    src/hypoinverse2000/eventSummary.cpp)
 if (${MINISEED_FOUND})
    set(MINISEED_SRC
        src/miniseed/sncl.cpp
@@ -158,6 +159,7 @@ add_executable(tests
                testing/utilities/time.cpp
                testing/sac/sac.cpp
                testing/segy/silixa.cpp
+               testing/hypoinverse2000/hypoinverse2000.cpp
                ${MINISEED_TEST_SRC})
 target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
 target_include_directories(tests PRIVATE ${GTEST_INCLUDE_DIRS})

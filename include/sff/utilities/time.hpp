@@ -1,7 +1,6 @@
 #ifndef SFF_UTILITIES_TIME_HPP
 #define SFF_UTILITIES_TIME_HPP
 #include <memory>
-
 namespace SFF::Utilities
 {
 /*!
@@ -112,7 +111,7 @@ public:
      * @result The UTC epochal time in seconds since the epoch.
      * @throws std::invalid_argument if the time is improperly set.
      */
-    double getEpochalTime() const;
+    [[nodiscard]] double getEpochalTime() const;
     /*! @} */
 
     /*!
@@ -130,7 +129,7 @@ public:
      * @brief Gets the year corresponding to the time set in the class.
      * @result The 4-digit year.
      */
-    int getYear() const noexcept;
+    [[nodiscard]] int getYear() const noexcept;
     /*! @} */
 
     /*!
@@ -153,7 +152,7 @@ public:
      * @result The Julian day.  This is in the range [1,366] where 366
      *         accounts for leap years.
      */
-    int getJulianDay() const noexcept;
+    [[nodiscard]] int getJulianDay() const noexcept;
     /*! @} */
 
     /*!
@@ -172,7 +171,7 @@ public:
      * @brief Gets the month corresponding to the time set in the class.
      * @result The month.  This is in the range [1,12].
      */
-    int getMonth() const noexcept;
+    [[nodiscard]] int getMonth() const noexcept;
     /*!
      * @brief Sets the day of the month.
      * @note  When using this setter the month must also be set with
@@ -189,7 +188,7 @@ public:
      *        in the class.
      * @result The day of the month.  This is in the range [1,31].
      */
-    int getDayOfMonth() const noexcept;
+    [[nodiscard]] int getDayOfMonth() const noexcept;
     /*! @} */
 
     /*!
@@ -206,7 +205,7 @@ public:
      * @brief Gets the hour corresponding to the time set in the class.
      * @result The time of the day.  This is in the range [0,23].
      */
-    int getHour() const noexcept;
+    [[nodiscard]] int getHour() const noexcept;
     /*! @} */
 
     /*!
@@ -223,7 +222,7 @@ public:
      * @brief Gets the minute corresponding to the time set in the class.
      * @result The minute of the hour.  This is in the range [0,59].
      */
-    int getMinute() const noexcept;
+    [[nodiscard]] int getMinute() const noexcept;
     /*! @} */
 
     /*!
@@ -241,7 +240,7 @@ public:
      * @brief Gets the second corresponding to the time set in the class.
      * @result The second.  This is in the range [0,59].
      */
-    int getSecond() const noexcept;
+    [[nodiscard]] int getSecond() const noexcept;
     /*! @} */
 
     /*!
@@ -259,7 +258,7 @@ public:
      * @brief Gets the microsecond corresonding to the time set in the class.
      * @result The microsecond.
      */
-    int getMicroSecond() const noexcept;
+    [[nodiscard]] int getMicroSecond() const noexcept;
     /*!
      * @} 
     */
@@ -309,6 +308,14 @@ Time operator-(const Time &x, const Time &y);
  *         number of seconds in y: x - y.
  */
 Time operator-(const Time &x, double y);
+/*!
+ * @brief Outputs a time as YYYY-MM-DDTHH:MM:SS.SSSSSS
+ * @param[in] os    An output stream object.
+ * @param[in] time  The time stamp
+ * @return A formatted time.
+ */
+std::ostream& operator<<(std::ostream &os, const Time &time);
+
 }
 
 #endif

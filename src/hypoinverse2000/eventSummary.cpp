@@ -24,14 +24,7 @@ std::pair<bool, char> unpackCharPair(const int i1, const char *stringPtr,
                                      const int maxLen)
 {
     auto c = unpackChar(i1, stringPtr, maxLen);
-    if (c == '\0')
-    {
-        return std::pair(false, c);
-    }
-    else
-    {
-        return std::pair(true, c);
-    }
+    return std::pair(c != '\0', c);
 }
 
 int unpackInt(const int i1, const int i2, const char *stringPtr,
@@ -56,6 +49,31 @@ std::pair<bool, int> unpackIntPair(const int i1, const int i2,
 {
     auto i = unpackInt(i1, i2, stringPtr, maxLen);
     return std::pair(i < std::numeric_limits<int>::max(), i);
+}
+
+
+uint64_t unpackUInt64(const int i1, const int i2, const char *stringPtr,
+                      const int maxLen)
+{
+    if (i1 >= maxLen){return std::numeric_limits<int>::max();}
+    char subString[10] = {"\0\0\0\0\0\0\0\0\0"};
+    std::copy(stringPtr+i1,  stringPtr+std::min(i1 + maxLen, i2), subString);
+    try
+    {
+        return std::stol(subString);
+    }
+    catch (const std::exception &e)
+    {
+        return std::numeric_limits<uint64_t>::max();
+    }
+}
+
+std::pair<bool, uint64_t>
+    unpackUInt64Pair(int i1, int i2, const char *stringPtr,
+                     const int maxLen)
+{
+    auto i = unpackUInt64(i1, i2, stringPtr, maxLen);
+    return std::pair(i < std::numeric_limits<uint64_t>::max(), i);
 }
 
 double unpackDouble(const int i1, const int i2,
@@ -111,7 +129,10 @@ public:
         mAzimuthalGap = 0;
         mWeightedResiduals =-1;
         mTravelTimeRMS =-1;
+        mEventIdentifier = 0;
         mPreferredMagnitude = 0;
+        mNumberOfFirstMotions = 0;
+        mHavePreferredMagnitudeLabel = ' ';
 
         mHaveOriginTime = false;
         mHaveLatitude = false;
@@ -119,6 +140,7 @@ public:
         mHaveDepth = false;
         mHaveAzimuthalGap = false;
         mHavePreferredMagnitude = false;
+        mHaveEventIdentifier = false;
     }
 
     SFF::Utilities::Time mOriginTime;
@@ -128,13 +150,17 @@ public:
     double mAzimuthalGap = 0;
     double mPreferredMagnitude = 0;
     double mTravelTimeRMS = -1;
+    uint64_t mEventIdentifier = 0;
     int mWeightedResiduals =-1;
+    int mNumberOfFirstMotions =-1;
+    char mHavePreferredMagnitudeLabel = ' ';
     bool mHaveOriginTime = false;
     bool mHaveLatitude = false;
     bool mHaveLongitude = false;
     bool mHaveDepth = false;
     bool mHaveAzimuthalGap = false;
     bool mHavePreferredMagnitude = false;
+    bool mHaveEventIdentifier = false;
 };
 
 /// C'tor
@@ -286,9 +312,25 @@ void EventSummary::unpackString(const std::string &line)
     {
         result.setResidualTravelTimeRMS(rms.second);
     }
+
+    auto nFirstMotions = unpackIntPair(93, 96, headerPtr, lenos);
+    if (nFirstMotions.first && nFirstMotions.second >= 0)
+    {
+        result.setNumberOfFirstMotions(nFirstMotions.second);
+    }
+
     // Preferred magnitude
+    auto prefMagLabel = unpackCharPair(146, headerPtr, lenos);
+    if (prefMagLabel.first)
+    {
+        result.setPreferredMagnitudeLabel(prefMagLabel.second);
+    }
     auto prefMag = unpackDoublePair(147, 150, 1, 2, headerPtr, lenos);
     if (prefMag.first){result.setPreferredMagnitude(prefMag.second);}
+
+    auto evid = unpackUInt64Pair(136, 146, headerPtr, lenos);
+    if (evid.first){result.setEventIdentifier(evid.second);}
+
     // Finally copy the correct inputs to this
     *this = result;
 }
@@ -474,4 +516,71 @@ double EventSummary::getPreferredMagnitude() const
 bool EventSummary::havePreferredMagnitude() const noexcept
 {
     return pImpl->mHavePreferredMagnitude;
+}
+
+/// First motions
+void EventSummary::setNumberOfFirstMotions(int nFirstMotions)
+{
+    if (nFirstMotions < 0)
+    {
+        throw std::invalid_argument("nFirstMotions = "
+                                  + std::to_string(nFirstMotions)
+                                  + " must be positive");
+    }
+    pImpl->mNumberOfFirstMotions = nFirstMotions;
+}
+int EventSummary::getNumberOfFirstMotions() const
+{
+    if (!haveNumberOfFirstMotions())
+    {
+        throw std::runtime_error("Number of first motions not set");
+    }
+    return pImpl->mNumberOfFirstMotions;
+}
+
+bool EventSummary::haveNumberOfFirstMotions() const noexcept
+{
+    return pImpl->mNumberOfFirstMotions >= 0;
+}
+
+/// Preferred magnitude label
+void EventSummary::setPreferredMagnitudeLabel(char label)
+{
+    if (isblank(label))
+    {
+        throw std::invalid_argument("label cannot be blank");
+    }
+    pImpl->mHavePreferredMagnitudeLabel = label;
+}
+
+char EventSummary::getPreferredMagnitudeLabel() const
+{
+    if (!havePreferredMagnitudeLabel())
+    {
+        throw std::runtime_error("Preferred magnitude label not yet set");
+    }
+    return pImpl->mHavePreferredMagnitudeLabel;
+}
+
+bool EventSummary::havePreferredMagnitudeLabel() const noexcept
+{
+    return !isblank(pImpl->mHavePreferredMagnitudeLabel);
+}
+
+/// Event identifier
+void EventSummary::setEventIdentifier(const uint64_t evid) noexcept
+{
+    pImpl->mHaveEventIdentifier = true;
+    pImpl->mEventIdentifier = evid;
+}
+
+uint64_t EventSummary::getEventIdentifier() const
+{
+    if (!haveEventIdentifier()){throw std::runtime_error("evid not yet set");}
+    return pImpl->mEventIdentifier;
+}
+
+bool EventSummary::haveEventIdentifier() const noexcept
+{
+    return pImpl->mHaveEventIdentifier;
 }
