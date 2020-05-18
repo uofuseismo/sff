@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 #include <string>
 #include <algorithm>
 #include "sff/segy/silixa/traceHeader.hpp"
@@ -68,7 +69,7 @@ public:
     float *__attribute__((aligned(64))) mData = nullptr;
     TraceHeader mHeader;
     int mSamples = 0;
-    const bool mSwapBytes = testByteOrder() == LITTLE_ENDIAN ? true : false;
+    const bool mSwapBytes = testByteOrder() == LITTLE_ENDIAN;
 };
 
 /// Constructor
@@ -290,7 +291,7 @@ void Trace::setSamplingRate(const double df)
 /// Sets the sampling period in micro-seconds
 void Trace::setSamplingPeriod(const double dt) 
 {
-    auto dtMicroSeconds = static_cast<int16_t> (dt*1000000 + 0.5);
+    auto dtMicroSeconds = static_cast<int16_t> (std::lround(dt*1000000));
     pImpl->mHeader.setSampleInterval(dtMicroSeconds);
 }
 

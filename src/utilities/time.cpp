@@ -4,7 +4,6 @@
 #include <string>
 #include <cmath>
 #include <mutex>
-#include <algorithm>
 #include <stdexcept>
 #include "sff/utilities/time.hpp"
 
@@ -15,10 +14,10 @@ using namespace SFF::Utilities;
 std::mutex timeMutex;
 
 static void calendar2epoch(
-    const int mode, const double etime,
-    const int year, const int jday, const int month, const int dom,
-    const int hour, const int minute, const double second,
-    const bool luseJday,
+    int mode, double etime,
+    int year, int jday, int month, int dom,
+    int hour, int minute, double second,
+    bool luseJday,
     int &yearOut,   int &jdayOut,  int &monthOut,
     int &domOut,    int &hourOut,  int &minuteOut,
     int &secondOut, int &musecOut,
@@ -27,6 +26,42 @@ static void calendar2epoch(
 class  Time::TimeImpl
 {
 public:
+    void updateEpochalTime()
+    {
+        if (!lhaveEpoch)
+        {
+            constexpr double etime = 0;
+            int yearWork      = year;
+            int jdayWork      = jday;
+            int monthWork     = month;
+            int domWork       = dom;
+            int hourWork      = hour;
+            int minuteWork    = minute;
+            int isecWork      = second;
+            int musecWork     = musec;
+            bool luseJdayWork = luseJday;
+            if (luseJday)
+            {
+                monthWork = 0;
+                domWork = 0;
+            }
+            else
+            {
+                jdayWork = 0;
+            }
+            auto secondWork = static_cast<double> (isecWork)
+                + static_cast<double> (musecWork)*1.e-6;
+            calendar2epoch(CALENDAR_2_EPOCH,
+                           etime,
+                           yearWork, jdayWork, monthWork,  domWork,
+                           hourWork, minuteWork, secondWork,
+                           luseJdayWork,
+                           year,   jday,  month,
+                           dom,    hour,  minute,
+                           second, musec, epoch);
+            lhaveEpoch = true;
+        }
+    }
     /// Epochal time; Seconds since Jan 1, 1970 (UTC)
     double epoch = 0;
     /// Year
@@ -150,39 +185,7 @@ void Time::setEpochalTime(const double epoch)
 
 double Time::getEpochalTime() const
 {
-    if (!pImpl->lhaveEpoch)
-    {
-        constexpr double etime = 0;
-        int year   = pImpl->year;
-        int jday   = pImpl->jday;
-        int month  = pImpl->month;
-        int dom    = pImpl->dom;
-        int hour   = pImpl->hour;
-        int minute = pImpl->minute;
-        int isec   = pImpl->second;
-        int musec  = pImpl->musec;
-        bool luseJday = pImpl->luseJday;
-        if (luseJday)
-        {
-            month = 0;
-            dom = 0;
-        }
-        else
-        {
-            jday = 0;
-        }
-        double second = static_cast<double> (isec) 
-                      + static_cast<double> (musec)*1.e-6;
-        calendar2epoch(CALENDAR_2_EPOCH,
-                       etime,
-                       year, jday, month,  dom,
-                       hour, minute, second,
-                       luseJday,
-                       pImpl->year,   pImpl->jday,  pImpl->month,
-                       pImpl->dom,    pImpl->hour,  pImpl->minute,
-                       pImpl->second, pImpl->musec, pImpl->epoch);
-        pImpl->lhaveEpoch = true;
-    }
+    pImpl->updateEpochalTime();
     return static_cast<double> (pImpl->epoch);
 }
 
@@ -219,7 +222,7 @@ int Time::getJulianDay() const noexcept
     // The julian day wasn't set but this will compute it
     if (!pImpl->luseJday && !pImpl->lhaveEpoch)
     {
-        getEpochalTime();
+        pImpl->updateEpochalTime();
     }
     return pImpl->jday;
 }
@@ -241,7 +244,7 @@ int Time::getMonth() const noexcept
     // The month wasn't set but this will compute it
     if (pImpl->luseJday && !pImpl->lhaveEpoch)
     {
-        getEpochalTime();
+        pImpl->updateEpochalTime();
     }
     return pImpl->month;
 }
@@ -263,7 +266,7 @@ int Time::getDayOfMonth() const noexcept
     // The day of the month wasn't set but this will compute it
     if (pImpl->luseJday && !pImpl->lhaveEpoch)
     {
-        getEpochalTime();
+        pImpl->updateEpochalTime();
     } 
     return pImpl->dom;
 }
@@ -419,7 +422,7 @@ void calendar2epoch(
         hourOut   = hour;
         minuteOut = minute;
         secondOut = isec;
-        musecOut  = std::lround(frac*1.e6); //static_cast<int> (frac*1.e6 + 0.5);
+        musecOut  = static_cast<int> (std::lround(frac*1.e6)); //static_cast<int> (frac*1.e6 + 0.5);
         epochOut  = epoch;
     }
     else
@@ -438,7 +441,7 @@ void calendar2epoch(
         minuteOut = static_cast<int> (tmptr->tm_min);
         secondOut = static_cast<int> (tmptr->tm_sec);
         auto epochIFix = static_cast<double> (static_cast<uint64_t> (etime));
-        musecOut  = std::lround ((etime - epochIFix)*1.e6);
+        musecOut  = static_cast<int> (std::lround ((etime - epochIFix)*1.e6));
         epochOut  = etime;
     }
 }

@@ -1,9 +1,8 @@
-#include <cstdio>
 #include <cstdlib>
-#include <cassert>
 #include <cstring>
 #include <string>
 #include <array>
+#include <cmath>
 #include <algorithm>
 #include <fstream>
 #include "sff/utilities/time.hpp"
@@ -279,7 +278,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
     int npts = getNumberOfSamples();
     size_t nbytes = sizeof(float)*static_cast<size_t> (npts);;//632 + sizeof(float)*static_cast<size_t> (npts);
     //std::vector<char> cdata(nbytes);
-    std::array<char, 632> cheader;
+    std::array<char, 632> cheader{};
     pImpl->mHeader.getBinaryHeader(cheader.data(), lswap); //cdata.data(), lswap);
     // Write header 
     std::ofstream outfile(fileName,
@@ -371,7 +370,7 @@ void Waveform::setStartTime(const Utilities::Time &startTime) noexcept
      pImpl->mHeader.setHeader(SAC::Integer::NZHOUR, startTime.getHour());
      pImpl->mHeader.setHeader(SAC::Integer::NZMIN,  startTime.getMinute());
      pImpl->mHeader.setHeader(SAC::Integer::NZSEC,  startTime.getSecond());
-     auto millisec = static_cast<int> (startTime.getMicroSecond()*1.e-3 + 0.5);
+     auto millisec = static_cast<int> (std::lround((startTime.getMicroSecond()*1.e-3)));
      pImpl->mHeader.setHeader(SAC::Integer::NZMSEC, millisec);
      pImpl->mHeader.setHeader(SAC::Double::B, 0.0);    
 }
@@ -485,8 +484,7 @@ bool Waveform::isValid() const noexcept
     if (!pImpl){return false;}
     if (getSamplingPeriod() <= 0){return false;}
     if (getNumberOfSamples() < 0){return false;}
-    if (pImpl->mData == nullptr){return false;}
-    return true;
+    return pImpl->mData != nullptr;
 }
 
 /// Gets a pointer to the data

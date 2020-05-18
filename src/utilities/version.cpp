@@ -25,8 +25,7 @@ bool Version::isAtLeast(const int major, const int minor,
     if (SFF_MAJOR > major){return true;}
     if (SFF_MINOR < minor){return false;}
     if (SFF_MINOR > minor){return true;}
-    if (SFF_PATCH < patch){return false;}
-    return true;
+    return SFF_PATCH >= patch;
 }
 
 std::string Version::getVersion() noexcept

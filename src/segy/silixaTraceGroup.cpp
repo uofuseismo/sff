@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <cstdlib>
 #include <string>
 #include <vector>
 #include <array>
@@ -104,8 +103,8 @@ void TraceGroup::read(const std::string &fileName)
         }
         segyfl.seekg(0, segyfl.beg);
         // Read the textual header and binary header
-        std::array<char, 3200> textHeader;
-        std::array<char, 400> binaryFileHeader;
+        std::array<char, 3200> textHeader{};
+        std::array<char, 400> binaryFileHeader{};
         segyfl.read(textHeader.data(), 3200);
         segyfl.read(binaryFileHeader.data(), 400);
         try 

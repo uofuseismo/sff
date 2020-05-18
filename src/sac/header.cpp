@@ -1,6 +1,3 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cassert>
 #include <cstring>
 #include <algorithm>
 #include <string>
@@ -27,15 +24,15 @@ using namespace SFF::SAC;
 
 namespace {
 
-inline void copyTruncatedString(const std::string &value, char result[], const size_t len=8); //std::array &result);
+inline void copyTruncatedString(const std::string &value, char result[], size_t len=8); //std::array &result);
 inline void readChar8(const char cin[], char cout[]);
 inline void readChar16(const char cin[], char cout[]);
-inline void packf4(const double d8, char c[], const bool lswap);
-inline void packi4(const int i4, char c[], const bool lswap);
+inline void packf4(double d8, char c[], bool lswap);
+inline void packi4(int i4, char c[], bool lswap);
 inline std::string returnString8(const char c[8]);
 inline std::string returnString16(const char c[16]);
-inline int unpacki4(const char c4[4], const bool lswap);
-inline double unpackf4(const char c4[4], const bool lswap);
+inline int unpacki4(const char c4[4], bool lswap);
+inline double unpackf4(const char c4[4], bool lswap);
 
 inline std::string returnString8(const char c[])
 {
