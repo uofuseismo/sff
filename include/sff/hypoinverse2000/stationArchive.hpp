@@ -34,6 +34,12 @@ public:
     StationArchive(StationArchive &&station) noexcept;
     /*! @} */
 
+    /*!
+     * @brief Sets the event information from a station line read from an
+     *        archive file.
+     */
+    void unpackString(const std::string &line);
+
     /*! @name Operators
      * @{
      */
@@ -76,11 +82,11 @@ public:
      * @return The network to which the station belongs.
      * @throws std::runtime_error if this is not set.
      */
-    std::string getNetworkName() const;
+    [[nodiscard]] std::string getNetworkName() const;
     /*!
      * @return True indicates that the network name was set.
      */
-    bool haveNetworkName() const noexcept;
+    [[nodiscard]] bool haveNetworkName() const noexcept;
 
     /*!
      * @brief Sets the name of the station on which the pick was made.
@@ -92,11 +98,11 @@ public:
      * @return The name of the station name.
      * @throws std::runtime_error if this is not set.
      */
-    std::string getStationName() const;
+    [[nodiscard]] std::string getStationName() const;
     /*!
      * @return True indicates that the station's name was set.
      */
-    bool haveStationName() const noexcept;
+    [[nodiscard]] bool haveStationName() const noexcept;
 
     /*!
      * @brief Sets the station's channel code on which the pick was made.
@@ -108,11 +114,11 @@ public:
      * @return The station's channel name.
      * @throws std::runtime_error if this is not set.
      */
-    std::string getChannelName() const;
+    [[nodiscard]] std::string getChannelName() const;
     /*!
      * @return True indicates that the channel name was set.
      */
-    bool haveChannelName() const noexcept;
+    [[nodiscard]] bool haveChannelName() const noexcept;
 
     /*!
      * @brief Sets the station's location code on which the pick was made.
@@ -124,11 +130,11 @@ public:
      * @return The station's location code.
      * @throws std::runtime_error if this is not set.
      */
-    std::string getLocationCode() const;
+    [[nodiscard]] std::string getLocationCode() const;
     /*!
      * @return True indicates that the location code was set.
      */
-    bool haveLocationCode() const noexcept;
+    [[nodiscard]] bool haveLocationCode() const noexcept;
     /*! @} */
 private:
     class StationArchiveImpl;

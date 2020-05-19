@@ -77,7 +77,7 @@ int32_t unpackInt(const char c[4], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-float unpackFloat(const char c[4], const bool lswap)
+[[maybe_unused]] float unpackFloat(const char c[4], const bool lswap)
 {
     union
     {
@@ -210,7 +210,7 @@ void packFloat(const float valIn, char c[4], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-void packDouble(const double valIn, char c[8], const bool lswap)
+[[maybe_unused]] void packDouble(const double valIn, char c[8], const bool lswap)
 {
     union
     {

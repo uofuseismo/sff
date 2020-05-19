@@ -7,111 +7,9 @@
 #endif
 #include "sff/hypoinverse2000/eventSummary.hpp"
 #include "sff/utilities/time.hpp"
+#include "private/hypoinverse2000.hpp"
 
 using namespace SFF::HypoInverse2000;
-
-namespace
-{
-
-char unpackChar(const int i1, const char *stringPtr, const int maxLen)
-{
-    if (i1 >= maxLen){return '\0';}
-    if (stringPtr[i1] == ' '){return '\0';}
-    return stringPtr[i1];
-}
-
-std::pair<bool, char> unpackCharPair(const int i1, const char *stringPtr,
-                                     const int maxLen)
-{
-    auto c = unpackChar(i1, stringPtr, maxLen);
-    return std::pair(c != '\0', c);
-}
-
-int unpackInt(const int i1, const int i2, const char *stringPtr,
-              const int maxLen)
-{
-    if (i1 >= maxLen){return std::numeric_limits<int>::max();}
-    char subString[8] = {"\0\0\0\0\0\0\0"};
-    std::copy(stringPtr+i1,  stringPtr+std::min(i1 + maxLen, i2), subString);
-    try
-    {
-        return std::stoi(subString);
-    }
-    catch (const std::exception &e)
-    {
-        return std::numeric_limits<int>::max();
-    }
-}
-
-std::pair<bool, int> unpackIntPair(const int i1, const int i2,
-                                   const char *stringPtr,
-                                   const int maxLen)
-{
-    auto i = unpackInt(i1, i2, stringPtr, maxLen);
-    return std::pair(i < std::numeric_limits<int>::max(), i);
-}
-
-
-uint64_t unpackUInt64(const int i1, const int i2, const char *stringPtr,
-                      const int maxLen)
-{
-    if (i1 >= maxLen){return std::numeric_limits<int>::max();}
-    char subString[10] = {"\0\0\0\0\0\0\0\0\0"};
-    std::copy(stringPtr+i1,  stringPtr+std::min(i1 + maxLen, i2), subString);
-    try
-    {
-        return std::stol(subString);
-    }
-    catch (const std::exception &e)
-    {
-        return std::numeric_limits<uint64_t>::max();
-    }
-}
-
-std::pair<bool, uint64_t>
-    unpackUInt64Pair(int i1, int i2, const char *stringPtr,
-                     const int maxLen)
-{
-    auto i = unpackUInt64(i1, i2, stringPtr, maxLen);
-    return std::pair(i < std::numeric_limits<uint64_t>::max(), i);
-}
-
-double unpackDouble(const int i1, const int i2,
-                    const int whole, const int decimal,
-                    const char *stringPtr,
-                    const int maxLen)
-{
-#ifndef DNDEBUG
-    assert(i2 - i1 == whole + decimal);
-#endif
-    double result = std::numeric_limits<double>::max();
-    auto j1 = i1;
-    auto j2 = i1 + whole;
-    auto i = unpackInt(j1, j2, stringPtr, maxLen);
-    j1 = i1 + whole;
-    j2 = i2;
-    auto ifrac = unpackInt(j1, j2, stringPtr, maxLen);
-    if (ifrac < std::numeric_limits<int>::max())
-    {
-        result = static_cast<double> (ifrac)/(std::pow(10, decimal));
-        if (i < std::numeric_limits<int>::max())
-        {
-            result = result + i;
-        }
-    }
-    return result;
-}
-
-std::pair<bool, double> unpackDoublePair(const int i1, const int i2,
-                                         const int whole, const int decimal,
-                                         const char *stringPtr,
-                                         const int maxLen)
-{
-    auto d = unpackDouble(i1, i2, whole, decimal, stringPtr, maxLen);
-    return std::pair(d < std::numeric_limits<int>::max(), d);
-}
-
-}
 
 ///--------------------------------------------------------------------------///
 ///                            Begin implementation                          ///
@@ -179,7 +77,7 @@ EventSummary::EventSummary(const EventSummary &summary)
     *this = summary;
 }
 
-/// Move c'tor
+[[maybe_unused]] /// Move c'tor
 EventSummary::EventSummary(EventSummary &&summary) noexcept
 {
     *this = std::move(summary);

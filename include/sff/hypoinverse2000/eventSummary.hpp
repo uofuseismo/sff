@@ -25,7 +25,7 @@ public:
      *                      this class.
      */
     EventSummary(const EventSummary &summary);
-    /*!
+    [[maybe_unused]] /*!
      * @brief Move constructor.
      * @param[in,out] summary  The event summary from which to initialize this
      *                         class.  On exit, summary's behavior is undefined.
