@@ -1,10 +1,11 @@
 #ifndef SFF_PRIVATE_HYPOINVERSE2000_HPP
 #define SFF_PRIVATE_HYPOINVERSE2000_HPP
 #include <cmath>
+#include <algorithm>
 namespace
 {
 
-void rtrim(std::string &s)
+[[maybe_unused]] void rtrim(std::string &s)
 {
     s.erase(std::find_if(s.rbegin(), s.rend(),
                          [](int ch)
@@ -68,7 +69,7 @@ uint64_t unpackUInt64(const int i1, const int i2, const char *stringPtr,
     }
 }
 
-std::pair<bool, uint64_t>
+[[maybe_unused]] std::pair<bool, uint64_t>
     unpackUInt64Pair(int i1, int i2, const char *stringPtr,
                      const int maxLen)
 {
@@ -131,7 +132,7 @@ std::string unpackString(int i1, int i2, const char *stringPtr,
     return result;
 }
 
-std::pair<bool, std::string>
+[[maybe_unused]] std::pair<bool, std::string>
 unpackStringPair(int i1, int i2, const char *stringPtr, const int maxLen)
 {
     auto s = unpackString(i1, i2, stringPtr, maxLen);

@@ -1,10 +1,6 @@
-#ifndef SFF_BYTESWAP_HPP
-#define SFF_BYTESWAP_HPP
+#ifndef SFF_PRIVATE_BYTESWAP_HPP
+#define SFF_PRIVATE_BYTESWAP_HPP
 #include <cstdint>
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-
 #ifndef BIG_ENDIAN
 #define BIG_ENDIAN 0
 #endif
@@ -31,7 +27,7 @@ int testByteOrder()
 //----------------------------------------------------------------------------//
 
 #pragma omp declare simd uniform(lswap)
-int16_t unpackShort(const char c[2], const bool lswap)
+[[maybe_unused]] int16_t unpackShort(const char c[2], const bool lswap)
 {
     union
     {
@@ -52,7 +48,7 @@ int16_t unpackShort(const char c[2], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-int32_t unpackInt(const char c[4], const bool lswap)
+[[maybe_unused]] int32_t unpackInt(const char c[4], const bool lswap)
 {
     union
     {
@@ -102,7 +98,7 @@ int32_t unpackInt(const char c[4], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-double unpackDouble(const char c[8], const bool lswap)
+[[maybe_unused]] double unpackDouble(const char c[8], const bool lswap)
 {
     union
     {
@@ -139,7 +135,8 @@ double unpackDouble(const char c[8], const bool lswap)
 //----------------------------------------------------------------------------//
 
 #pragma omp declare simd uniform(lswap)
-void packShort(const int16_t valIn, char c[2], const bool lswap)
+[[maybe_unused]] void packShort(const int16_t valIn, char c[2],
+                                const bool lswap)
 {
     union
     {
@@ -160,7 +157,7 @@ void packShort(const int16_t valIn, char c[2], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-void packInt(const int32_t valIn, char c[4], const bool lswap)
+[[maybe_unused]] void packInt(const int32_t valIn, char c[4], const bool lswap)
 {
     union
     {
@@ -185,7 +182,7 @@ void packInt(const int32_t valIn, char c[4], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-void packFloat(const float valIn, char c[4], const bool lswap)
+[[maybe_unused]] void packFloat(const float valIn, char c[4], const bool lswap)
 {
     union
     {
@@ -210,7 +207,8 @@ void packFloat(const float valIn, char c[4], const bool lswap)
 }
 
 #pragma omp declare simd uniform(lswap)
-[[maybe_unused]] void packDouble(const double valIn, char c[8], const bool lswap)
+[[maybe_unused]] void packDouble(const double valIn, char c[8],
+                                 const bool lswap)
 {
     union
     {
@@ -243,5 +241,4 @@ void packFloat(const float valIn, char c[4], const bool lswap)
 }
 
 }
-#pragma GCC diagnostic pop
 #endif
