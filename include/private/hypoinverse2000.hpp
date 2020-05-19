@@ -1,17 +1,33 @@
 #ifndef SFF_PRIVATE_HYPOINVERSE2000_HPP
 #define SFF_PRIVATE_HYPOINVERSE2000_HPP
 #include <cmath>
+#include <locale>
 #include <algorithm>
 namespace
 {
 
-[[maybe_unused]] void rtrim(std::string &s)
+void ltrim(std::string &s)
 {
-    s.erase(std::find_if(s.rbegin(), s.rend(),
-                         [](int ch)
-                         {
-                             return !std::isspace(ch);
-                         }).base(), s.end());
+    auto it = std::find_if(s.begin(), s.end(),
+                           [](char c) {
+                               return !std::isspace<char>(c, std::locale::classic());
+                           });
+    s.erase(s.begin(), it);
+}
+
+void rtrim(std::string &s)
+{
+    auto it = std::find_if(s.rbegin(), s.rend(),
+                           [](char c) {
+                               return !std::isspace<char>(c, std::locale::classic());
+                           });
+    s.erase(it.base(), s.end());
+}
+
+[[maybe_unused]] void trim(std::string &s)
+{
+    ltrim(s);
+    rtrim(s);
 }
 
 char unpackChar(const int i1, const char *stringPtr, const int maxLen)
@@ -34,12 +50,17 @@ int unpackInt(const int i1, const int i2, const char *stringPtr,
     if (i1 >= maxLen){return std::numeric_limits<int>::max();}
     char subString[8] = {"\0\0\0\0\0\0\0"};
     std::copy(stringPtr+i1,  stringPtr+std::min(i1 + maxLen, i2), subString);
+    // Deal with negative numbers
     try
     {
         return std::stoi(subString);
     }
     catch (const std::exception &e)
     {
+        for (int i=i2-1; i>=0; --i)
+        {
+            if (subString[i] == '-'){return -1;}
+        }
         return std::numeric_limits<int>::max();
     }
 }
@@ -86,18 +107,32 @@ double unpackDouble(const int i1, const int i2,
     assert(i2 - i1 == whole + decimal);
 #endif
     double result = std::numeric_limits<double>::max();
+    // Copy whole
+    std::string snum;
+    snum.reserve(10);
     auto j1 = i1;
     auto j2 = i1 + whole;
-    auto i = unpackInt(j1, j2, stringPtr, maxLen);
+    for (int j=j1; j<std::min(j2, maxLen); ++j)
+    {
+        if (!isblank(stringPtr[j])){snum.push_back(stringPtr[j]);}
+    }
+    snum.push_back('.');
+    // Copy decimal
     j1 = i1 + whole;
     j2 = i2;
-    auto ifrac = unpackInt(j1, j2, stringPtr, maxLen);
-    if (ifrac < std::numeric_limits<int>::max())
+    for (int j=j1; j<std::min(j2, maxLen); ++j)
     {
-        result = static_cast<double> (ifrac)/(std::pow(10, decimal));
-        if (i < std::numeric_limits<int>::max())
+        if (!isblank(stringPtr[j])){snum.push_back(stringPtr[j]);}
+    }
+    if (!snum.empty())
+    {
+        try
         {
-            result = result + i;
+            result = std::stod(snum);
+        }
+        catch (const std::exception &e)
+        {
+            return result;
         }
     }
     return result;

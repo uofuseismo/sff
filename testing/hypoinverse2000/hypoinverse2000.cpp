@@ -48,7 +48,47 @@ TEST(Hypo2000, EventSummary)
 
 TEST(Hypo2000, StationArchive)
 {
+    std::string pPickString("RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300    JD 02");
+    std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J  01");
+    
+    SFF::Utilities::Time pickTime;
+    StationArchive pPick;  
+    EXPECT_NO_THROW(pPick.unpackString(pPickString));
+    EXPECT_EQ(pPick.getNetworkName(), "UU");
+    EXPECT_EQ(pPick.getStationName(), "RBU");
+    EXPECT_EQ(pPick.getChannelName(), "EHZ");
+    EXPECT_EQ(pPick.getLocationCode(), "02");
+    EXPECT_EQ(pPick.getPRemark(), "IP");
+    EXPECT_EQ(pPick.getPFirstMotion(), 'U');
+    EXPECT_EQ(pPick.getPWeightCode(), 0);
+    EXPECT_NO_THROW(pickTime = pPick.getPPickTime());
+    std::stringstream pstream;
+    pstream << pickTime;
+    EXPECT_EQ(pstream.str(), std::string("2020-03-18T13:20:25.960000"));
+    EXPECT_NEAR(pPick.getPResidual(), -0.14, 1.e-2);
+    EXPECT_NEAR(pPick.getPWeightUsed(), 1.98, 1.e-2);
+    EXPECT_EQ(pPick.getPDelayTime(), 0);
+    EXPECT_NEAR(pPick.getEpicentralDistance(), 21.8, 1.e-1);
+    EXPECT_NEAR(pPick.getTakeOffAngle(), 110, 1.e-1);
 
+    StationArchive sPick;
+    EXPECT_NO_THROW(sPick.unpackString(sPickString));
+    EXPECT_EQ(sPick.getNetworkName(), "UU");
+    EXPECT_EQ(sPick.getStationName(), "NOQ");
+    EXPECT_EQ(sPick.getChannelName(), "HHN");
+    EXPECT_EQ(sPick.getLocationCode(), "01");
+    EXPECT_EQ(sPick.getSRemark(), "ES");
+    EXPECT_FALSE(sPick.havePFirstMotion());
+    EXPECT_EQ(sPick.getSWeightCode(), 2);
+    pickTime = sPick.getSPickTime();
+    std::stringstream sstream;
+    sstream << pickTime;
+    EXPECT_EQ(sstream.str(), std::string("2020-03-18T13:20:26.890000"));
+    EXPECT_NEAR(sPick.getSResidual(), -0.15, 1.e-2);
+    EXPECT_NEAR(sPick.getSWeightUsed(), 0.24, 1.e-2);
+    EXPECT_EQ(sPick.getSDelayTime(), 0);
+    EXPECT_NEAR(sPick.getEpicentralDistance(), 13.4, 1.e-1);
+    EXPECT_NEAR(sPick.getTakeOffAngle(), 121, 1.e-1);
 }
 
 }
