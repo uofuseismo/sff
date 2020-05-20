@@ -53,7 +53,7 @@ public:
      *        archive file.
      * @return The line describing the pick.
      */
-    std::string packString() const noexcept;
+    [[nodiscard]] std::string packString() const noexcept;
 
     /*! @name Operators
      * @{
@@ -630,11 +630,11 @@ public:
      * @return The amplitude units.
      * @throws std::runtime_error if the amplitud eunits weree not set.
      */
-    AmplitudeUnits getAmplitudeUnits() const;
+    [[nodiscard]] AmplitudeUnits getAmplitudeUnits() const;
     /*!
      * @return True indicates that the amplitude units were set.
      */
-    bool haveAmplitudeUnits() const noexcept;
+    [[nodiscard]] bool haveAmplitudeUnits() const noexcept;
     /*! @} */
 private:
     class StationArchiveImpl;
