@@ -79,8 +79,11 @@ TEST(Hypo2000, StationArchive)
     EXPECT_FALSE(pPick.haveAmplitudeMagnitudeWeightCode());
     EXPECT_FALSE(pPick.haveAmplitude());
     EXPECT_FALSE(pPick.haveAmplitudeUnits());
-
+    EXPECT_NEAR(pPick.getAzimuth(), 85, 1.e-1); 
+    EXPECT_FALSE(pPick.havePeriodOfAmplitudeMeasurement());
+    EXPECT_NEAR(pPick.getCodaDuration(), 84, 1.e-1);
     auto pstring = pPick.packString();
+    EXPECT_EQ(pstring, pPickString);
     std::cout << pPickString << std::endl;
     std::cout << pstring << std::endl;
 
@@ -111,7 +114,11 @@ TEST(Hypo2000, StationArchive)
     EXPECT_FALSE(sPick.haveDurationMagnitudeWeightCode());
     EXPECT_NEAR(sPick.getAmplitude(), 14.24, 1.e-2);
     EXPECT_EQ(sPick.getAmplitudeUnits(), AmplitudeUnits::PEAK_TO_PEAK);
+    EXPECT_NEAR(sPick.getAzimuth(), 199, 1.e-1);
+    EXPECT_NEAR(sPick.getPeriodOfAmplitudeMeasurement(), 0.14, 1.e-2);
+    EXPECT_FALSE(sPick.haveCodaDuration());
     auto sstring = sPick.packString();
+    EXPECT_EQ(sstring, sPickString);
     std::cout << sPickString << std::endl;
     std::cout << sstring << std::endl;
 }

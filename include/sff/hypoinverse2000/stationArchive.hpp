@@ -152,7 +152,7 @@ public:
     [[nodiscard]] bool haveLocationCode() const noexcept;
     /*! @} */
 
-    /*! @name Source-Receiver Distance And Take-Off Angle
+    /*! @name Source-Receiver Distance, Azimuth, And Take-Off Angle
      * @{
      */
     /*!
@@ -170,6 +170,24 @@ public:
      * @return True indicates that the epicentral distance was set.
      */
     [[nodiscard]] bool haveEpicentralDistance() const noexcept;
+
+    /*!
+     * @brief Sets the source-to-receiver azimuth in degrees.
+     * @param[in] azimuth  The source to receiver azimuth in degrees.
+     *                     This is positive east of north.
+     * @throws std::invalid_argument if this is not in the range [0,360).
+     */
+    void setAzimuth(double azimuth);
+    /*!
+     * @return The soruce to receiver azimuth in degrees.
+     * @throws std::runtime_error if the azimuth was not set.
+     */
+    [[nodiscard]] double getAzimuth() const;
+    /*!
+     * @return True indicates that the azimuth was set.
+     */
+    [[nodiscard]] bool haveAzimuth() const noexcept;
+
     /*!
      * @brief Sets the takeoff angle (emergence angle at source).
      * @param angle  The takeoff angle in degrees.  This must be in the
@@ -484,6 +502,22 @@ public:
     [[nodiscard]] bool haveAmplitudeMagnitudeLabel() const noexcept;
 
     /*!
+     * @brief Sets the period at which the amplitude was measured.
+     * @param[in] period  The period of the amplitude measurement in seconds.
+     * @throws std::invalid_argument if this is not positive.
+     */
+    void setPeriodOfAmplitudeMeasurement(double period);
+    /*!
+     * @return The period at which the amplitude was measured.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] double getPeriodOfAmplitudeMeasurement() const;
+    /*!
+     * @return True indicates that the period was set.
+     */
+    [[nodiscard]] bool havePeriodOfAmplitudeMeasurement() const noexcept;
+
+    /*!
      * @brief Sets the duration magnitude, e.g., coda magnitude, for the
      *        station.
      * @param magnitude  The duration magnitude.
@@ -532,6 +566,22 @@ public:
      * @return True indicates the duration magnitude label was set.
      */
     [[nodiscard]] bool haveDurationMagnitudeLabel() const noexcept;
+
+    /*!
+     * @brief Sets the coda duration.
+     * @param[in] duration  The coda magnitude duration in seconds.
+     * @throws std::invalid_argument if this is not positive.
+     */
+    void setCodaDuration(double duration);
+    /*!
+     * @return The coda magnitude duration in seconds.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] double getCodaDuration() const;
+    /*!
+     * @return True indicates that the coda duration was set.
+     */
+    [[nodiscard]] bool haveCodaDuration() const noexcept;
     /*! @} */
 
     /*! @name Miscellaneous

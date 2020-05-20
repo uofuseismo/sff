@@ -35,9 +35,12 @@ public:
         mSDelayTime = 0;
         mEpicentralDistance =-1;
         mTakeOffAngle =-1;
+        mAzimuth =-1;
         mDurationMagnitude = 0;
         mAmplitudeMagnitude = 0;
         mAmplitude =-1;
+        mPeriodOfAmplitudeMeasurement =-1;
+        mCodaDuration =-1;
         mPImportance =-1;
         mSImportance =-1;
         mPWeightCode =-1;
@@ -81,6 +84,9 @@ public:
     double mPImportance =-1;
     double mSImportance =-1;
     double mAmplitude =-1;
+    double mPeriodOfAmplitudeMeasurement =-1;
+    double mCodaDuration =-1;
+    double mAzimuth =-1;
     int mPWeightCode =-1;
     int mSWeightCode =-1;
     int mDurationMagnitudeWeightCode =-1;
@@ -281,7 +287,7 @@ void StationArchive::unpackString(const std::string &line)
     if (pDelayTime.first){result.setPDelayTime(pDelayTime.second);}
     auto sDelayTime = unpackDoublePair(70, 74, 2, linePtr, lenos);
     if (sDelayTime.first){result.setSDelayTime(sDelayTime.second);}
-    // Takeoff angle and epicentral distance
+    // Takeoff angle, azimuth, and epicentral distance
     auto distance = unpackDoublePair(74, 78, 3, linePtr, lenos);
     if (distance.first && distance.second >= 0)
     {
@@ -291,6 +297,11 @@ void StationArchive::unpackString(const std::string &line)
     if (angle.first && angle.second >= 0 && angle.second <= 180)
     {
         result.setTakeOffAngle(angle.second);
+    }
+    auto azimuth = unpackIntPair(91, 94, linePtr, lenos);
+    if (azimuth.first && azimuth.second >= 0 && azimuth.second < 360)
+    {
+        result.setAzimuth(azimuth.second);
     }
     // Magnitudes
     auto durMag = unpackDoublePair(94, 97, 1, linePtr, lenos);
@@ -306,6 +317,16 @@ void StationArchive::unpackString(const std::string &line)
     if (ampMagWeightCode.first && ampMagWeightCode.second >= 0)
     {
         result.setAmplitudeMagnitudeWeightCode(ampMagWeightCode.second);
+    }
+    auto period = unpackDoublePair(83, 86, 1, linePtr, lenos);
+    if (period.first && period.second > 0)
+    {
+        result.setPeriodOfAmplitudeMeasurement(period.second);
+    }
+    auto duration = unpackIntPair(87, 91, linePtr, lenos);
+    if (duration.first && duration.second > 0)
+    {
+        result.setCodaDuration(duration.second);
     }
     auto durMagLabel = unpackCharPair(109, linePtr, lenos);
     if (durMagLabel.first && durMagLabel.second != ' ')
@@ -450,6 +471,11 @@ std::string StationArchive::packString() const noexcept
         setInteger(78, 81, static_cast<int> (std::round(getTakeOffAngle())),
                    result, false);
     }
+    if (haveAzimuth())
+    {
+        setInteger(91, 94, static_cast<int> (std::round(getAzimuth())),
+                result, false);
+    }
     if (havePDelayTime())
     {
         setInteger(66, 70, static_cast<int> (std::round(getPDelayTime()*100)),
@@ -478,6 +504,29 @@ std::string StationArchive::packString() const noexcept
     if (haveDurationMagnitudeWeightCode())
     {
         setInteger(82, 83, getDurationMagnitudeWeightCode(), result);
+    }
+    if (havePeriodOfAmplitudeMeasurement())
+    {
+        setInteger(83, 86,
+                   static_cast<int> (std::round(getPeriodOfAmplitudeMeasurement()*100)),
+                   result, false);
+    }
+    if (haveCodaDuration())
+    {
+        setInteger(87, 91, static_cast<int> (std::round(getCodaDuration())),
+                result, false);
+    }
+    if (havePImportance())
+    {
+        setInteger(100, 104,
+                   static_cast<int> (std::round(getPImportance()*1000)),
+                   result, false);
+    }
+    if (haveSImportance())
+    {
+        setInteger(104, 108,
+                   static_cast<int> (std::round(getSImportance()*1000)),
+                   result, false);
     }
     if (haveDataSourceCode()){result[108] = getDataSourceCode();}
     if (haveDurationMagnitudeLabel())
@@ -900,6 +949,27 @@ bool StationArchive::haveTakeOffAngle() const noexcept
     return pImpl->mTakeOffAngle >= 0;
 }
 
+/// Azimuth angle
+void StationArchive::setAzimuth(const double azimuth)
+{
+    if (azimuth < 0 || azimuth >= 3600)
+    {
+        throw std::invalid_argument("Takeoff angle must be in range [0,360)");
+    }
+    pImpl->mAzimuth = azimuth;
+}
+
+double StationArchive::getAzimuth() const
+{
+    if (!haveAzimuth()){throw std::runtime_error("Azimuth not set");}
+    return pImpl->mAzimuth;
+}
+
+bool StationArchive::haveAzimuth() const noexcept
+{
+    return pImpl->mAzimuth >= 0;
+}
+
 /// Epicentral distance
 void StationArchive::setEpicentralDistance(const double distance)
 {
@@ -1126,4 +1196,52 @@ AmplitudeUnits StationArchive::getAmplitudeUnits() const
 bool StationArchive::haveAmplitudeUnits() const noexcept
 {
     return pImpl->mHaveAmplitudeUnits;
+}
+
+/// Period of amplitude measurement
+void StationArchive::setPeriodOfAmplitudeMeasurement(const double period)
+{
+    if (period <= 0)
+    {
+        throw std::invalid_argument("Period must be positive");
+    }
+    pImpl->mPeriodOfAmplitudeMeasurement = period;
+}
+
+double StationArchive::getPeriodOfAmplitudeMeasurement() const
+{
+    if (!havePeriodOfAmplitudeMeasurement())
+    {
+        throw std::runtime_error("Period not yet set");
+    }
+    return pImpl->mPeriodOfAmplitudeMeasurement;
+}
+bool StationArchive::havePeriodOfAmplitudeMeasurement() const noexcept
+{
+    return pImpl->mPeriodOfAmplitudeMeasurement >= 0;
+}
+
+/// Duration of coda magnitude
+
+void StationArchive::setCodaDuration(const double duration)
+{
+    if (duration <= 0)
+    {
+        throw std::invalid_argument("Duration must be positive");
+    }
+    pImpl->mCodaDuration = duration;
+}
+
+double StationArchive::getCodaDuration() const
+{
+    if (!haveCodaDuration())
+    {
+        throw std::runtime_error("Coda duration was not set");
+    }
+    return pImpl->mCodaDuration;
+}
+
+bool StationArchive::haveCodaDuration() const noexcept
+{
+    return pImpl->mCodaDuration > 0;
 }
