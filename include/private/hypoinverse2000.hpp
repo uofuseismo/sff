@@ -167,6 +167,77 @@ std::string unpackString(int i1, int i2, const char *stringPtr,
     return result;
 }
 
+void setString(const int i1, const int i2, const std::string &add,
+               std::string &update)
+{
+    if (add.empty()){return;}
+#ifdef DNDEBUG
+    assert(i1 < i2);
+    assert(i2 <= update.size());
+#endif
+    auto ncopy = std::min(i2 - i1, static_cast<int> (add.size()));
+    std::copy(add.begin(), add.begin()+ncopy, update.begin()+i1);
+}
+
+void setInteger(const int i1, const int i2, const int value,
+                std::string &update,
+                const bool keepLeadingZero = true)
+{
+#ifdef DNDEBUG
+    assert(i1 < i2);
+    assert(i2 <= update.size());
+#endif
+    int len = i2 - i1;
+    std::string cformat = "%0" + std::to_string(i2-i1) + "d";
+    char c16[16];
+    std::fill(c16, c16+16, '\0');
+    sprintf(c16, cformat.c_str(), value);
+    if (keepLeadingZero)
+    {
+        std::copy(c16, c16 + len, update.begin() + i1);
+    }
+    else
+    {
+        int j = 0; // If this is all zero then copy something
+        bool lAllZero = true;
+        for (int i = 0; i < len; ++i)
+        {
+            if (c16[i] != '0' && c16[i] != '-')
+            {
+                j = i;
+                lAllZero = false;
+                break;
+            }
+        }
+        // Deal with negative
+        if (value < 0 && j > 0)
+        {
+            j = j - 1;
+            c16[j] = '-';
+        }
+        if (!lAllZero)
+        {
+            std::copy(c16 + j, c16 + len, update.begin() + i1 + j);
+        }
+        else
+        {
+            update[i2-1] = '0';
+        }
+    }
+    /*
+    char cvalue[10];
+    // Copy each digit
+    auto approxValue = 0;
+    for (int i = 0; i < len; ++i)
+    {
+        auto digit = static_cast<int> (value/std::pow(10, i));
+        auto c = std::to_string(digit);
+        cvalue[len-1-i] = c[0];
+        update[i2-1-i] = c[0];
+    }
+    std::cout << cvalue << std::endl;
+     */
+}
 [[maybe_unused]] std::pair<bool, std::string>
 unpackStringPair(int i1, int i2, const char *stringPtr, const int maxLen)
 {

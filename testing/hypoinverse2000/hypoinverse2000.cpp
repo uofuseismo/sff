@@ -48,8 +48,8 @@ TEST(Hypo2000, EventSummary)
 
 TEST(Hypo2000, StationArchive)
 {
-    std::string pPickString("RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300    JD 02");
-    std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J  01");
+    std::string pPickString("RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300     D 02");
+    std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J L01");
     
     SFF::Utilities::Time pickTime;
     StationArchive pPick;  
@@ -70,6 +70,19 @@ TEST(Hypo2000, StationArchive)
     EXPECT_EQ(pPick.getPDelayTime(), 0);
     EXPECT_NEAR(pPick.getEpicentralDistance(), 21.8, 1.e-1);
     EXPECT_NEAR(pPick.getTakeOffAngle(), 110, 1.e-1);
+    EXPECT_NEAR(pPick.getPImportance(), 0.3, 1.e-1);
+    EXPECT_NEAR(pPick.getDurationMagnitude(), 2.27, 1.e-2);
+    EXPECT_FALSE(pPick.haveAmplitudeMagnitude());
+    EXPECT_EQ(pPick.getDurationMagnitudeLabel(), 'D');
+    EXPECT_FALSE(pPick.haveDataSourceCode());
+    EXPECT_EQ(pPick.getDurationMagnitudeWeightCode(), 0);
+    EXPECT_FALSE(pPick.haveAmplitudeMagnitudeWeightCode());
+    EXPECT_FALSE(pPick.haveAmplitude());
+    EXPECT_FALSE(pPick.haveAmplitudeUnits());
+
+    auto pstring = pPick.packString();
+    std::cout << pPickString << std::endl;
+    std::cout << pstring << std::endl;
 
     StationArchive sPick;
     EXPECT_NO_THROW(sPick.unpackString(sPickString));
@@ -89,6 +102,18 @@ TEST(Hypo2000, StationArchive)
     EXPECT_EQ(sPick.getSDelayTime(), 0);
     EXPECT_NEAR(sPick.getEpicentralDistance(), 13.4, 1.e-1);
     EXPECT_NEAR(sPick.getTakeOffAngle(), 121, 1.e-1);
+    EXPECT_EQ(sPick.getSImportance(), 0);
+    EXPECT_NEAR(sPick.getAmplitudeMagnitude(), 2.51, 1.e-2);
+    EXPECT_FALSE(sPick.haveDurationMagnitude());
+    EXPECT_EQ(sPick.getAmplitudeMagnitudeLabel(), 'L');
+    EXPECT_EQ(sPick.getDataSourceCode(), 'J');
+    EXPECT_EQ(sPick.getAmplitudeMagnitudeWeightCode(), 0);
+    EXPECT_FALSE(sPick.haveDurationMagnitudeWeightCode());
+    EXPECT_NEAR(sPick.getAmplitude(), 14.24, 1.e-2);
+    EXPECT_EQ(sPick.getAmplitudeUnits(), AmplitudeUnits::PEAK_TO_PEAK);
+    auto sstring = sPick.packString();
+    std::cout << sPickString << std::endl;
+    std::cout << sstring << std::endl;
 }
 
 }

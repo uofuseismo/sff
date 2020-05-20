@@ -5,6 +5,15 @@
 namespace SFF::HypoInverse2000
 {
 /*!
+ * @brief Defines different amplitude unit types.
+ */
+enum class AmplitudeUnits
+{
+    PEAK_TO_PEAK = 0,   /*! Peak to peak amplitude in millimeters. */
+    ZERO_TO_PEAK = 1,   /*! Zero to peak amplitude in millimeters. */
+    DIGITAL_COUNTS = 2  /*! Digital counts (UCB). */
+};
+/*!
  * @class StationArchive "stationArchive.hpp" "sff/hypoinverse2000/stationArchive.hpp"
  * @brief Defines a year-2000 compatibile station archive line.
  * @copyright Ben Baker (University of Utah) distributed under the MIT license.
@@ -25,7 +34,7 @@ public:
      *                     this class.
      */
     StationArchive(const StationArchive &station);
-    /*!
+    [[maybe_unused]] /*!
      * @brief Move constructor.
      * @param[in,out] station  The station archive from which to initialize
      *                         this class.  On exit, station's behavior is
@@ -39,6 +48,12 @@ public:
      *        archive file.
      */
     void unpackString(const std::string &line);
+    /*!
+     * @brief Converts the class members to a line in a station line in an
+     *        archive file.
+     * @return The line describing the pick.
+     */
+    std::string packString() const noexcept;
 
     /*! @name Operators
      * @{
@@ -285,6 +300,21 @@ public:
      * @result True indicates that the P delay time was set.
      */
     [[nodiscard]] bool havePDelayTime() const noexcept;
+
+    /*!
+     * @brief Sets the P importance.
+     * @param[in] importance  The importance of the P arrival.
+     */
+    void setPImportance(double importance);
+    /*!
+     * @return The importance of the P arrival.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] double getPImportance() const;
+    /*!
+     * @return True indicates that the P importance was set.
+     */
+    [[nodiscard]] bool havePImportance() const noexcept;
     /*! @} */
 
     /*! @name S Pick Information
@@ -383,6 +413,178 @@ public:
      * @result True indicates that the S static delay time was set.
      */
     [[nodiscard]] bool haveSDelayTime() const noexcept;
+
+    /*!
+     * @brief Sets the S importance.
+     * @param[in] importance  The importance of the S arrival.
+     */
+    void setSImportance(double importance);
+    /*!
+     * @return The importance of the S arrival.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] double getSImportance() const;
+    /*!
+     * @return True indicates that the S importance was set.
+     */
+    [[nodiscard]] bool haveSImportance() const noexcept;
+    /*! @} */
+
+    /*! @name Magnitude
+     * @{
+     */
+    /*!
+     * @brief Sets the amplitude magnitude, e.g., Richter magnitude, for the
+     *        station.
+     * @param magnitude  The amplitude magnitude.
+     */
+    void setAmplitudeMagnitude(double magnitude) noexcept;
+    /*!
+     * @return The amplitude magnitude for the station.
+     * @throws std::runtime_error if the amplitude magnitude was not set.
+     */
+    [[nodiscard]] double getAmplitudeMagnitude() const;
+    /*!
+     * @return True indicates that the amplitude magnitude was set.
+     */
+    [[nodiscard]] bool haveAmplitudeMagnitude() const noexcept;
+
+    /*!
+     * @brief Sets the amplitude magnitude weight code.
+     * @param code  The amplitude magnitude weight code.  This must be
+     *              non-negative.
+     * @throws std::invalid_argument if the weight code is negative.
+     */
+    void setAmplitudeMagnitudeWeightCode(int code);
+    /*!
+     * @return The amplitude magnitude weight code for the station.
+     * @throws std::runtime_error if the amplitude magnitude weight
+     *         code was not set.
+     */
+    [[nodiscard]] int getAmplitudeMagnitudeWeightCode() const;
+    /*!
+     * @return True indicates that the amplitude magnitude weight code was set.
+     */
+    [[nodiscard]] bool haveAmplitudeMagnitudeWeightCode() const noexcept;
+
+    /*!
+     * @brief Sets the amplitude magnitude label.
+     * @param[in] label  The amplitude magnitude label.
+     * @throws std::invalid_argument if this is blank.
+     */
+    void setAmplitudeMagnitudeLabel(char label);
+    /*!
+     * @result The amplitude magnitude label.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] char getAmplitudeMagnitudeLabel() const;
+    /*!
+     * @return True indicates the amplitude magnitude label was set.
+     */
+    [[nodiscard]] bool haveAmplitudeMagnitudeLabel() const noexcept;
+
+    /*!
+     * @brief Sets the duration magnitude, e.g., coda magnitude, for the
+     *        station.
+     * @param magnitude  The duration magnitude.
+     */
+    void setDurationMagnitude(double magnitude) noexcept;
+    /*!
+     * @return The duration magnitude for the station.
+     * @throws std::runtime_error if the amplitude magnitude was not set.
+     */
+    [[nodiscard]] double getDurationMagnitude() const;
+    /*!
+     * @return True indicates that the duration magnitude was set.
+     */
+    [[nodiscard]] bool haveDurationMagnitude() const noexcept;
+
+    /*!
+     * @brief Sets the duration magnitude weight code.
+     * @param code  The duration magnitude weight code.  This must be
+     *              non-negative.
+     * @throws std::invalid_argument if the weight code is negative.
+     */
+    void setDurationMagnitudeWeightCode(int code);
+    /*!
+     * @return The duration magnitude weight code for the station.
+     * @throws std::runtime_error if the duration magnitude weight
+     *         code was not set.
+     */
+    [[nodiscard]] int getDurationMagnitudeWeightCode() const;
+    /*!
+     * @return True indicates that the duration magnitude weight code was set.
+     */
+    [[nodiscard]] bool haveDurationMagnitudeWeightCode() const noexcept;
+
+    /*!
+     * @brief Sets the duration magnitude label.
+     * @param[in] label  The duration magnitude label.
+     * @throws std::invalid_argument if this is blank.
+     */
+    void setDurationMagnitudeLabel(char label);
+    /*!
+     * @result The duration magnitude label.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] char getDurationMagnitudeLabel() const;
+    /*!
+     * @return True indicates the duration magnitude label was set.
+     */
+    [[nodiscard]] bool haveDurationMagnitudeLabel() const noexcept;
+    /*! @} */
+
+    /*! @name Miscellaneous
+     * @{
+     */
+    /*!
+     * @brief Sets the pick's data source.  For example J may indicate Jiggle.
+     * @param[in] code  The data source code.
+     * @throws std::invalid_argument if the code is blank.
+     */
+    void setDataSourceCode(char code);
+    /*!
+     * @return The data source code.
+     * @throws std::runtime_error if this was not set.
+     */
+    [[nodiscard]] char getDataSourceCode() const;
+    /*!
+     * @return True indicates that the data source code was set.
+     */
+    [[nodiscard]] bool haveDataSourceCode() const noexcept;
+
+    /*!
+     * @brief Sets the amplitude (normally peak-to-peak).
+     * @param[in] amplitude  The amplitude.  This must be non-negative.
+     * @throws std::invalid_argument if this is negative.
+     */
+    void setAmplitude(double amplitude);
+    /*!
+     * @return Gets the amplitude.
+     * @throw std::runtime_error if this is not set.
+     */
+    [[nodiscard]] double getAmplitude() const;
+    /*!
+     * @return True indicates that the amplitude was set.
+     */
+    [[nodiscard]] bool haveAmplitude() const noexcept;
+    /*!
+     * @brief Sets the amplitude units.
+     */
+     /*!
+      * @brief Defines the amplitude units.
+      * @param units   The amplitude units.
+      */
+    void setAmplitudeUnits(AmplitudeUnits units) noexcept;
+    /*!
+     * @return The amplitude units.
+     * @throws std::runtime_error if the amplitud eunits weree not set.
+     */
+    AmplitudeUnits getAmplitudeUnits() const;
+    /*!
+     * @return True indicates that the amplitude units were set.
+     */
+    bool haveAmplitudeUnits() const noexcept;
     /*! @} */
 private:
     class StationArchiveImpl;
