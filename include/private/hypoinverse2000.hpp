@@ -48,7 +48,8 @@ int unpackInt(const int i1, const int i2, const char *stringPtr,
               const int maxLen)
 {
     if (i1 >= maxLen){return std::numeric_limits<int>::max();}
-    char subString[8] = {"\0\0\0\0\0\0\0"};
+    char subString[8];
+    std::fill(subString, subString+8, '\0');
     std::copy(stringPtr+i1,  stringPtr+std::min(i1 + maxLen, i2), subString);
     // Deal with negative numbers
     try
@@ -57,7 +58,7 @@ int unpackInt(const int i1, const int i2, const char *stringPtr,
     }
     catch (const std::exception &e)
     {
-        for (int i=i2-1; i>=0; --i)
+        for (int i=i2-i1-1; i>=0; --i)
         {
             if (subString[i] == '-'){return -1;}
         }
@@ -99,13 +100,10 @@ uint64_t unpackUInt64(const int i1, const int i2, const char *stringPtr,
 }
 
 double unpackDouble(const int i1, const int i2,
-                    const int whole, const int decimal,
+                    const int whole,
                     const char *stringPtr,
                     const int maxLen)
 {
-#ifndef DNDEBUG
-    assert(i2 - i1 == whole + decimal);
-#endif
     double result = std::numeric_limits<double>::max();
     // Copy whole
     std::string snum;
@@ -139,11 +137,11 @@ double unpackDouble(const int i1, const int i2,
 }
 
 std::pair<bool, double> unpackDoublePair(const int i1, const int i2,
-                                         const int whole, const int decimal,
+                                         const int whole,
                                          const char *stringPtr,
                                          const int maxLen)
 {
-    auto d = unpackDouble(i1, i2, whole, decimal, stringPtr, maxLen);
+    auto d = unpackDouble(i1, i2, whole, stringPtr, maxLen);
     return std::pair(d < std::numeric_limits<int>::max(), d);
 }
 
@@ -167,6 +165,7 @@ std::string unpackString(int i1, int i2, const char *stringPtr,
     return result;
 }
 
+[[maybe_unused]]
 void setString(const int i1, const int i2, const std::string &add,
                std::string &update)
 {
@@ -179,6 +178,7 @@ void setString(const int i1, const int i2, const std::string &add,
     std::copy(add.begin(), add.begin()+ncopy, update.begin()+i1);
 }
 
+[[maybe_unused]]
 void setInteger(const int i1, const int i2, const int value,
                 std::string &update,
                 const bool keepLeadingZero = true)

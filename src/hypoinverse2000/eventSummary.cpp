@@ -194,7 +194,7 @@ void EventSummary::unpackString(const std::string &line)
         }
     }
     // Depth
-    auto depth = unpackDoublePair(31, 36, 3, 2, headerPtr, lenos);
+    auto depth = unpackDoublePair(31, 36, 3, headerPtr, lenos);
     if (depth.first){result.setDepth(depth.second);}
     // Quality metrics
     auto nWeightedResiduals = unpackIntPair(39, 42, headerPtr, lenos);
@@ -213,7 +213,7 @@ void EventSummary::unpackString(const std::string &line)
     {
         result.setDistanceToClosestStation(distanceToClosestStation.second);
     }
-    auto rms = unpackDoublePair(48, 52, 2, 2, headerPtr, lenos);
+    auto rms = unpackDoublePair(48, 52, 2, headerPtr, lenos);
     if (rms.first && rms.second >= 0)
     {
         result.setResidualTravelTimeRMS(rms.second);
@@ -236,7 +236,7 @@ void EventSummary::unpackString(const std::string &line)
     {
         result.setPreferredMagnitudeLabel(prefMagLabel.second);
     }
-    auto prefMag = unpackDoublePair(147, 150, 1, 2, headerPtr, lenos);
+    auto prefMag = unpackDoublePair(147, 150, 1, headerPtr, lenos);
     if (prefMag.first){result.setPreferredMagnitude(prefMag.second);}
 
     auto evid = unpackUInt64Pair(136, 146, headerPtr, lenos);

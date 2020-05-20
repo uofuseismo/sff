@@ -239,12 +239,12 @@ void StationArchive::unpackString(const std::string &line)
         result.setSWeightCode(sWeightCode.second);
     }
     // Residuals
-    auto pResidual = unpackDoublePair(34, 38, 2, 2, linePtr, lenos);
+    auto pResidual = unpackDoublePair(34, 38, 2, linePtr, lenos);
     if (pResidual.first){result.setPResidual(pResidual.second);}
-    auto sResidual = unpackDoublePair(50, 54, 2, 2, linePtr, lenos);
+    auto sResidual = unpackDoublePair(50, 54, 2, linePtr, lenos);
     if (sResidual.first){result.setSResidual(sResidual.second);}
     // Amplitude
-    auto amplitude = unpackDoublePair(54, 61, 5, 2, linePtr, lenos);
+    auto amplitude = unpackDoublePair(54, 61, 5, linePtr, lenos);
     if (amplitude.first && amplitude.second >= 0)
     {
         result.setAmplitude(amplitude.second);
@@ -266,23 +266,23 @@ void StationArchive::unpackString(const std::string &line)
         }
     }
     // Weight used
-    auto pWeightUsed = unpackDoublePair(38, 41, 1, 2, linePtr, lenos);
+    auto pWeightUsed = unpackDoublePair(38, 41, 1, linePtr, lenos);
     if (pWeightUsed.first && pWeightUsed.second >= 0)
     {
         result.setPWeightUsed(pWeightUsed.second);
     }
-    auto sWeightUsed = unpackDoublePair(63, 66, 1, 2, linePtr, lenos);
+    auto sWeightUsed = unpackDoublePair(63, 66, 1, linePtr, lenos);
     if (sWeightUsed.first && sWeightUsed.second >= 0)
     {
         result.setSWeightUsed(sWeightUsed.second);
     }
     // Static corrections
-    auto pDelayTime = unpackDoublePair(66, 70, 2, 2, linePtr, lenos);
+    auto pDelayTime = unpackDoublePair(66, 70, 2, linePtr, lenos);
     if (pDelayTime.first){result.setPDelayTime(pDelayTime.second);}
-    auto sDelayTime = unpackDoublePair(70, 74, 2, 2, linePtr, lenos);
+    auto sDelayTime = unpackDoublePair(70, 74, 2, linePtr, lenos);
     if (sDelayTime.first){result.setSDelayTime(sDelayTime.second);}
     // Takeoff angle and epicentral distance
-    auto distance = unpackDoublePair(74, 78, 3, 1, linePtr, lenos);
+    auto distance = unpackDoublePair(74, 78, 3, linePtr, lenos);
     if (distance.first && distance.second >= 0)
     {
         result.setEpicentralDistance(distance.second);
@@ -293,9 +293,9 @@ void StationArchive::unpackString(const std::string &line)
         result.setTakeOffAngle(angle.second);
     }
     // Magnitudes
-    auto durMag = unpackDoublePair(94, 97, 1, 2, linePtr, lenos);
+    auto durMag = unpackDoublePair(94, 97, 1, linePtr, lenos);
     if (durMag.first){result.setDurationMagnitude(durMag.second);}
-    auto ampMag = unpackDoublePair(97, 100, 1, 2, linePtr, lenos);
+    auto ampMag = unpackDoublePair(97, 100, 1, linePtr, lenos);
     if (ampMag.first){result.setAmplitudeMagnitude(ampMag.second);}
     auto durMagWeightCode = unpackIntPair(82, 83, linePtr, lenos);
     if (durMagWeightCode.first && durMagWeightCode.second >= 0)
@@ -318,12 +318,12 @@ void StationArchive::unpackString(const std::string &line)
         result.setAmplitudeMagnitudeLabel(ampMagLabel.second);
     }
     // Importance
-    auto pImportance = unpackDoublePair(100, 104, 1, 3, linePtr, lenos);
+    auto pImportance = unpackDoublePair(100, 104, 1, linePtr, lenos);
     if (pImportance.first && pImportance.second >= 0)
     {
         result.setPImportance(pImportance.second);
     }
-    auto sImportance = unpackDoublePair(104, 108, 1, 3, linePtr, lenos);
+    auto sImportance = unpackDoublePair(104, 108, 1, linePtr, lenos);
     if (sImportance.first && sImportance.second >= 0)
     {
         result.setSImportance(sImportance.second);
