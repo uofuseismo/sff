@@ -1,5 +1,5 @@
-#ifndef SFF_HYPOINVERSE2000_STATIONARCHIVE_HPP
-#define SFF_HYPOINVERSE2000_STATIONARCHIVE_HPP
+#ifndef SFF_HYPOINVERSE2000_STATIONARCHIVELINE_HPP
+#define SFF_HYPOINVERSE2000_STATIONARCHIVELINE_HPP
 #include <memory>
 #include "sff/utilities/time.hpp"
 namespace SFF::HypoInverse2000
@@ -14,11 +14,11 @@ enum class AmplitudeUnits
     DIGITAL_COUNTS = 2  /*! Digital counts (UCB). */
 };
 /*!
- * @class StationArchive "stationArchive.hpp" "sff/hypoinverse2000/stationArchive.hpp"
- * @brief Defines a year-2000 compatibile station archive line.
+ * @class StationArchiveLine "stationArchiveLine.hpp" "sff/hypoinverse2000/stationArchiveLine.hpp"
+ * @brief Defines a year-2000-compatibile station archive line.
  * @copyright Ben Baker (University of Utah) distributed under the MIT license.
  */
-class StationArchive
+class StationArchiveLine
 {
 public:
     /*! @name Constructors
@@ -27,20 +27,20 @@ public:
     /*!
      * @brief Default constructor.
      */
-    StationArchive();
+    StationArchiveLine();
     /*!
      * @brief Copy constructor.
      * @param[in] station  The station archive class from which to initialize
      *                     this class.
      */
-    StationArchive(const StationArchive &station);
+    StationArchiveLine(const StationArchiveLine &station);
     [[maybe_unused]] /*!
      * @brief Move constructor.
      * @param[in,out] station  The station archive from which to initialize
      *                         this class.  On exit, station's behavior is
      *                         undefined.
      */
-    StationArchive(StationArchive &&station) noexcept;
+    StationArchiveLine(StationArchiveLine &&station) noexcept;
     /*! @} */
 
     /*!
@@ -63,13 +63,13 @@ public:
      * @param[in] station  The station class to copy to this.
      * @return A deep copy of station.
      */
-    StationArchive& operator=(const StationArchive &station);
+    StationArchiveLine& operator=(const StationArchiveLine &station);
     /*!
      * @brief Move assignment operator.
      * @param[in,out] station  Moves the memory from station to this.
      * @return The memory from station moved to this.
      */
-    StationArchive& operator=(StationArchive &&station) noexcept;
+    StationArchiveLine& operator=(StationArchiveLine &&station) noexcept;
     /*! @} */
 
     /*! @name Destructors
@@ -78,7 +78,7 @@ public:
     /*!
      * @brief Default destructor.
      */
-    ~StationArchive();
+    ~StationArchiveLine();
     /*!
      * @brief Frees memory and resets the class.
      */
@@ -637,8 +637,8 @@ public:
     [[nodiscard]] bool haveAmplitudeUnits() const noexcept;
     /*! @} */
 private:
-    class StationArchiveImpl;
-    std::unique_ptr<StationArchiveImpl> pImpl;
+    class StationArchiveLineImpl;
+    std::unique_ptr<StationArchiveLineImpl> pImpl;
 };
 }
 #endif

@@ -4,13 +4,13 @@
 #include <cstdint>
 #ifndef DNDEBUG
 #endif
-#include "sff/hypoinverse2000/stationArchive.hpp"
+#include "sff/hypoinverse2000/stationArchiveLine.hpp"
 #include "sff/utilities/time.hpp"
 #include "private/hypoinverse2000.hpp"
 
 using namespace SFF::HypoInverse2000;
 
-class StationArchive::StationArchiveImpl
+class StationArchiveLine::StationArchiveLineImpl
 {
 public:
     void clear() noexcept
@@ -115,35 +115,37 @@ public:
 };
 
 /// Constructor
-StationArchive::StationArchive() :
-    pImpl(std::make_unique<StationArchiveImpl> ())
+StationArchiveLine::StationArchiveLine() :
+    pImpl(std::make_unique<StationArchiveLineImpl> ())
 {
 }
 
 /// Copy c'tor
 [[maybe_unused]]
-StationArchive::StationArchive(const StationArchive &station)
+StationArchiveLine::StationArchiveLine(const StationArchiveLine &station)
 {
     *this = station;
 }
 
 /// Move c'tor
 [[maybe_unused]]
-StationArchive::StationArchive(StationArchive &&station) noexcept
+StationArchiveLine::StationArchiveLine(StationArchiveLine &&station) noexcept
 {
     *this = std::move(station);
 }
 
 /// Copy assignment operator
-StationArchive& StationArchive::operator=(const StationArchive &station)
+StationArchiveLine&
+StationArchiveLine::operator=(const StationArchiveLine &station)
 {
     if (&station == this){return *this;}
-    pImpl = std::make_unique<StationArchiveImpl> (*station.pImpl);
+    pImpl = std::make_unique<StationArchiveLineImpl> (*station.pImpl);
     return *this;
 }
 
 /// Move assignment operator
-StationArchive& StationArchive::operator=(StationArchive &&station) noexcept
+StationArchiveLine&
+StationArchiveLine::operator=(StationArchiveLine &&station) noexcept
 {
     if (&station == this){return *this;}
     pImpl = std::move(station.pImpl);
@@ -151,18 +153,18 @@ StationArchive& StationArchive::operator=(StationArchive &&station) noexcept
 }
 
 /// Destructor
-StationArchive::~StationArchive() = default;
+StationArchiveLine::~StationArchiveLine() = default;
 
 /// Clears the class
-void StationArchive::clear() noexcept
+void StationArchiveLine::clear() noexcept
 {
     pImpl->clear();
 }
 
 /// Unpacks a pick line
-void StationArchive::unpackString(const std::string &line)
+void StationArchiveLine::unpackString(const std::string &line)
 {
-    StationArchive result;
+    StationArchiveLine result;
     // Nothing to do
     if (line.empty())
     {
@@ -360,7 +362,7 @@ void StationArchive::unpackString(const std::string &line)
 }
 
 /// Packs a hypo string
-std::string StationArchive::packString() const noexcept
+std::string StationArchiveLine::packString() const noexcept
 {
     std::string result(113, ' ');
     // SNCL
@@ -541,7 +543,7 @@ std::string StationArchive::packString() const noexcept
 }
 
 /// Network name
-void StationArchive::setNetworkName(const std::string &network) noexcept
+void StationArchiveLine::setNetworkName(const std::string &network) noexcept
 {
     std::string scopy(network,
                       0,std::min(static_cast<int> (network.size()), 2));
@@ -551,19 +553,19 @@ void StationArchive::setNetworkName(const std::string &network) noexcept
     pImpl->mHaveNetwork = true;
 }
 
-std::string StationArchive::getNetworkName() const
+std::string StationArchiveLine::getNetworkName() const
 {
     if (!haveNetworkName()){throw std::runtime_error("Network name not set");}
     return pImpl->mNetwork;
 }
 
-bool StationArchive::haveNetworkName() const noexcept
+bool StationArchiveLine::haveNetworkName() const noexcept
 {
     return pImpl->mHaveNetwork;
 }
 
 /// Station name
-void StationArchive::setStationName(const std::string &station) noexcept
+void StationArchiveLine::setStationName(const std::string &station) noexcept
 {
     std::string scopy(station,
                  0, std::min(static_cast<int> (station.size()), 5));
@@ -573,19 +575,19 @@ void StationArchive::setStationName(const std::string &station) noexcept
     pImpl->mHaveStation = true;
 }
 
-std::string StationArchive::getStationName() const
+std::string StationArchiveLine::getStationName() const
 {
     if (!haveStationName()){throw std::runtime_error("Station name not set");}
     return pImpl->mStation;
 }
 
-bool StationArchive::haveStationName() const noexcept
+bool StationArchiveLine::haveStationName() const noexcept
 {
     return pImpl->mHaveStation;
 }
 
 /// Channel name
-void StationArchive::setChannelName(const std::string &channel) noexcept
+void StationArchiveLine::setChannelName(const std::string &channel) noexcept
 {
     std::string scopy(channel,
                  0, std::min(static_cast<int> (channel.size()), 3));
@@ -595,19 +597,19 @@ void StationArchive::setChannelName(const std::string &channel) noexcept
     pImpl->mHaveChannel = true;
 }
 
-std::string StationArchive::getChannelName() const
+std::string StationArchiveLine::getChannelName() const
 {
     if (!haveChannelName()){throw std::runtime_error("Channel name not set");}
     return pImpl->mChannel;
 }
 
-bool StationArchive::haveChannelName() const noexcept
+bool StationArchiveLine::haveChannelName() const noexcept
 {
     return pImpl->mHaveChannel;
 }
 
 /// Location code
-void StationArchive::setLocationCode(const std::string &location) noexcept
+void StationArchiveLine::setLocationCode(const std::string &location) noexcept
 {
     std::string scopy(location,
                  0, std::min(static_cast<int> (location.size()), 2));
@@ -617,7 +619,7 @@ void StationArchive::setLocationCode(const std::string &location) noexcept
     pImpl->mHaveLocationCode = true;
 }
 
-std::string StationArchive::getLocationCode() const
+std::string StationArchiveLine::getLocationCode() const
 {
     if (!haveLocationCode())
     {
@@ -626,19 +628,19 @@ std::string StationArchive::getLocationCode() const
     return pImpl->mLocationCode;
 }
 
-bool StationArchive::haveLocationCode() const noexcept
+bool StationArchiveLine::haveLocationCode() const noexcept
 {
     return pImpl->mHaveLocationCode;
 }
 
 /// P First motion
-void StationArchive::setPFirstMotion(const char firstMotion) noexcept
+void StationArchiveLine::setPFirstMotion(const char firstMotion) noexcept
 {
     pImpl->mPFirstMotion = firstMotion;
     pImpl->mHavePFirstMotion = true;
 }
 
-char StationArchive::getPFirstMotion() const
+char StationArchiveLine::getPFirstMotion() const
 {
     if (!havePFirstMotion())
     {
@@ -647,13 +649,13 @@ char StationArchive::getPFirstMotion() const
     return pImpl->mPFirstMotion;
 }
 
-bool StationArchive::havePFirstMotion() const noexcept
+bool StationArchiveLine::havePFirstMotion() const noexcept
 {
     return pImpl->mHavePFirstMotion;
 }
 
 /// P remark
-void StationArchive::setPRemark(const std::string &remark) noexcept
+void StationArchiveLine::setPRemark(const std::string &remark) noexcept
 {
     std::string scopy(remark,
                  0, std::min(static_cast<int> (remark.size()), 2));
@@ -663,72 +665,73 @@ void StationArchive::setPRemark(const std::string &remark) noexcept
     pImpl->mHavePRemark = true;
 }
 
-std::string StationArchive::getPRemark() const
+std::string StationArchiveLine::getPRemark() const
 {
     if (!havePRemark()){throw std::runtime_error("P remark not set");}
     return pImpl->mPRemark;
 }
 
-bool StationArchive::havePRemark() const noexcept
+bool StationArchiveLine::havePRemark() const noexcept
 {
     return pImpl->mHavePRemark;
 }
 
 /// P weight code
-void StationArchive::setPWeightCode(const uint16_t weightCode) noexcept
+void StationArchiveLine::setPWeightCode(const uint16_t weightCode) noexcept
 {
     pImpl->mPWeightCode = weightCode;
 }
 
-int StationArchive::getPWeightCode() const
+int StationArchiveLine::getPWeightCode() const
 {
     if (!havePWeightCode()){throw std::runtime_error("P weight code not set");}
     return pImpl->mPWeightCode;
 }
 
-bool StationArchive::havePWeightCode() const noexcept
+bool StationArchiveLine::havePWeightCode() const noexcept
 {
     return pImpl->mPWeightCode >= 0;
 }
 
 /// P pick time
-void StationArchive::setPPickTime(const SFF::Utilities::Time &pickTime) noexcept
+void StationArchiveLine::setPPickTime(
+    const SFF::Utilities::Time &pickTime) noexcept
 {
     pImpl->mPPick = pickTime;
     pImpl->mHavePPick = true;
 }
 
-SFF::Utilities::Time StationArchive::getPPickTime() const
+SFF::Utilities::Time StationArchiveLine::getPPickTime() const
 {
     if (!havePPickTime()){throw std::runtime_error("P pick time not set");}
     return pImpl->mPPick;
 }
 
-bool StationArchive::havePPickTime() const noexcept
+bool StationArchiveLine::havePPickTime() const noexcept
 {
     return pImpl->mHavePPick;
 }
 
 /// P residual
-void StationArchive::setPResidual(const double residual) noexcept
+void StationArchiveLine::setPResidual(const double residual) noexcept
 {
     pImpl->mPResidual = residual;
     pImpl->mHavePResidual = true;
 }
 
-double StationArchive::getPResidual() const
+double StationArchiveLine::getPResidual() const
 {
     if (!havePResidual()){throw std::runtime_error("P residual not set");}
     return pImpl->mPResidual;
 }
 
-bool StationArchive::havePResidual() const noexcept
+bool StationArchiveLine::havePResidual() const noexcept
 {
     return pImpl->mHavePResidual;
 }
 
 /// P weight used
-void StationArchive::setPWeightUsed(const double weightUsed)
+void StationArchiveLine::setPWeightUsed(const double weightUsed)
 {
     if (weightUsed < 0)
     {
@@ -737,25 +740,25 @@ void StationArchive::setPWeightUsed(const double weightUsed)
     pImpl->mPWeightUsed = weightUsed;
 }
 
-double StationArchive::getPWeightUsed() const
+double StationArchiveLine::getPWeightUsed() const
 {
     if (!havePWeightUsed()){throw std::runtime_error("P weight used not set");}
     return pImpl->mPWeightUsed;
 }
 
-bool StationArchive::havePWeightUsed() const noexcept
+bool StationArchiveLine::havePWeightUsed() const noexcept
 {
     return pImpl->mPWeightUsed >= 0;
 }
 
 /// P static correction
-void StationArchive::setPDelayTime(const double correction) noexcept
+void StationArchiveLine::setPDelayTime(const double correction) noexcept
 {
     pImpl->mPDelayTime = correction;
     pImpl->mHavePDelayTime = true;
 }
 
-double StationArchive::getPDelayTime() const
+double StationArchiveLine::getPDelayTime() const
 {
     if (!havePDelayTime())
     {
@@ -764,13 +767,13 @@ double StationArchive::getPDelayTime() const
     return pImpl->mPDelayTime;
 }
 
-bool StationArchive::havePDelayTime() const noexcept
+bool StationArchiveLine::havePDelayTime() const noexcept
 {
     return pImpl->mHavePDelayTime;
 }
 
 /// P importance
-void StationArchive::setPImportance(const double importance)
+void StationArchiveLine::setPImportance(const double importance)
 {
     if (importance < 0)
     {
@@ -779,72 +782,74 @@ void StationArchive::setPImportance(const double importance)
     pImpl->mPImportance = importance;
 }
 
-double StationArchive::getPImportance() const
+double StationArchiveLine::getPImportance() const
 {
     if (!havePImportance()){throw std::runtime_error("P importance not set");}
     return pImpl->mPImportance;
 }
 
-bool StationArchive::havePImportance() const noexcept
+bool StationArchiveLine::havePImportance() const noexcept
 {
     return pImpl->mPImportance >= 0;
 }
 
 /// S pick time
-void StationArchive::setSPickTime(const SFF::Utilities::Time &pickTime) noexcept
+void StationArchiveLine::setSPickTime(
+    const SFF::Utilities::Time &pickTime) noexcept
 {
     pImpl->mSPick = pickTime;
     pImpl->mHaveSPick = true;
 }
 
-SFF::Utilities::Time StationArchive::getSPickTime() const
+SFF::Utilities::Time StationArchiveLine::getSPickTime() const
 {
     if (!haveSPickTime()){throw std::runtime_error("S pick time not set");}
     return pImpl->mSPick;
 }
 
-bool StationArchive::haveSPickTime() const noexcept
+bool StationArchiveLine::haveSPickTime() const noexcept
 {
     return pImpl->mHaveSPick;
 }
 
 /// S weight code
-void StationArchive::setSWeightCode(const uint16_t weightCode) noexcept
+void StationArchiveLine::setSWeightCode(
+    const uint16_t weightCode) noexcept
 {
     pImpl->mSWeightCode = weightCode;
 }
 
-int StationArchive::getSWeightCode() const
+int StationArchiveLine::getSWeightCode() const
 {
     if (!haveSWeightCode()){throw std::runtime_error("S weight code not set");}
     return pImpl->mSWeightCode;
 }
 
-bool StationArchive::haveSWeightCode() const noexcept
+bool StationArchiveLine::haveSWeightCode() const noexcept
 {
     return pImpl->mSWeightCode >= 0;
 }
 
 /// S residual
-void StationArchive::setSResidual(const double residual) noexcept
+void StationArchiveLine::setSResidual(const double residual) noexcept
 {
     pImpl->mSResidual = residual;
     pImpl->mHaveSResidual = true;
 }
 
-double StationArchive::getSResidual() const
+double StationArchiveLine::getSResidual() const
 {
     if (!haveSResidual()){throw std::runtime_error("S residual not set");}
     return pImpl->mSResidual;
 }
 
-bool StationArchive::haveSResidual() const noexcept
+bool StationArchiveLine::haveSResidual() const noexcept
 {
     return pImpl->mHaveSResidual;
 }
 
 /// S remark
-void StationArchive::setSRemark(const std::string &remark) noexcept
+void StationArchiveLine::setSRemark(const std::string &remark) noexcept
 {
     std::string scopy(remark,
                       0, std::min(static_cast<int> (remark.size()), 2));
@@ -854,19 +859,19 @@ void StationArchive::setSRemark(const std::string &remark) noexcept
     pImpl->mHaveSRemark = true;
 }
 
-std::string StationArchive::getSRemark() const
+std::string StationArchiveLine::getSRemark() const
 {
     if (!haveSRemark()){throw std::runtime_error("S remark not set");}
     return pImpl->mSRemark;
 }
 
-bool StationArchive::haveSRemark() const noexcept
+bool StationArchiveLine::haveSRemark() const noexcept
 {
     return pImpl->mHaveSRemark;
 }
 
 /// S weight used
-void StationArchive::setSWeightUsed(const double weightUsed)
+void StationArchiveLine::setSWeightUsed(const double weightUsed)
 {
     if (weightUsed < 0)
     {
@@ -875,25 +880,25 @@ void StationArchive::setSWeightUsed(const double weightUsed)
     pImpl->mSWeightUsed = weightUsed;
 }
 
-double StationArchive::getSWeightUsed() const
+double StationArchiveLine::getSWeightUsed() const
 {
     if (!haveSWeightUsed()){throw std::runtime_error("S weight used not set");}
     return pImpl->mSWeightUsed;
 }
 
-bool StationArchive::haveSWeightUsed() const noexcept
+bool StationArchiveLine::haveSWeightUsed() const noexcept
 {
     return pImpl->mSWeightUsed >= 0;
 }
 
 /// S static correction
-void StationArchive::setSDelayTime(const double correction) noexcept
+void StationArchiveLine::setSDelayTime(const double correction) noexcept
 {
     pImpl->mSDelayTime = correction;
     pImpl->mHaveSDelayTime = true;
 }
 
-double StationArchive::getSDelayTime() const
+double StationArchiveLine::getSDelayTime() const
 {
     if (!haveSDelayTime())
     {
@@ -902,13 +907,13 @@ double StationArchive::getSDelayTime() const
     return pImpl->mSDelayTime;
 }
 
-bool StationArchive::haveSDelayTime() const noexcept
+bool StationArchiveLine::haveSDelayTime() const noexcept
 {
     return pImpl->mHaveSDelayTime;
 }
 
 /// S importance
-void StationArchive::setSImportance(const double importance)
+void StationArchiveLine::setSImportance(const double importance)
 {
     if (importance < 0)
     {
@@ -917,19 +922,19 @@ void StationArchive::setSImportance(const double importance)
     pImpl->mSImportance = importance;
 }
 
-double StationArchive::getSImportance() const
+double StationArchiveLine::getSImportance() const
 {
     if (!haveSImportance()){throw std::runtime_error("S importance not set");}
     return pImpl->mSImportance;
 }
 
-bool StationArchive::haveSImportance() const noexcept
+bool StationArchiveLine::haveSImportance() const noexcept
 {
     return pImpl->mSImportance >= 0;
 }
 
 /// Take off angle
-void StationArchive::setTakeOffAngle(const double angle)
+void StationArchiveLine::setTakeOffAngle(const double angle)
 {
     if (angle < 0 || angle > 180)
     {
@@ -938,19 +943,19 @@ void StationArchive::setTakeOffAngle(const double angle)
     pImpl->mTakeOffAngle = angle;
 }
 
-double StationArchive::getTakeOffAngle() const
+double StationArchiveLine::getTakeOffAngle() const
 {
     if (!haveTakeOffAngle()){throw std::runtime_error("Takeoff angle not set");}
     return pImpl->mTakeOffAngle;
 }
 
-bool StationArchive::haveTakeOffAngle() const noexcept
+bool StationArchiveLine::haveTakeOffAngle() const noexcept
 {
     return pImpl->mTakeOffAngle >= 0;
 }
 
 /// Azimuth angle
-void StationArchive::setAzimuth(const double azimuth)
+void StationArchiveLine::setAzimuth(const double azimuth)
 {
     if (azimuth < 0 || azimuth >= 3600)
     {
@@ -959,19 +964,19 @@ void StationArchive::setAzimuth(const double azimuth)
     pImpl->mAzimuth = azimuth;
 }
 
-double StationArchive::getAzimuth() const
+double StationArchiveLine::getAzimuth() const
 {
     if (!haveAzimuth()){throw std::runtime_error("Azimuth not set");}
     return pImpl->mAzimuth;
 }
 
-bool StationArchive::haveAzimuth() const noexcept
+bool StationArchiveLine::haveAzimuth() const noexcept
 {
     return pImpl->mAzimuth >= 0;
 }
 
 /// Epicentral distance
-void StationArchive::setEpicentralDistance(const double distance)
+void StationArchiveLine::setEpicentralDistance(const double distance)
 {
     if (distance < 0)
     {
@@ -980,7 +985,7 @@ void StationArchive::setEpicentralDistance(const double distance)
     pImpl->mEpicentralDistance = distance;
 }
 
-double StationArchive::getEpicentralDistance() const
+double StationArchiveLine::getEpicentralDistance() const
 {
     if (!haveEpicentralDistance())
     {
@@ -989,19 +994,19 @@ double StationArchive::getEpicentralDistance() const
     return pImpl->mEpicentralDistance;
 }
 
-bool StationArchive::haveEpicentralDistance() const noexcept
+bool StationArchiveLine::haveEpicentralDistance() const noexcept
 {
     return pImpl->mEpicentralDistance >= 0;
 }
 
 /// Duration magnitude
-void StationArchive::setDurationMagnitude(const double magnitude) noexcept
+void StationArchiveLine::setDurationMagnitude(const double magnitude) noexcept
 {
     pImpl->mDurationMagnitude = magnitude;
     pImpl->mHaveDurationMagnitude = true;
 }
 
-double StationArchive::getDurationMagnitude() const
+double StationArchiveLine::getDurationMagnitude() const
 {
     if (!haveDurationMagnitude())
     {
@@ -1010,13 +1015,13 @@ double StationArchive::getDurationMagnitude() const
     return pImpl->mDurationMagnitude;
 }
 
-bool StationArchive::haveDurationMagnitude() const noexcept
+bool StationArchiveLine::haveDurationMagnitude() const noexcept
 {
     return pImpl->mHaveDurationMagnitude;
 }
 
 /// Duration magnitude weight code
-void StationArchive::setDurationMagnitudeWeightCode(const int code)
+void StationArchiveLine::setDurationMagnitudeWeightCode(const int code)
 {
     if (code < 0)
     {
@@ -1025,7 +1030,7 @@ void StationArchive::setDurationMagnitudeWeightCode(const int code)
     pImpl->mDurationMagnitudeWeightCode = code;
 }
 
-int StationArchive::getDurationMagnitudeWeightCode() const
+int StationArchiveLine::getDurationMagnitudeWeightCode() const
 {
     if (!haveDurationMagnitudeWeightCode())
     {
@@ -1034,13 +1039,13 @@ int StationArchive::getDurationMagnitudeWeightCode() const
     return pImpl->mDurationMagnitudeWeightCode;
 }
 
-bool StationArchive::haveDurationMagnitudeWeightCode() const noexcept
+bool StationArchiveLine::haveDurationMagnitudeWeightCode() const noexcept
 {
     return pImpl->mDurationMagnitudeWeightCode >= 0;
 }
 
 /// Duration magnitude label
-void StationArchive::setDurationMagnitudeLabel(const char label)
+void StationArchiveLine::setDurationMagnitudeLabel(const char label)
 {
     if (std::isblank(label))
     {
@@ -1049,7 +1054,7 @@ void StationArchive::setDurationMagnitudeLabel(const char label)
     pImpl->mDurationMagnitudeLabel = label;
 }
 
-char StationArchive::getDurationMagnitudeLabel() const
+char StationArchiveLine::getDurationMagnitudeLabel() const
 {
     if (!haveDurationMagnitudeLabel())
     {
@@ -1058,19 +1063,19 @@ char StationArchive::getDurationMagnitudeLabel() const
     return pImpl->mDurationMagnitudeLabel;
 }
 
-bool StationArchive::haveDurationMagnitudeLabel() const noexcept
+bool StationArchiveLine::haveDurationMagnitudeLabel() const noexcept
 {
     return pImpl->mDurationMagnitudeLabel != ' ';
 }
 
 /// Amplitude magnitude
-void StationArchive::setAmplitudeMagnitude(const double magnitude) noexcept
+void StationArchiveLine::setAmplitudeMagnitude(const double magnitude) noexcept
 {
     pImpl->mAmplitudeMagnitude = magnitude;
     pImpl->mHaveAmplitudeMagnitude = true;
 }
 
-double StationArchive::getAmplitudeMagnitude() const
+double StationArchiveLine::getAmplitudeMagnitude() const
 {
     if (!haveAmplitudeMagnitude())
     {
@@ -1079,13 +1084,13 @@ double StationArchive::getAmplitudeMagnitude() const
     return pImpl->mAmplitudeMagnitude;
 }
 
-bool StationArchive::haveAmplitudeMagnitude() const noexcept
+bool StationArchiveLine::haveAmplitudeMagnitude() const noexcept
 {
     return pImpl->mHaveAmplitudeMagnitude;
 }
 
 /// Amplitude magnitude weight code
-void StationArchive::setAmplitudeMagnitudeWeightCode(const int code)
+void StationArchiveLine::setAmplitudeMagnitudeWeightCode(const int code)
 {
     if (code < 0)
     {
@@ -1094,7 +1099,7 @@ void StationArchive::setAmplitudeMagnitudeWeightCode(const int code)
     pImpl->mAmplitudeMagnitudeWeightCode = code;
 }
 
-int StationArchive::getAmplitudeMagnitudeWeightCode() const
+int StationArchiveLine::getAmplitudeMagnitudeWeightCode() const
 {
     if (!haveAmplitudeMagnitudeWeightCode())
     {
@@ -1103,13 +1108,13 @@ int StationArchive::getAmplitudeMagnitudeWeightCode() const
     return pImpl->mAmplitudeMagnitudeWeightCode;
 }
 
-bool StationArchive::haveAmplitudeMagnitudeWeightCode() const noexcept
+bool StationArchiveLine::haveAmplitudeMagnitudeWeightCode() const noexcept
 {
     return pImpl->mAmplitudeMagnitudeWeightCode >= 0;
 }
 
 /// Amplitude magnitude label
-void StationArchive::setAmplitudeMagnitudeLabel(const char label)
+void StationArchiveLine::setAmplitudeMagnitudeLabel(const char label)
 {
     if (std::isblank(label))
     {
@@ -1118,7 +1123,7 @@ void StationArchive::setAmplitudeMagnitudeLabel(const char label)
     pImpl->mAmplitudeMagnitudeLabel = label;
 }
 
-char StationArchive::getAmplitudeMagnitudeLabel() const
+char StationArchiveLine::getAmplitudeMagnitudeLabel() const
 {
     if (!haveAmplitudeMagnitudeLabel())
     {
@@ -1127,13 +1132,13 @@ char StationArchive::getAmplitudeMagnitudeLabel() const
     return pImpl->mAmplitudeMagnitudeLabel;
 }
 
-bool StationArchive::haveAmplitudeMagnitudeLabel() const noexcept
+bool StationArchiveLine::haveAmplitudeMagnitudeLabel() const noexcept
 {
     return pImpl->mAmplitudeMagnitudeLabel != ' ';
 }
 
 /// Data Source code
-void StationArchive::setDataSourceCode(const char label)
+void StationArchiveLine::setDataSourceCode(const char label)
 {
     if (std::isblank(label))
     {
@@ -1142,7 +1147,7 @@ void StationArchive::setDataSourceCode(const char label)
     pImpl->mDataSourceCode = label;
 }
 
-char StationArchive::getDataSourceCode() const
+char StationArchiveLine::getDataSourceCode() const
 {
     if (!haveDataSourceCode())
     {
@@ -1151,13 +1156,13 @@ char StationArchive::getDataSourceCode() const
     return pImpl->mDataSourceCode;
 }
 
-bool StationArchive::haveDataSourceCode() const noexcept
+bool StationArchiveLine::haveDataSourceCode() const noexcept
 {
     return pImpl->mDataSourceCode != ' ';
 }
 
 /// The amplitude
-void StationArchive::setAmplitude(const double amplitude)
+void StationArchiveLine::setAmplitude(const double amplitude)
 {
     if (amplitude < 0)
     {
@@ -1166,25 +1171,26 @@ void StationArchive::setAmplitude(const double amplitude)
     pImpl->mAmplitude = amplitude;
 }
 
-double StationArchive::getAmplitude() const
+double StationArchiveLine::getAmplitude() const
 {
     if (!haveAmplitude()){throw std::runtime_error("Amplitude not set");}
     return pImpl->mAmplitude;
 }
 
-bool StationArchive::haveAmplitude() const noexcept
+bool StationArchiveLine::haveAmplitude() const noexcept
 {
     return pImpl->mAmplitude >= 0;
 }
 
 /// Amplitude units
-void StationArchive::setAmplitudeUnits(AmplitudeUnits units) noexcept
+void StationArchiveLine::setAmplitudeUnits(
+    const AmplitudeUnits units) noexcept
 {
     pImpl->mAmplitudeUnits = units;
     pImpl->mHaveAmplitudeUnits = true;
 }
 
-AmplitudeUnits StationArchive::getAmplitudeUnits() const
+AmplitudeUnits StationArchiveLine::getAmplitudeUnits() const
 {
     if (!haveAmplitudeUnits())
     {
@@ -1193,13 +1199,13 @@ AmplitudeUnits StationArchive::getAmplitudeUnits() const
     return pImpl->mAmplitudeUnits;
 }
 
-bool StationArchive::haveAmplitudeUnits() const noexcept
+bool StationArchiveLine::haveAmplitudeUnits() const noexcept
 {
     return pImpl->mHaveAmplitudeUnits;
 }
 
 /// Period of amplitude measurement
-void StationArchive::setPeriodOfAmplitudeMeasurement(const double period)
+void StationArchiveLine::setPeriodOfAmplitudeMeasurement(const double period)
 {
     if (period <= 0)
     {
@@ -1208,7 +1214,7 @@ void StationArchive::setPeriodOfAmplitudeMeasurement(const double period)
     pImpl->mPeriodOfAmplitudeMeasurement = period;
 }
 
-double StationArchive::getPeriodOfAmplitudeMeasurement() const
+double StationArchiveLine::getPeriodOfAmplitudeMeasurement() const
 {
     if (!havePeriodOfAmplitudeMeasurement())
     {
@@ -1216,14 +1222,14 @@ double StationArchive::getPeriodOfAmplitudeMeasurement() const
     }
     return pImpl->mPeriodOfAmplitudeMeasurement;
 }
-bool StationArchive::havePeriodOfAmplitudeMeasurement() const noexcept
+bool StationArchiveLine::havePeriodOfAmplitudeMeasurement() const noexcept
 {
     return pImpl->mPeriodOfAmplitudeMeasurement >= 0;
 }
 
 /// Duration of coda magnitude
 
-void StationArchive::setCodaDuration(const double duration)
+void StationArchiveLine::setCodaDuration(const double duration)
 {
     if (duration <= 0)
     {
@@ -1232,7 +1238,7 @@ void StationArchive::setCodaDuration(const double duration)
     pImpl->mCodaDuration = duration;
 }
 
-double StationArchive::getCodaDuration() const
+double StationArchiveLine::getCodaDuration() const
 {
     if (!haveCodaDuration())
     {
@@ -1241,7 +1247,7 @@ double StationArchive::getCodaDuration() const
     return pImpl->mCodaDuration;
 }
 
-bool StationArchive::haveCodaDuration() const noexcept
+bool StationArchiveLine::haveCodaDuration() const noexcept
 {
     return pImpl->mCodaDuration > 0;
 }

@@ -114,7 +114,8 @@ set(SRC
     src/segy/silixaTrace.cpp
     src/segy/silixaTraceGroup.cpp
     src/segy/textualFileHeader.cpp
-    src/hypoinverse2000/eventSummary.cpp src/hypoinverse2000/stationArchive.cpp)
+    src/hypoinverse2000/eventSummaryLine.cpp
+    src/hypoinverse2000/stationArchiveLine.cpp)
 if (${MINISEED_FOUND})
    set(MINISEED_SRC
        src/miniseed/sncl.cpp

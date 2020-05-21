@@ -1,8 +1,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "sff/hypoinverse2000/eventSummary.hpp"
-#include "sff/hypoinverse2000/stationArchive.hpp"
+#include "sff/hypoinverse2000/eventSummaryLine.hpp"
+#include "sff/hypoinverse2000/stationArchiveLine.hpp"
 #include "sff/utilities/time.hpp"
 #include <gtest/gtest.h>
 
@@ -10,10 +10,10 @@ namespace
 {
 using namespace SFF::HypoInverse2000;
 
-TEST(Hypo2000, EventSummary)
+TEST(Hypo2000, EventSummaryLine)
 {
     const std::string line = "202003181320217640 4594112  399  771    24 83  4  1633184  88154 5  44298     33    1  44  87  4     100    47       D 24 L237 20         60363637L237  20        5FUUP1";
-    EventSummary summary;
+    EventSummaryLine summary;
     SFF::Utilities::Time originTime;
     EXPECT_NO_THROW(summary.unpackString(line));
     EXPECT_NO_THROW(originTime = summary.getOriginTime());
@@ -46,13 +46,13 @@ TEST(Hypo2000, EventSummary)
               static_cast<uint64_t> (60363637));
 }
 
-TEST(Hypo2000, StationArchive)
+TEST(Hypo2000, StationArchiveLine)
 {
     std::string pPickString("RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300     D 02");
     std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J L01");
     
     SFF::Utilities::Time pickTime;
-    StationArchive pPick;  
+    StationArchiveLine pPick;  
     EXPECT_NO_THROW(pPick.unpackString(pPickString));
     EXPECT_EQ(pPick.getNetworkName(), "UU");
     EXPECT_EQ(pPick.getStationName(), "RBU");
@@ -87,7 +87,7 @@ TEST(Hypo2000, StationArchive)
     std::cout << pPickString << std::endl;
     std::cout << pstring << std::endl;
 
-    StationArchive sPick;
+    StationArchiveLine sPick;
     EXPECT_NO_THROW(sPick.unpackString(sPickString));
     EXPECT_EQ(sPick.getNetworkName(), "UU");
     EXPECT_EQ(sPick.getStationName(), "NOQ");

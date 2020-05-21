@@ -5,7 +5,7 @@
 #ifndef DNDEBUG
 #include <cassert>
 #endif
-#include "sff/hypoinverse2000/eventSummary.hpp"
+#include "sff/hypoinverse2000/eventSummaryLine.hpp"
 #include "sff/utilities/time.hpp"
 #include "private/hypoinverse2000.hpp"
 
@@ -14,7 +14,7 @@ using namespace SFF::HypoInverse2000;
 ///--------------------------------------------------------------------------///
 ///                            Begin implementation                          ///
 ///--------------------------------------------------------------------------///
-class EventSummary::EventSummaryImpl
+class EventSummaryLine::EventSummaryLineImpl
 {
 public:
     void clear()
@@ -66,42 +66,43 @@ public:
 };
 
 /// C'tor
-EventSummary::EventSummary() :
-    pImpl(std::make_unique<EventSummaryImpl> ())
+EventSummaryLine::EventSummaryLine() :
+    pImpl(std::make_unique<EventSummaryLineImpl> ())
 {
 }
 
 /// Copy c'tor
-EventSummary::EventSummary(const EventSummary &summary)
+EventSummaryLine::EventSummaryLine(const EventSummaryLine &summary)
 {
     *this = summary;
 }
 
 [[maybe_unused]] /// Move c'tor
-EventSummary::EventSummary(EventSummary &&summary) noexcept
+EventSummaryLine::EventSummaryLine(EventSummaryLine &&summary) noexcept
 {
     *this = std::move(summary);
 }
 
 /// Destructor
-EventSummary::~EventSummary() = default;
+EventSummaryLine::~EventSummaryLine() = default;
 
 /// Clears the class
-void EventSummary::clear() noexcept
+void EventSummaryLine::clear() noexcept
 {
     pImpl->clear();
 }
 
 /// Copy assignment operator
-EventSummary& EventSummary::operator=(const EventSummary &summary)
+EventSummaryLine& EventSummaryLine::operator=(const EventSummaryLine &summary)
 {
     if (&summary == this){return *this;}
-    pImpl = std::make_unique<EventSummaryImpl> (*summary.pImpl);
+    pImpl = std::make_unique<EventSummaryLineImpl> (*summary.pImpl);
     return *this;
 }
 
 /// Move assignment operator
-EventSummary& EventSummary::operator=(EventSummary &&summary) noexcept
+EventSummaryLine&
+EventSummaryLine::operator=(EventSummaryLine &&summary) noexcept
 {
     if (&summary == this){return *this;}
     pImpl = std::move(summary.pImpl);
@@ -109,9 +110,9 @@ EventSummary& EventSummary::operator=(EventSummary &&summary) noexcept
 }
 
 /// Unpacks a header line string
-void EventSummary::unpackString(const std::string &line)
+void EventSummaryLine::unpackString(const std::string &line)
 {
-    EventSummary result;
+    EventSummaryLine result;
     // Nothing to do
     if (line.empty())
     {
@@ -247,25 +248,25 @@ void EventSummary::unpackString(const std::string &line)
 }
 
 /// Origin time
-void EventSummary::setOriginTime(const SFF::Utilities::Time &originTime) noexcept
+void EventSummaryLine::setOriginTime(const SFF::Utilities::Time &originTime) noexcept
 {
     pImpl->mOriginTime = originTime;
     pImpl->mHaveOriginTime = true;
 }
 
-SFF::Utilities::Time EventSummary::getOriginTime() const
+SFF::Utilities::Time EventSummaryLine::getOriginTime() const
 {
     if (!haveOriginTime()){throw std::runtime_error("Origin time not set");}
     return pImpl->mOriginTime;
 }
 
-bool EventSummary::haveOriginTime() const noexcept
+bool EventSummaryLine::haveOriginTime() const noexcept
 {
     return pImpl->mHaveOriginTime;
 }
 
 /// Latitude
-void EventSummary::setLatitude(const double latitude)
+void EventSummaryLine::setLatitude(const double latitude)
 {
     if (latitude < -90 || latitude > 90)
     {
@@ -276,19 +277,19 @@ void EventSummary::setLatitude(const double latitude)
     pImpl->mHaveLatitude = true;
 }
 
-double EventSummary::getLatitude() const
+double EventSummaryLine::getLatitude() const
 {
     if (!haveLatitude()){throw std::runtime_error("Latitude not set");}
     return pImpl->mLatitude;
 }
 
-bool EventSummary::haveLatitude() const noexcept
+bool EventSummaryLine::haveLatitude() const noexcept
 {
     return pImpl->mHaveLatitude;
 }
 
 /// Longitude
-void EventSummary::setLongitude(const double longitude)
+void EventSummaryLine::setLongitude(const double longitude)
 {
     if (longitude < -540 || longitude >= 540)
     {
@@ -307,37 +308,37 @@ void EventSummary::setLongitude(const double longitude)
     pImpl->mHaveLongitude = true;
 }
 
-double EventSummary::getLongitude() const
+double EventSummaryLine::getLongitude() const
 {
     if (!haveLongitude()){throw std::runtime_error("Longitude not set");}
     return pImpl->mLongitude;
 }
 
-bool EventSummary::haveLongitude() const noexcept
+bool EventSummaryLine::haveLongitude() const noexcept
 {
     return pImpl->mHaveLongitude;
 }
 
 /// Depth
-void EventSummary::setDepth(const double depth) noexcept
+void EventSummaryLine::setDepth(const double depth) noexcept
 {
     pImpl->mDepth = depth;
     pImpl->mHaveDepth = true;
 }
 
-double EventSummary::getDepth() const
+double EventSummaryLine::getDepth() const
 {
     if (!haveDepth()){throw std::runtime_error("Depth not set");}
     return pImpl->mDepth;
 }
 
-bool EventSummary::haveDepth() const noexcept
+bool EventSummaryLine::haveDepth() const noexcept
 {
     return pImpl->mHaveDepth;
 }
 
 /// Weighted residuals
-void EventSummary::setNumberOfWeightedResiduals(int nResiduals)
+void EventSummaryLine::setNumberOfWeightedResiduals(const int nResiduals)
 {
     if (nResiduals < 0)
     {
@@ -346,7 +347,7 @@ void EventSummary::setNumberOfWeightedResiduals(int nResiduals)
     pImpl->mWeightedResiduals = nResiduals;
 }
 
-int EventSummary::getNumberOfWeightedResiduals() const
+int EventSummaryLine::getNumberOfWeightedResiduals() const
 {
     if (!haveNumberOfWeightedResiduals())
     {
@@ -355,12 +356,12 @@ int EventSummary::getNumberOfWeightedResiduals() const
     return pImpl->mWeightedResiduals;
 }
 
-bool EventSummary::haveNumberOfWeightedResiduals() const noexcept
+bool EventSummaryLine::haveNumberOfWeightedResiduals() const noexcept
 {
     return pImpl->mWeightedResiduals >= 0;
 }
 
-void EventSummary::setNumberOfSWeightedResiduals(int nResiduals)
+void EventSummaryLine::setNumberOfSWeightedResiduals(const int nResiduals)
 {
     if (nResiduals < 0)
     {
@@ -369,7 +370,7 @@ void EventSummary::setNumberOfSWeightedResiduals(int nResiduals)
     pImpl->mSWeightedResiduals = nResiduals;
 }
 
-int EventSummary::getNumberOfSWeightedResiduals() const
+int EventSummaryLine::getNumberOfSWeightedResiduals() const
 {
     if (!haveNumberOfSWeightedResiduals())
     {
@@ -378,13 +379,13 @@ int EventSummary::getNumberOfSWeightedResiduals() const
     return pImpl->mSWeightedResiduals;
 }
 
-bool EventSummary::haveNumberOfSWeightedResiduals() const noexcept
+bool EventSummaryLine::haveNumberOfSWeightedResiduals() const noexcept
 {
     return pImpl->mSWeightedResiduals >= 0;
 }
 
 /// Azimuthal gap
-void EventSummary::setAzimuthalGap(double gap)
+void EventSummaryLine::setAzimuthalGap(const double gap)
 {
     if (gap < 0 || gap >= 360)
     {
@@ -395,19 +396,19 @@ void EventSummary::setAzimuthalGap(double gap)
     pImpl->mAzimuthalGap = gap;
 }
 
-double EventSummary::getAzimuthalGap() const
+double EventSummaryLine::getAzimuthalGap() const
 {
     if (!haveAzimuthalGap()){throw std::runtime_error("Gap not set");}
     return pImpl->mAzimuthalGap;
 }
 
-bool EventSummary::haveAzimuthalGap() const noexcept
+bool EventSummaryLine::haveAzimuthalGap() const noexcept
 {
     return pImpl->mHaveAzimuthalGap;
 }
 
 /// RMS
-void EventSummary::setResidualTravelTimeRMS(double rms)
+void EventSummaryLine::setResidualTravelTimeRMS(const double rms)
 {
     if (rms < 0)
     {
@@ -417,7 +418,7 @@ void EventSummary::setResidualTravelTimeRMS(double rms)
     pImpl->mTravelTimeRMS = rms;
 }
 
-double EventSummary::getResidualTravelTimeRMS() const
+double EventSummaryLine::getResidualTravelTimeRMS() const
 {
     if (!haveResidualTravelTimeRMS())
     {
@@ -426,19 +427,19 @@ double EventSummary::getResidualTravelTimeRMS() const
     return pImpl->mTravelTimeRMS;
 }
 
-bool EventSummary::haveResidualTravelTimeRMS() const noexcept
+bool EventSummaryLine::haveResidualTravelTimeRMS() const noexcept
 {
     return pImpl->mTravelTimeRMS >= 0;
 }
 
 /// Preferred magnitude
-void EventSummary::setPreferredMagnitude(double magnitude) noexcept
+void EventSummaryLine::setPreferredMagnitude(const double magnitude) noexcept
 {
     pImpl->mHavePreferredMagnitude = true;
     pImpl->mPreferredMagnitude = magnitude;
 }
 
-double EventSummary::getPreferredMagnitude() const
+double EventSummaryLine::getPreferredMagnitude() const
 {
     if (!havePreferredMagnitude())
     {
@@ -447,13 +448,13 @@ double EventSummary::getPreferredMagnitude() const
     return pImpl->mPreferredMagnitude;
 }
 
-bool EventSummary::havePreferredMagnitude() const noexcept
+bool EventSummaryLine::havePreferredMagnitude() const noexcept
 {
     return pImpl->mHavePreferredMagnitude;
 }
 
 /// First motions
-void EventSummary::setNumberOfFirstMotions(int nFirstMotions)
+void EventSummaryLine::setNumberOfFirstMotions(const int nFirstMotions)
 {
     if (nFirstMotions < 0)
     {
@@ -463,7 +464,7 @@ void EventSummary::setNumberOfFirstMotions(int nFirstMotions)
     }
     pImpl->mNumberOfFirstMotions = nFirstMotions;
 }
-int EventSummary::getNumberOfFirstMotions() const
+int EventSummaryLine::getNumberOfFirstMotions() const
 {
     if (!haveNumberOfFirstMotions())
     {
@@ -472,13 +473,13 @@ int EventSummary::getNumberOfFirstMotions() const
     return pImpl->mNumberOfFirstMotions;
 }
 
-bool EventSummary::haveNumberOfFirstMotions() const noexcept
+bool EventSummaryLine::haveNumberOfFirstMotions() const noexcept
 {
     return pImpl->mNumberOfFirstMotions >= 0;
 }
 
 /// Preferred magnitude label
-void EventSummary::setPreferredMagnitudeLabel(char label)
+void EventSummaryLine::setPreferredMagnitudeLabel(const char label)
 {
     if (isblank(label))
     {
@@ -487,7 +488,7 @@ void EventSummary::setPreferredMagnitudeLabel(char label)
     pImpl->mHavePreferredMagnitudeLabel = label;
 }
 
-char EventSummary::getPreferredMagnitudeLabel() const
+char EventSummaryLine::getPreferredMagnitudeLabel() const
 {
     if (!havePreferredMagnitudeLabel())
     {
@@ -496,31 +497,31 @@ char EventSummary::getPreferredMagnitudeLabel() const
     return pImpl->mHavePreferredMagnitudeLabel;
 }
 
-bool EventSummary::havePreferredMagnitudeLabel() const noexcept
+bool EventSummaryLine::havePreferredMagnitudeLabel() const noexcept
 {
     return !isblank(pImpl->mHavePreferredMagnitudeLabel);
 }
 
 /// Event identifier
-void EventSummary::setEventIdentifier(const uint64_t evid) noexcept
+void EventSummaryLine::setEventIdentifier(const uint64_t evid) noexcept
 {
     pImpl->mHaveEventIdentifier = true;
     pImpl->mEventIdentifier = evid;
 }
 
-uint64_t EventSummary::getEventIdentifier() const
+uint64_t EventSummaryLine::getEventIdentifier() const
 {
     if (!haveEventIdentifier()){throw std::runtime_error("evid not yet set");}
     return pImpl->mEventIdentifier;
 }
 
-bool EventSummary::haveEventIdentifier() const noexcept
+bool EventSummaryLine::haveEventIdentifier() const noexcept
 {
     return pImpl->mHaveEventIdentifier;
 }
 
 /// Distance to closest station
-void EventSummary::setDistanceToClosestStation(const double dist)
+void EventSummaryLine::setDistanceToClosestStation(const double dist)
 {
     if (dist < 0)
     {
@@ -529,7 +530,7 @@ void EventSummary::setDistanceToClosestStation(const double dist)
     pImpl->mDistanceToClosestStation = dist;
 }
 
-double EventSummary::getDistanceToClosestStation() const
+double EventSummaryLine::getDistanceToClosestStation() const
 {
     if (!haveDistanceToClosestStation())
     {
@@ -538,7 +539,7 @@ double EventSummary::getDistanceToClosestStation() const
     return pImpl->mDistanceToClosestStation;
 }
 
-bool EventSummary::haveDistanceToClosestStation() const noexcept
+bool EventSummaryLine::haveDistanceToClosestStation() const noexcept
 {
     return pImpl->mDistanceToClosestStation >= 0;
 }

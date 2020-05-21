@@ -1,15 +1,15 @@
-#ifndef SFF_HYPOINVERSE2000_EVENTSUMMARY_HPP
-#define SFF_HYPOINVERSE2000_EVENTSUMMARY_HPP
+#ifndef SFF_HYPOINVERSE2000_EVENTSUMMARYLINE_HPP
+#define SFF_HYPOINVERSE2000_EVENTSUMMARYLINE_HPP
 #include <memory>
 #include "sff/utilities/time.hpp"
 namespace SFF::HypoInverse2000
 {
 /*!
- * @class EventSummary "eventSummary.hpp" "sff/hypoinverse2000/eventSummary.hpp"
- * @brief Defines a year-2000 compatibile event summary.
+ * @class EventSummaryLine "eventSummaryLine.hpp" "sff/hypoinverse2000/eventSummaryLine.hpp"
+ * @brief Defines a year-2000 compatibile event summary line in an archive file.
  * @copyright Ben Baker (University of Utah) distributed under the MIT license.
  */
-class EventSummary
+class EventSummaryLine
 {
 public:
     /*! @name Constructors
@@ -18,19 +18,19 @@ public:
     /*!
      * @brief Constructor.
      */
-    EventSummary();
+    EventSummaryLine();
     /*!
      * @brief Copy constructor.
      * @param[in] summary   The event summary from which to initialize
      *                      this class.
      */
-    EventSummary(const EventSummary &summary);
+    EventSummaryLine(const EventSummaryLine &summary);
     [[maybe_unused]] /*!
      * @brief Move constructor.
      * @param[in,out] summary  The event summary from which to initialize this
      *                         class.  On exit, summary's behavior is undefined.
      */
-    EventSummary(EventSummary &&summary) noexcept;
+    EventSummaryLine(EventSummaryLine &&summary) noexcept;
     /*! @} */
 
     /*! @name Operators
@@ -41,14 +41,14 @@ public:
      * @param[in] summary  The summary class to copy to this.
      * @result A deep copy of summary.
      */
-    EventSummary& operator=(const EventSummary &summary);
+    EventSummaryLine& operator=(const EventSummaryLine &summary);
     /*!
      * @brief Move assignment operator.
      * @param[in,out] summary   Moves the memory from summary to this.  On exit,
      *                          summary's behavior is undefined.
      * @result The memory from summary moved to this.
      */
-    EventSummary& operator=(EventSummary &&summary) noexcept;
+    EventSummaryLine& operator=(EventSummaryLine &&summary) noexcept;
     /*! @} */
 
     /*! @name Destructor
@@ -57,7 +57,7 @@ public:
     /*!
      * @brief Destructor.
      */
-    ~EventSummary();
+    ~EventSummaryLine();
     /*!
      * @brief Resets the class.
      */
@@ -69,6 +69,11 @@ public:
      *        archive file.
      */
     void unpackString(const std::string &line);
+    /*!
+     * @brief Packs the information contained in this class into a line to 
+     *        write to the archive file.
+     */
+    std::string packString() const;
 
     /*! @brief Hypocenter and Origin Time
      * @{
@@ -308,8 +313,8 @@ public:
     [[nodiscard]] bool haveResidualTravelTimeRMS() const noexcept;
     /*! @} */
 private:
-    class EventSummaryImpl;
-    std::unique_ptr<EventSummaryImpl> pImpl;
+    class EventSummaryLineImpl;
+    std::unique_ptr<EventSummaryLineImpl> pImpl;
 };
 }
 #endif
