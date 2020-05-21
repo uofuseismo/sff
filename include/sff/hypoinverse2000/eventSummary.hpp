@@ -1,5 +1,6 @@
 #ifndef SFF_HYPOINVERSE2000_EVENTSUMMARY_HPP
 #define SFF_HYPOINVERSE2000_EVENTSUMMARY_HPP
+#include <vector>
 #include <memory>
 namespace SFF::HypoInverse2000
 {
