@@ -247,6 +247,92 @@ void EventSummaryLine::unpackString(const std::string &line)
     *this = result;
 }
 
+/// Packs the class into a string
+std::string EventSummaryLine::packString() const
+{
+    std::string result(164, ' ');
+    if (haveOriginTime())
+    {
+        auto originTime = getOriginTime();
+        setInteger(0, 4, originTime.getYear(), result);
+        setInteger(4, 6, originTime.getMonth(), result);
+        setInteger(6, 8, originTime.getDayOfMonth(), result);
+        setInteger(8, 10, originTime.getHour(), result);
+        setInteger(10, 12, originTime.getMinute(), result);
+        setInteger(12, 14, originTime.getSecond(), result);
+        setInteger(14, 16, originTime.getMicroSecond()/1000, result);
+    }
+    if (haveLatitude())
+    {
+        auto lat = getLatitude();
+        auto latWhole = static_cast<int> (lat);
+        setInteger(16, 18, latWhole, result, false);
+        if (lat < 0){result[18] = 'S';}
+        auto latFrac = (lat - latWhole)*60.;
+        setInteger(19, 23, static_cast<int> (std::round(latFrac*100)),
+                result, false);
+    }
+    if (haveLongitude())
+    {
+        auto lon = getLongitude();
+        if (lon > 180){lon = lon - 360;}
+        auto lonWhole = static_cast<int> (lon);
+        setInteger(23, 26, std::abs(lonWhole), result, false);
+        if (lonWhole > 0){result[26] = 'E';}
+        auto lonFrac = (std::abs(lon) - std::abs(lonWhole))*60.;
+        setInteger(27, 31,static_cast<int> (std::round(lonFrac*100)),
+                result, false);
+    }
+    if (haveDepth())
+    {
+        setInteger(31, 36, static_cast<int> (std::round(getDepth()*100)),
+                   result, false);
+    }
+    if (haveNumberOfWeightedResiduals())
+    {
+        setInteger(39, 42, getNumberOfWeightedResiduals(), result, false);
+    }
+    if (haveAzimuthalGap())
+    {
+        setInteger(42, 45, static_cast<int> (std::round(getAzimuthalGap())),
+                   result, false);
+    }
+    if (haveDistanceToClosestStation())
+    {
+        setInteger(45, 48,
+                   static_cast<int> (std::round(getDistanceToClosestStation())),
+                   result, false);
+    }
+    if (haveEventIdentifier())
+    {
+        setInteger(136, 146, getEventIdentifier(), result, false);
+    }
+    if (haveResidualTravelTimeRMS())
+    {
+        setInteger(48, 52,
+                   static_cast<int> (std::round(getResidualTravelTimeRMS()*100)),
+                   result, false);
+    }
+    if (haveNumberOfSWeightedResiduals())
+    {
+        setInteger(82, 85, getNumberOfSWeightedResiduals(), result, false);
+    }
+    if (haveNumberOfFirstMotions())
+    {
+        setInteger(93, 96, getNumberOfFirstMotions(), result, false);
+    }
+    if (havePreferredMagnitudeLabel())
+    {
+        result[146] = getPreferredMagnitudeLabel();
+    }
+    if (havePreferredMagnitude())
+    {
+        setInteger(147, 150,
+             static_cast<int> (std::round(getPreferredMagnitude()*100)),
+                result, false);
+    }
+    return result;
+}
 /// Origin time
 void EventSummaryLine::setOriginTime(const SFF::Utilities::Time &originTime) noexcept
 {

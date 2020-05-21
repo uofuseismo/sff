@@ -175,7 +175,7 @@ public:
      * @brief Sets the source-to-receiver azimuth in degrees.
      * @param[in] azimuth  The source to receiver azimuth in degrees.
      *                     This is positive east of north.
-     * @throws std::invalid_argument if this is not in the range [0,360).
+     * @throws std::invalid_argument if this is not in the range [0,360].
      */
     void setAzimuth(double azimuth);
     /*!

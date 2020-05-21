@@ -301,7 +301,7 @@ void StationArchiveLine::unpackString(const std::string &line)
         result.setTakeOffAngle(angle.second);
     }
     auto azimuth = unpackIntPair(91, 94, linePtr, lenos);
-    if (azimuth.first && azimuth.second >= 0 && azimuth.second < 360)
+    if (azimuth.first && azimuth.second >= 0 && azimuth.second <= 360)
     {
         result.setAzimuth(azimuth.second);
     }
@@ -366,14 +366,10 @@ std::string StationArchiveLine::packString() const noexcept
 {
     std::string result(113, ' ');
     // SNCL
-    if (haveStationName())
-    { setString(0, 5, getStationName(), result); }
-    if (haveNetworkName())
-    { setString(5, 7, getNetworkName(), result); }
-    if (haveChannelName())
-    { setString(9, 12, getChannelName(), result); }
-    if (haveLocationCode())
-    { setString(111, 113, getLocationCode(), result); }
+    if (haveStationName()){setString(0, 5, getStationName(), result);}
+    if (haveNetworkName()){setString(5, 7, getNetworkName(), result);}
+    if (haveChannelName()){setString(9, 12, getChannelName(), result);}
+    if (haveLocationCode()){setString(111, 113, getLocationCode(), result);}
     if (havePRemark())
     {
         auto remark = getPRemark();
@@ -388,14 +384,12 @@ std::string StationArchiveLine::packString() const noexcept
         { remark.push_back(' '); }
         setString(46, 48, remark, result);
     }
-    if (havePFirstMotion())
-    { result[15] = getPFirstMotion(); }
+    if (havePFirstMotion()){result[15] = getPFirstMotion();}
     // A little strange - but a 4 seems to be assigned to the P weight
     // when we have an S pick.  HypoInverse seems to hunt for this number
     // so may as well fill it.  Likewise, fill S with 0 which seems dangerous.
     int pWeightCode = 4;
-    if (havePWeightCode())
-    { pWeightCode = getPWeightCode(); }
+    if (havePWeightCode()){pWeightCode = getPWeightCode();}
     setInteger(16, 17, pWeightCode, result);
     int sWeightCode = 0;
     if (haveSWeightUsed())
@@ -957,7 +951,7 @@ bool StationArchiveLine::haveTakeOffAngle() const noexcept
 /// Azimuth angle
 void StationArchiveLine::setAzimuth(const double azimuth)
 {
-    if (azimuth < 0 || azimuth >= 3600)
+    if (azimuth < 0 || azimuth > 360)
     {
         throw std::invalid_argument("Takeoff angle must be in range [0,360)");
     }

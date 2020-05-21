@@ -67,6 +67,7 @@ public:
     /*!
      * @brief Sets the event information from a header line read from an
      *        archive file.
+     * @param[in] line   The event information line to unpack.
      */
     void unpackString(const std::string &line);
     /*!

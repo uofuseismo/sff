@@ -3,6 +3,7 @@
 #include <string>
 #include "sff/hypoinverse2000/eventSummaryLine.hpp"
 #include "sff/hypoinverse2000/stationArchiveLine.hpp"
+#include "sff/hypoinverse2000/eventSummary.hpp"
 #include "sff/utilities/time.hpp"
 #include <gtest/gtest.h>
 
@@ -44,6 +45,9 @@ TEST(Hypo2000, EventSummaryLine)
     EXPECT_EQ(summary.getNumberOfFirstMotions(), 4);
     EXPECT_EQ(summary.getEventIdentifier(),
               static_cast<uint64_t> (60363637));
+    auto lineOut = summary.packString();
+    std::cout << line << std::endl;
+    std::cout << lineOut << std::endl; 
 }
 
 TEST(Hypo2000, StationArchiveLine)
