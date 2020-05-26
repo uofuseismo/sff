@@ -2,7 +2,6 @@
 #define SFF_PYTHON_HYPOINVERSE2000_HPP
 #include <memory>
 #include <string>
-#include <pybind11/numpy.h>
 #include "sff/hypoinverse2000/stationArchiveLine.hpp"
 #include "time.hpp"
 

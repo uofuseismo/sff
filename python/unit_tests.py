@@ -112,6 +112,59 @@ def test_hypoinverse2000():
     assert sta.get_channel_name() == "EHZ", 'channel name failed'
     assert sta.get_location_code() == "02",  'location code failed'
 
+    assert sta.get_p_remark() == "IP", 'p remark failed';
+    assert sta.get_first_motion() == 'U', 'first motion failed'
+    assert sta.get_p_weight_code() ==  0, 'p weight code failed'
+    pick_time = sta.get_p_pick_time()
+    assert abs(pick_time.get_epoch() - 1584537625.96) < 1.e-2, 'p pick time failed'
+    assert abs(sta.get_p_residual() - -0.14) < 1.e-2, 'p residual failed'
+    assert abs(sta.get_p_weight_used() - 1.98) < 1.e-2, 'p weight failed'
+    assert sta.get_p_delay_time() == 0, 'p delay time failed'
+    assert abs(sta.get_epicentral_distance() - 21.8) < 1.e-1, 'epicentral distance failed'
+    assert abs(sta.get_takeoff_angle() - 110) < 1.e-1, 'take off angle failed'
+    assert abs(sta.get_p_importance() - 0.3) < 1.e-1, 'p importance failed'
+    assert abs(sta.get_duration_magnitude() - 2.27) <  1.e-2, 'duration mag failed'
+    assert not sta.have_amplitude_magnitude(), 'have amp mag failed'
+    assert sta.get_duration_magnitude_label() == 'D', 'dur mag label failed'
+    assert not sta.have_data_source_code(), 'have data source code failed'
+    assert sta.get_duration_magnitude_weight_code() == 0, 'dur mag weight code failed'
+    assert not sta.have_amplitude_magnitude_weight_code(), 'amp mag weight code failed'
+    assert not sta.have_amplitude(), 'have amplitude failed'
+    assert not sta.have_amplitude_units(), 'have amp units failed'
+    assert abs(sta.get_azimuth() - 85) < 1.e-1, 'azimuth failed'
+    assert not sta.have_period_of_amplitude_measurement(), 'have period failed'
+    assert abs(sta.get_coda_duration() - 84) < 1.e-1
+    assert sta.pack_string() == p_string, 'pack string failed'
+    sta.clear()
+
+    sta.unpack_string(s_string)
+    assert sta.get_network_name() == "UU", 'network name failed'
+    assert sta.get_station_name() == "NOQ", 'station name failed'
+    assert sta.get_channel_name() == "HHN", 'channel name failed'
+    assert sta.get_location_code() == "01",  'location code failed'
+    assert sta.get_s_remark() == "ES", 's remark failed'
+    assert not sta.have_first_motion(), 's not have first motion failed'
+    pick_time = sta.get_s_pick_time()
+    assert abs(pick_time.get_epoch() - 1584537626.89) < 1.e-1, 's pick time failed'
+    assert abs(sta.get_s_residual() - -0.15) < 1.e-2, 's residual time failed'
+    assert abs(sta.get_s_weight_used() - 0.24) < 1.e-2, 's weight used failed'
+    assert sta.get_s_delay_time() == 0, 's delay time failed'
+    assert abs(sta.get_epicentral_distance() - 13.4) < 1.e-1, 's epi distance failed'
+    assert abs(sta.get_takeoff_angle()- 121) < 1.e-1, 's takeoff failed'
+    assert sta.get_s_importance() ==  0, 's importance failed'
+    assert abs(sta.get_amplitude_magnitude() - 2.51) < 1.e-2, 's amp mag failed'
+    assert not sta.have_duration_magnitude(), 's have dur mag failed'
+    assert sta.get_amplitude_magnitude_label() ==  'L', 'amp mag label failed'
+    assert sta.get_data_source_code() == 'J', 'data source code failed'
+    assert sta.get_amplitude_magnitude_weight_code() == 0, 's amp mag weight code failed'
+    assert not sta.have_duration_magnitude_weight_code(), 's have dur mag weight code failed'
+    assert abs(sta.get_amplitude() - 14.24) < 1.e-2, 'amplitude failed'
+    assert sta.get_amplitude_units() == sta.AmplitudeUnits.peak_to_peak, 'amplitude units failed'
+    assert abs(sta.get_azimuth() - 199) < 1.e-1, 's az failed'
+    assert abs(sta.get_period_of_amplitude_measurement() - 0.14) < 1.e-2, 'period failed'
+    assert not sta.have_coda_duration(), 's have coda duration failed'
+    assert sta.pack_string() == s_string, 's pack string failed'
+
 if __name__ == "__main__":
     test_time()
     print("Passed time")
@@ -120,3 +173,4 @@ if __name__ == "__main__":
     test_silixa_segy()
     print("Passed Silixa SEGY")
     test_hypoinverse2000()
+    print("Passed hypoinverse")

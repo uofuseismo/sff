@@ -362,15 +362,15 @@ bool StationArchiveLine::haveSImportance() const noexcept
 // Magnitudes and miscellaneous
 void StationArchiveLine::setAmplitudeMagnitude(const double magnitude) noexcept
 {
-    mStation->setAmplitudeMagnitudeLabel(magnitude);
+    mStation->setAmplitudeMagnitude(magnitude);
 }
 double StationArchiveLine::getAmplitudeMagnitude() const
 {
-    return mStation->getAmplitudeMagnitudeLabel();
+    return mStation->getAmplitudeMagnitude();
 }
 bool StationArchiveLine::haveAmplitudeMagnitude() const noexcept
 {
-    return mStation->haveAmplitudeMagnitudeLabel();
+    return mStation->haveAmplitudeMagnitude();
 }
 
 void StationArchiveLine::setAmplitudeMagnitudeWeightCode(const int code)
@@ -414,15 +414,15 @@ bool StationArchiveLine::havePeriodOfAmplitudeMeasurement() const noexcept
 
 void StationArchiveLine::setDurationMagnitude(const double magnitude) noexcept
 {
-    mStation->setDurationMagnitudeLabel(magnitude);
+    mStation->setDurationMagnitude(magnitude);
 }
 double StationArchiveLine::getDurationMagnitude() const
 {
-    return mStation->getDurationMagnitudeLabel();
+    return mStation->getDurationMagnitude();
 }
 bool StationArchiveLine::haveDurationMagnitude() const noexcept
 {
-    return mStation->haveDurationMagnitudeLabel();
+    return mStation->haveDurationMagnitude();
 }
 
 void StationArchiveLine::setDurationMagnitudeWeightCode(const int code)
@@ -514,10 +514,16 @@ void PBSFF::HypoInverse2000::initialize(pybind11::module &m)
     sta.def(pybind11::init<> ());
     sta.doc() = "This is used for reading and writing HypoInverse2000 station archive lines.";
 
+    pybind11::enum_<SFF::HypoInverse2000::AmplitudeUnits> (sta, "AmplitudeUnits")
+        .value("peak_to_peak",   SFF::HypoInverse2000::AmplitudeUnits::PEAK_TO_PEAK, "Amplitude is measured peak-to-peak.")
+        .value("zero_to_peak",   SFF::HypoInverse2000::AmplitudeUnits::ZERO_TO_PEAK, "Amplitude is measured zero-to-peak.")
+        .value("digital_counts", SFF::HypoInverse2000::AmplitudeUnits::DIGITAL_COUNTS, "Amplitude is measured in digital counts.");
+
     sta.def("unpack_string", &StationArchiveLine::unpackString,
             "Unpacks a station archive line and populates members of this class.");
     sta.def("pack_string", &StationArchiveLine::packString,
             "Converts the members of this class to a string to write to an archive file.");
+    sta.def("clear", &StationArchiveLine::clear, "Resets the class.");
 
     sta.def("set_network_name", &StationArchiveLine::setNetworkName,
             "Sets the network name.");
@@ -667,7 +673,70 @@ void PBSFF::HypoInverse2000::initialize(pybind11::module &m)
     sta.def("have_amplitude", &StationArchiveLine::haveAmplitude,
             "True indicates that the amplitude was set.");
 
-    sta.def("set_amplitude_units", &StationArchiveLine::getAmplitudeUnits,
+    sta.def("set_amplitude_magnitude", &StationArchiveLine::setAmplitudeMagnitude,
+            "Sets the amplitude magnitude, e.g., Richter magnitude.");
+    sta.def("get_amplitude_magnitude", &StationArchiveLine::getAmplitudeMagnitude,
+            "Gets the amplitude magnitude.");
+    sta.def("have_amplitude_magnitude", &StationArchiveLine::haveAmplitudeMagnitude,
+            "True indicates that the amplitude magnitude was set.");
+   
+    sta.def("set_amplitude_magnitude_weight_code", &StationArchiveLine::setAmplitudeMagnitudeWeightCode,
+            "Sets the amplitude magnitude weight code.");
+    sta.def("get_amplitude_magnitude_weight_code", &StationArchiveLine::getAmplitudeMagnitudeWeightCode,
+            "Gets the amplitude magnitude weight code.");
+    sta.def("have_amplitude_magnitude_weight_code", &StationArchiveLine::haveAmplitudeMagnitudeWeightCode,
+            "True indicates that the amplitude magnitude weight code was set.");
+
+    sta.def("set_amplitude_magnitude_label", &StationArchiveLine::setAmplitudeMagnitudeLabel,
+            "Sets the amplitude magnitude label, e.g., 'L' could denote local.");
+    sta.def("get_amplitude_magnitude_label", &StationArchiveLine::getAmplitudeMagnitudeLabel,
+            "Gets the amplitude magnitude label.");
+    sta.def("have_amplitude_magnitude_label", &StationArchiveLine::haveAmplitudeMagnitudeLabel,
+            "True indicates that the amplitude magnitude label was set.");
+
+    sta.def("set_period_of_amplitude_measurement", &StationArchiveLine::setPeriodOfAmplitudeMeasurement,
+            "Sets the period, in seconds, at which the amplitude measurement was made.  There might be a bug in operations because this typically looks like a frequency.");
+    sta.def("get_period_of_amplitude_measurement", &StationArchiveLine::getPeriodOfAmplitudeMeasurement,
+            "Gets the period, in seconds, at which the amplitude measurement was made.");
+    sta.def("have_period_of_amplitude_measurement", &StationArchiveLine::havePeriodOfAmplitudeMeasurement,
+            "True inddicates that the period of the amplitude measurement was set.");
+   
+    sta.def("set_duration_magnitude", &StationArchiveLine::setDurationMagnitude,
+            "Sets the duration magnitude, e.g., coda magnitude.");
+    sta.def("get_duration_magnitude", &StationArchiveLine::getDurationMagnitude,
+            "Gets the duration magnitude.");
+    sta.def("have_duration_magnitude", &StationArchiveLine::haveDurationMagnitude,
+            "True indicates that the duration magnitude was set.");
+
+    sta.def("set_duration_magnitude_weight_code", &StationArchiveLine::setDurationMagnitudeWeightCode,
+            "Sets the duration magnitude weight code.");
+    sta.def("get_duration_magnitude_weight_code", &StationArchiveLine::getDurationMagnitudeWeightCode,
+            "Gets the duration magnitude weight code.");
+    sta.def("have_duration_magnitude_weight_code", &StationArchiveLine::haveDurationMagnitudeWeightCode,
+            "True indicates that the duration magnitude weight code was set.");
+
+    sta.def("set_duration_magnitude_label", &StationArchiveLine::setDurationMagnitudeLabel,
+            "Sets the duration magnitude label, e.g., 'D' could denote a duration magnitude.");
+    sta.def("get_duration_magnitude_label", &StationArchiveLine::getDurationMagnitudeLabel,
+            "Gets the duration magnitude label.");
+    sta.def("have_duration_magnitude_label", &StationArchiveLine::haveDurationMagnitudeLabel,
+            "True indicates that the duration magnitude label was set.");
+
+    sta.def("set_coda_duration", &StationArchiveLine::setCodaDuration,
+            "Sets the coda duration in seconds.");
+    sta.def("get_coda_duration", &StationArchiveLine::getCodaDuration,
+            "Gets the coda duration in seconds.");
+    sta.def("have_coda_duration", &StationArchiveLine::haveCodaDuration,
+            "True indicates that the coda duration is set.");
+   
+    sta.def("set_data_source_code", &StationArchiveLine::setDataSourceCode,
+            "Sets the data source from which the pick was generated.  For example 'J', could denote Jiggle."); 
+    sta.def("get_data_source_code", &StationArchiveLine::getDataSourceCode,
+            "Gets the data source from which the pick was generated.");
+    sta.def("have_data_source_code", &StationArchiveLine::haveDataSourceCode,
+            "True indicates that the data source code was set.");
+
+    sta.def("set_amplitude_units", &StationArchiveLine::setAmplitudeUnits,
             "Sets the amplitude units.");
     sta.def("get_amplitude_units", &StationArchiveLine::getAmplitudeUnits,
             "Gets the amplitude units.");
