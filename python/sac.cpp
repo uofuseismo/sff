@@ -72,9 +72,8 @@ double SAC::getSamplingPeriod() const
 }
 
 /// Sets the waveform
-void SAC::setWaveform(
-    const pybind11::array_t<double, pybind11::array::c_style |
-                            pybind11::array::forcecast> &x)
+void SAC::setWaveform(pybind11::array_t<double, pybind11::array::c_style |
+                                                pybind11::array::forcecast> &x)
 {
     pybind11::buffer_info xbuf = x.request();
     auto len = static_cast<int> (xbuf.size);

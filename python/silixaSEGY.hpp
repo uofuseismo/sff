@@ -28,7 +28,7 @@ public:
     /// Destructor
     ~Trace();
     /// Sets/gets the waveform
-    void setWaveform(const pybind11::array_t<double, pybind11::array::c_style | pybind11::array::forcecast> &x);
+    void setWaveform(pybind11::array_t<double, pybind11::array::c_style | pybind11::array::forcecast> &x);
     pybind11::array_t<double> getWaveform() const;
     /// Sets/gets the sampling period
     void setSamplingPeriod(double samplingPeriod);

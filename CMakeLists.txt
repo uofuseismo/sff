@@ -144,11 +144,11 @@ if (WRAP_PYTHON)
                python/time.cpp
                python/sac.cpp
                python/silixaSEGY.cpp
+               python/hypoinverse2000.cpp
                #python/multiChannelMatchedFilterParameters.cpp
                #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)
-   target_link_libraries(pysff PRIVATE
-                         pybind11::module sff OpenMP::OpenMP_CXX)
+   target_link_libraries(pysff PRIVATE pybind11::module sff)# OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
    set_property(TARGET pysff PROPERTY PREFIX "")
    file(COPY ${CMAKE_SOURCE_DIR}/python/unit_tests.py DESTINATION .)

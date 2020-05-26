@@ -52,9 +52,8 @@ Trace& Trace::operator=(const SFF::SEGY::Silixa::Trace &trace)
 Trace::~Trace() = default;
 
 /// Sets the waveform
-void Trace::setWaveform(
-    const pybind11::array_t<double, pybind11::array::c_style |
-                            pybind11::array::forcecast> &x) 
+void Trace::setWaveform(pybind11::array_t<double, pybind11::array::c_style |
+                                          pybind11::array::forcecast> &x)
 {
     pybind11::buffer_info xbuf = x.request();
     auto len = static_cast<int> (xbuf.size);
