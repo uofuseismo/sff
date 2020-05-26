@@ -246,16 +246,16 @@ public:
      * @brief Sets the P first motion, e.g., U for up and D for down.
      * @param[in] firstMotion  Sets the P first motion.
      */
-    void setPFirstMotion(char firstMotion) noexcept;
+    void setFirstMotion(char firstMotion) noexcept;
     /*!
      * @return The P first motion.
      * @throws std::runtime_error if this was not set.
      */
-    [[nodiscard]] char getPFirstMotion() const;
+    [[nodiscard]] char getFirstMotion() const;
     /*!
      * @return True indicates that the P first motion was set.
      */
-    [[nodiscard]] bool havePFirstMotion() const noexcept;
+    [[nodiscard]] bool haveFirstMotion() const noexcept;
 
     /*!
      * @brief Sets the P travel time residual.

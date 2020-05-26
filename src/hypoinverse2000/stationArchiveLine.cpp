@@ -195,7 +195,7 @@ void StationArchiveLine::unpackString(const std::string &line)
     auto pFirstMotion = unpackCharPair(15, linePtr, lenos);
     if (pFirstMotion.first && pFirstMotion.second != ' ')
     {
-        result.setPFirstMotion(pFirstMotion.second);
+        result.setFirstMotion(pFirstMotion.second);
     }
 
     // P and S pick time
@@ -384,7 +384,7 @@ std::string StationArchiveLine::packString() const noexcept
         { remark.push_back(' '); }
         setString(46, 48, remark, result);
     }
-    if (havePFirstMotion()){result[15] = getPFirstMotion();}
+    if (haveFirstMotion()){result[15] = getFirstMotion();}
     // A little strange - but a 4 seems to be assigned to the P weight
     // when we have an S pick.  HypoInverse seems to hunt for this number
     // so may as well fill it.  Likewise, fill S with 0 which seems dangerous.
@@ -628,22 +628,22 @@ bool StationArchiveLine::haveLocationCode() const noexcept
 }
 
 /// P First motion
-void StationArchiveLine::setPFirstMotion(const char firstMotion) noexcept
+void StationArchiveLine::setFirstMotion(const char firstMotion) noexcept
 {
     pImpl->mPFirstMotion = firstMotion;
     pImpl->mHavePFirstMotion = true;
 }
 
-char StationArchiveLine::getPFirstMotion() const
+char StationArchiveLine::getFirstMotion() const
 {
-    if (!havePFirstMotion())
+    if (!haveFirstMotion())
     {
         throw std::runtime_error("P first motion not set");
     }
     return pImpl->mPFirstMotion;
 }
 
-bool StationArchiveLine::havePFirstMotion() const noexcept
+bool StationArchiveLine::haveFirstMotion() const noexcept
 {
     return pImpl->mHavePFirstMotion;
 }

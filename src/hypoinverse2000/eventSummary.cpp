@@ -46,7 +46,7 @@ int getNumberOfPolarities(const std::vector<StationArchiveLine> &picks)
     int nfm = 0;
     for (const auto &pick : picks)
     {
-        if (pick.havePFirstMotion()){nfm = nfm + 1;}
+        if (pick.haveFirstMotion()){nfm = nfm + 1;}
     }
     return nfm;
 }

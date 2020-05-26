@@ -102,7 +102,21 @@ def test_silixa_segy():
     assert trace.get_sampling_rate() == 2000, 'sampling rate is wrong'
     assert len(ts) == 30000, 'number of samples is wrong'
 
+def test_hypoinverse2000():
+    sta = pysff.HypoInverse2000.StationArchiveLine()
+    p_string = "RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300     D 02"
+    s_string = "NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J L01"
+    sta.unpack_string(p_string)
+    assert sta.get_network_name() == "UU", 'network name failed'
+    assert sta.get_station_name() == "RBU", 'station name failed'
+    assert sta.get_channel_name() == "EHZ", 'channel name failed'
+    assert sta.get_location_code() == "02",  'location code failed'
+
 if __name__ == "__main__":
     test_time()
+    print("Passed time")
     test_sac()
+    print("Passed SAC")
     test_silixa_segy()
+    print("Passed Silixa SEGY")
+    test_hypoinverse2000()

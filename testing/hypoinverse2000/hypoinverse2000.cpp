@@ -63,7 +63,7 @@ TEST(Hypo2000, StationArchiveLine)
     EXPECT_EQ(pPick.getChannelName(), "EHZ");
     EXPECT_EQ(pPick.getLocationCode(), "02");
     EXPECT_EQ(pPick.getPRemark(), "IP");
-    EXPECT_EQ(pPick.getPFirstMotion(), 'U');
+    EXPECT_EQ(pPick.getFirstMotion(), 'U');
     EXPECT_EQ(pPick.getPWeightCode(), 0);
     EXPECT_NO_THROW(pickTime = pPick.getPPickTime());
     std::stringstream pstream;
@@ -98,7 +98,7 @@ TEST(Hypo2000, StationArchiveLine)
     EXPECT_EQ(sPick.getChannelName(), "HHN");
     EXPECT_EQ(sPick.getLocationCode(), "01");
     EXPECT_EQ(sPick.getSRemark(), "ES");
-    EXPECT_FALSE(sPick.havePFirstMotion());
+    EXPECT_FALSE(sPick.haveFirstMotion());
     EXPECT_EQ(sPick.getSWeightCode(), 2);
     pickTime = sPick.getSPickTime();
     std::stringstream sstream;

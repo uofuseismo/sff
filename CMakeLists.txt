@@ -145,8 +145,6 @@ if (WRAP_PYTHON)
                python/sac.cpp
                python/silixaSEGY.cpp
                python/hypoinverse2000.cpp
-               #python/multiChannelMatchedFilterParameters.cpp
-               #python/multiChannelMatchedFilter.cpp
                python/pysff.cpp)
    target_link_libraries(pysff PRIVATE pybind11::module sff)# OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
