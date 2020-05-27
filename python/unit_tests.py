@@ -189,6 +189,7 @@ def test_hypoinverse2000():
     print(line_out)
     print(ev_line)
 
+    event = pysff.HypoInverse2000.EventSummary()
 
 if __name__ == "__main__":
     test_time()

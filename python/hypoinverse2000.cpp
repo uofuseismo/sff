@@ -793,6 +793,15 @@ int EventSummary::getNumberOfPicks() const noexcept
 {
     return mEvent->getNumberOfPicks();
 }
+std::string EventSummary::packString() const
+{
+    return mEvent->packString();
+}
+EventSummaryLine EventSummary::getEventInformation() const
+{
+    EventSummaryLine result(mEvent->getEventInformation());
+    return result;
+}
 
 ///--------------------------------------------------------------------------///
 ///                               Initialize                                 ///
@@ -1132,6 +1141,8 @@ void PBSFF::HypoInverse2000::initialize(pybind11::module &m)
     ev.def(pybind11::init<> ());
     ev.doc() = "This is used for reading and writing HypoInverse2000 event summaries.  An event summary is comprised of an event summary line and its corresponding picks.";
 
+    ev.def("pack_string", &EventSummary::packString, "Converts the class to an output string.");
+    ev.def("get_event_information", &EventSummary::getEventInformation, "Gets the event summary line.");
     ev.def("clear", &EventSummary::clear, "Resets the class and releases memory.");
     ev.def("clear_picks", &EventSummary::clearPicks, "Removes the picks from the event.");
     ev.def("add_p_pick", &EventSummary::addPPick, "Adds a P pick to the event.");

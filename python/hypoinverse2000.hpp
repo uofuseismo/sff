@@ -260,6 +260,9 @@ public:
     /// Destructors
     ~EventSummary();
     void clear() noexcept;
+    void unpackString(const std::vector<std::string> &lines);
+    [[nodiscard]] std::string packString() const;
+    [[nodiscard]] EventSummaryLine getEventInformation() const;
 
     SFF::HypoInverse2000::EventSummary getNativeClass() const;
     void clearPicks() noexcept;
