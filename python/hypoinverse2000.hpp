@@ -188,6 +188,61 @@ public:
     /// Destructors
     ~EventSummaryLine();
     void clear() noexcept;
+    /// Methods
+    void unpackString(const std::string &line);
+    [[nodiscard]] std::string packString() const;
+
+    void setLatitude(double latitude);
+    [[nodiscard]] double getLatitude() const;
+    [[nodiscard]] bool haveLatitude() const noexcept;
+
+    void setLongitude(double longitude);
+    [[nodiscard]] double getLongitude() const;
+    [[nodiscard]] bool haveLongitude() const noexcept;
+
+    void setDepth(double depth) noexcept;
+    [[nodiscard]] double getDepth() const;
+    [[nodiscard]] bool haveDepth() const noexcept;
+
+    void setOriginTime(const PBSFF::Time &originTime) noexcept;
+    [[nodiscard]] PBSFF::Time getOriginTime() const;
+    [[nodiscard]] bool haveOriginTime() const noexcept;
+
+    void setPreferredMagnitudeLabel(char label);
+    [[nodiscard]] char getPreferredMagnitudeLabel() const;
+    [[nodiscard]] bool havePreferredMagnitudeLabel() const noexcept;
+
+    void setPreferredMagnitude(double magnitude) noexcept;
+    [[nodiscard]] double getPreferredMagnitude() const;
+    [[nodiscard]] bool havePreferredMagnitude() const noexcept;
+
+    void setEventIdentifier(uint64_t evid) noexcept;
+    [[nodiscard]] uint64_t getEventIdentifier() const;
+    [[nodiscard]] bool haveEventIdentifier() const noexcept;
+
+    void setNumberOfFirstMotions(int nFirstMotions);
+    [[nodiscard]] int getNumberOfFirstMotions() const;
+    [[nodiscard]] bool haveNumberOfFirstMotions() const noexcept;
+
+    void setDistanceToClosestStation(double distance);
+    [[nodiscard]] double getDistanceToClosestStation() const;
+    [[nodiscard]] bool haveDistanceToClosestStation() const noexcept;
+
+    void setAzimuthalGap(double gap);
+    [[nodiscard]] double getAzimuthalGap() const;
+    [[nodiscard]] bool haveAzimuthalGap() const noexcept;
+
+    void setNumberOfWeightedResiduals(int nResiduals);
+    [[nodiscard]] int getNumberOfWeightedResiduals() const;
+    [[nodiscard]] bool haveNumberOfWeightedResiduals() const noexcept;
+
+    void setNumberOfSWeightedResiduals(int nResiduals);
+    [[nodiscard]] int getNumberOfSWeightedResiduals() const;
+    [[nodiscard]] bool haveNumberOfSWeightedResiduals() const noexcept;
+
+    void setResidualTravelTimeRMS(double rms);
+    [[nodiscard]] double getResidualTravelTimeRMS() const;
+    [[nodiscard]] bool haveResidualTravelTimeRMS() const noexcept;
 private:
     std::unique_ptr<SFF::HypoInverse2000::EventSummaryLine> mEventLine;
 };

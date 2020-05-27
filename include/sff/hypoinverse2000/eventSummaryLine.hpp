@@ -74,7 +74,7 @@ public:
      * @brief Packs the information contained in this class into a line to 
      *        write to the archive file.
      */
-    std::string packString() const;
+    [[nodiscard]] std::string packString() const;
 
     /*! @brief Hypocenter and Origin Time
      * @{

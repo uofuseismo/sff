@@ -165,6 +165,31 @@ def test_hypoinverse2000():
     assert not sta.have_coda_duration(), 's have coda duration failed'
     assert sta.pack_string() == s_string, 's pack string failed'
 
+    ev_line = "202003181320217640 4594112  399  771    24 83  4  1633184  88154 5  44298     33    1  44  87  4     100    47       D 24 L237 20         60363637L237  20        5FUUP1"
+    evl =  pysff.HypoInverse2000.EventSummaryLine()
+    evl.unpack_string(ev_line)
+    ot = evl.get_origin_time()
+    assert abs(ot.get_epoch() - 1584537621.76) < 1.e-2, 'ot failed'
+    assert abs(evl.get_latitude() - 40.7657) < 1.e-4, 'ev lat failed'
+    lon = evl.get_longitude();
+    if (lon > 180):
+        lon = lon - 360
+    assert abs(lon - -112.066) < 1.e-3, 'ev lon failed'
+    assert abs(evl.get_depth() - 7.71 ) < 1.e-2
+    assert evl.get_number_of_weighted_residuals() ==  24, 'nweighted resid failed'
+    assert abs(evl.get_distance_to_closest_station() - 4) < 1.e-1, 'dmin failed'
+    assert abs(evl.get_azimuthal_gap() - 83) < 1.e-1, 'azgap failed'
+    assert abs(evl.get_residual_traveltime_rms() - 0.16) < 1.e-2, 'rms failed'
+    assert abs(evl.get_preferred_magnitude() - 2.37) < 1.e-2, 'prefmag failed'
+    assert evl.get_preferred_magnitude_label() == 'L', 'label failed'
+    assert evl.get_number_of_s_weighted_residuals() == 1, 'nweighted s failed'
+    assert evl.get_number_of_first_motions() == 4, 'nfm failed'
+    assert evl.get_event_identifier() == 60363637, 'evid failed'
+    line_out = evl.pack_string();
+    print(line_out)
+    print(ev_line)
+
+
 if __name__ == "__main__":
     test_time()
     print("Passed time")
