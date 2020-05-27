@@ -260,6 +260,12 @@ public:
     /// Destructors
     ~EventSummary();
     void clear() noexcept;
+
+    SFF::HypoInverse2000::EventSummary getNativeClass() const;
+    void clearPicks() noexcept;
+    void addPPick(const PBSFF::HypoInverse2000::StationArchiveLine &pPick);
+    void addSPick(const PBSFF::HypoInverse2000::StationArchiveLine &sPick);
+    [[nodiscard]] int getNumberOfPicks() const noexcept;
 private:
     std::unique_ptr<SFF::HypoInverse2000::EventSummary> mEvent;
 };

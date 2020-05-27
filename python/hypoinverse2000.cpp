@@ -524,6 +524,12 @@ EventSummaryLine::EventSummaryLine(
 {
     *this = summary;
 }
+SFF::HypoInverse2000::EventSummaryLine
+EventSummaryLine::getNativeClass() const
+{
+    SFF::HypoInverse2000::EventSummaryLine archive(*mEventLine);
+    return archive;
+}
 /// Operators
 EventSummaryLine& EventSummaryLine::operator=(const EventSummaryLine &summary)
 {
@@ -727,7 +733,67 @@ bool EventSummaryLine::haveResidualTravelTimeRMS() const noexcept
 {
     return mEventLine->haveResidualTravelTimeRMS();
 }
-/// 
+///--------------------------------------------------------------------------///
+///                            Create an Event                               ///
+///--------------------------------------------------------------------------///
+EventSummary::EventSummary() :
+    mEvent(std::make_unique<SFF::HypoInverse2000::EventSummary> ())
+{
+}
+EventSummary::EventSummary(const EventSummary &summary)
+{
+    *this = summary;
+}
+EventSummary::EventSummary(const SFF::HypoInverse2000::EventSummary &summary)
+{
+    *this = summary;
+}
+// Operators
+EventSummary& EventSummary::operator=(const EventSummary &summary)
+{
+    if (&summary == this){return *this;}
+    mEvent = std::make_unique<SFF::HypoInverse2000::EventSummary>
+             (*summary.mEvent);
+    return *this;
+}
+EventSummary&
+EventSummary::operator=(const SFF::HypoInverse2000::EventSummary &summary)
+{
+    mEvent = std::make_unique<SFF::HypoInverse2000::EventSummary> (summary);
+    return *this;
+}
+/// Destructors
+EventSummary::~EventSummary() = default;
+void EventSummary::clear() noexcept
+{
+    mEvent->clear();
+}
+
+SFF::HypoInverse2000::EventSummary EventSummary::getNativeClass() const
+{
+    SFF::HypoInverse2000::EventSummary result(*mEvent);
+    return result;
+}
+
+void EventSummary::clearPicks() noexcept
+{
+    mEvent->clearPicks();
+}
+void EventSummary::addPPick(
+    const PBSFF::HypoInverse2000::StationArchiveLine &pPick)
+{
+    mEvent->addPPick(pPick.getNativeClass());
+}
+void EventSummary::addSPick(
+    const PBSFF::HypoInverse2000::StationArchiveLine &sPick)
+{
+    mEvent->addSPick(sPick.getNativeClass());
+}
+int EventSummary::getNumberOfPicks() const noexcept
+{
+    return mEvent->getNumberOfPicks();
+}
+
 ///--------------------------------------------------------------------------///
 ///                               Initialize                                 ///
 ///--------------------------------------------------------------------------///
@@ -1061,5 +1127,13 @@ void PBSFF::HypoInverse2000::initialize(pybind11::module &m)
             "Gets the traveltime RMS residual in seconds.");
     evl.def("have_residual_traveltime_rms", &EventSummaryLine::haveResidualTravelTimeRMS,
             "True indicates that the RMS residual is set.");
-    
+    //------------------------------------------------------------------------//
+    pybind11::class_<PBSFF::HypoInverse2000::EventSummary> ev(m, "EventSummary");
+    ev.def(pybind11::init<> ());
+    ev.doc() = "This is used for reading and writing HypoInverse2000 event summaries.  An event summary is comprised of an event summary line and its corresponding picks.";
+
+    ev.def("clear", &EventSummary::clear, "Resets the class and releases memory.");
+    ev.def("clear_picks", &EventSummary::clearPicks, "Removes the picks from the event.");
+    ev.def("add_p_pick", &EventSummary::addPPick, "Adds a P pick to the event.");
+    ev.def("add_s_pick", &EventSummary::addSPick, "Adds an S Pick to the event.");
 }
