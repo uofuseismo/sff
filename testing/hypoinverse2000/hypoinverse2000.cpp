@@ -53,7 +53,8 @@ TEST(Hypo2000, EventSummaryLine)
 TEST(Hypo2000, StationArchiveLine)
 {
     std::string pPickString("RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300     D 02");
-    std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J L01");
+    //std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J L01");
+    std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2  -8   1424 0 24       0 1341210  14     199   251       0J L01");
     
     SFF::Utilities::Time pickTime;
     StationArchiveLine pPick;  
@@ -104,7 +105,7 @@ TEST(Hypo2000, StationArchiveLine)
     std::stringstream sstream;
     sstream << pickTime;
     EXPECT_EQ(sstream.str(), std::string("2020-03-18T13:20:26.890000"));
-    EXPECT_NEAR(sPick.getSResidual(), -0.15, 1.e-2);
+    EXPECT_NEAR(sPick.getSResidual(), -0.08, 1.e-2); //-0.15, 1.e-2);
     EXPECT_NEAR(sPick.getSWeightUsed(), 0.24, 1.e-2);
     EXPECT_EQ(sPick.getSDelayTime(), 0);
     EXPECT_NEAR(sPick.getEpicentralDistance(), 13.4, 1.e-1);

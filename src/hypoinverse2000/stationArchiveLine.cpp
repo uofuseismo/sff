@@ -219,9 +219,23 @@ void StationArchiveLine::unpackString(const std::string &line)
     if (year.first && month.first && dayOfMonth.first &&
         hour.first && minute.first && pSecond.first && pMicroSecond.first)
     {
-        pickTime.setSecond(pSecond.second);
+        // Sometimes arrivals have like 70 seconds which breaks things.
+        int seconds = pSecond.second;
+        int extraSeconds = (seconds/60)*60;
+        seconds = seconds%60;
+#ifndef DNDEBUG
+        assert(extraSeconds + seconds == pSecond.second); 
+#endif
+        while (seconds > 60)
+        {
+            extraSeconds = extraSeconds + 60;
+            seconds = seconds - 60;
+        }
+
+        pickTime.setSecond(seconds); //pSecond.second);
         pMicroSecond.second = pMicroSecond.second*10000;
         pickTime.setMicroSecond(pMicroSecond.second);
+        pickTime = pickTime + extraSeconds;
         result.setPPickTime(pickTime);
     }
     auto sSecond = unpackIntPair(41, 44, linePtr, lenos);
@@ -229,9 +243,16 @@ void StationArchiveLine::unpackString(const std::string &line)
     if (year.first && month.first && dayOfMonth.first &&
         hour.first && minute.first && sSecond.first && sMicroSecond.first)
     {
-        pickTime.setSecond(sSecond.second);
+        int seconds = sSecond.second;
+        int extraSeconds = (seconds/60)*60;
+        seconds = seconds%60;
+#ifndef DNDEBUG
+        assert(extraSeconds + seconds == sSecond.second);
+#endif
+        pickTime.setSecond(seconds); //sSecond.second);
         sMicroSecond.second = sMicroSecond.second*10000;
         pickTime.setMicroSecond(sMicroSecond.second);
+        pickTime = pickTime + extraSeconds;
         result.setSPickTime(pickTime);
     }
     // Weight code (I think UUSS or Jiggle has a bug.  These values are assigned
@@ -392,15 +413,28 @@ std::string StationArchiveLine::packString() const noexcept
     if (havePWeightCode()){pWeightCode = getPWeightCode();}
     setInteger(16, 17, pWeightCode, result);
     int sWeightCode = 0;
-    if (haveSWeightUsed())
-    { sWeightCode = getSWeightCode(); }
+    if (haveSWeightCode()){sWeightCode = getSWeightCode();}
     setInteger(49, 50, sWeightCode, result);
     if (havePPickTime() || haveSPickTime())
     {
+        // Sometimes both P and S picks are set.  Typically one of the picks
+        // is filled with zeros.
         if (havePPickTime() && haveSPickTime())
         {
-            std::cerr << "Both P and S pick defined - output may be buggy"
-                      << std::endl;
+            auto p = getPPickTime();
+            auto s = getSPickTime();
+            if (p.getYear() != s.getYear() ||
+                p.getJulianDay() != s.getJulianDay() ||
+                p.getHour() != s.getHour() ||
+                p.getMinute() != s.getMinute())
+            {
+                if ( (p.getSecond() != 0 && p.getMicroSecond() != 0) &&
+                     (s.getSecond() != 0 && s.getMicroSecond() != 0) )
+                {
+                    std::cerr << "P and S pick defined - output may be buggy"
+                              << std::endl;
+                }
+            }
         }
         SFF::Utilities::Time pickTime;
         if (havePPickTime())
@@ -423,6 +457,7 @@ std::string StationArchiveLine::packString() const noexcept
         }
         if (haveSPickTime())
         {
+            if (havePPickTime()){pickTime = getSPickTime();}
             setInteger(42, 44, pickTime.getSecond(), result, false);
             setInteger(44, 46, pickTime.getMicroSecond() / 1000, result);
         }

@@ -105,11 +105,35 @@ double unpackDouble(const int i1, const int i2,
                     const int maxLen)
 {
     double result = std::numeric_limits<double>::max();
+    std::string swork;
+    swork.reserve(i2-i1);
+    for (int i=i1; i<std::min(maxLen, i2); ++i)
+    {
+        if (!isblank(stringPtr[i])){swork.push_back(stringPtr[i]);}
+    }
+    if (swork.empty()){return std::numeric_limits<double>::max();} 
+    try 
+    {
+        double temp = std::stod(swork);
+        double xden = std::pow(10.0, -(i2 - i1 - whole));
+        result = xden*temp;
+    }
+    catch (const std::exception &e)
+    {
+#ifndef DNDEBUG
+        std::cout << "Failed to unpack: " << swork << std::endl; 
+#endif
+        return std::numeric_limits<double>::max();
+    }
+    return result;
+/*  
+    double result = std::numeric_limits<double>::max();
     // Copy whole
     std::string snum;
     snum.reserve(10);
     auto j1 = i1;
     auto j2 = i1 + whole;
+    double ipos = 1;
     for (int j=j1; j<std::min(j2, maxLen); ++j)
     {
         if (!isblank(stringPtr[j])){snum.push_back(stringPtr[j]);}
@@ -120,13 +144,24 @@ double unpackDouble(const int i1, const int i2,
     j2 = i2;
     for (int j=j1; j<std::min(j2, maxLen); ++j)
     {
-        if (!isblank(stringPtr[j])){snum.push_back(stringPtr[j]);}
+        //if (!isblank(stringPtr[j])){snum.push_back(stringPtr[j]);}
+        if (!isblank(stringPtr[j]))
+        {
+            if (stringPtr[j] == '-')
+            {
+                ipos =-1;
+            }
+            else
+            {
+                snum.push_back(stringPtr[j]);
+            }
+        }
     }
     if (!snum.empty())
     {
         try
         {
-            result = std::stod(snum);
+            result = ipos*std::stod(snum);
         }
         catch (const std::exception &e)
         {
@@ -134,6 +169,7 @@ double unpackDouble(const int i1, const int i2,
         }
     }
     return result;
+*/
 }
 
 std::pair<bool, double> unpackDoublePair(const int i1, const int i2,
