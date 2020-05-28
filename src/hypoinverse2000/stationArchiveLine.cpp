@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #ifndef DNDEBUG
+#include <cassert>
 #endif
 #include "sff/hypoinverse2000/stationArchiveLine.hpp"
 #include "sff/utilities/time.hpp"
