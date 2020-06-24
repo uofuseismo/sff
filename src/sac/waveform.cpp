@@ -187,7 +187,7 @@ void Waveform::read(const std::string &fileName)
     union
     {
         char c4[4];
-        int npts;
+        int npts = 0;
     };
     std::memcpy(c4, &cdat[316], 4*sizeof(char));
     size_t nbytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
@@ -238,7 +238,7 @@ void Waveform::read(const std::string &fileName)
         union
         {
             char crev[4];
-            float f4;
+            float f4 = 0;
         };
         #pragma omp simd
         for (auto i=0; i<npts; i++)
@@ -306,7 +306,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
         union
         {
             char c4[4];
-            float f4; 
+            float f4 = 0;
         };
         std::vector<char> cdata(nbytes); 
         auto mData = pImpl->mData;
