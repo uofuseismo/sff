@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <array>
@@ -35,12 +36,14 @@ TraceGroup::TraceGroup() :
 }
 
 /// Copy c'tor
+[[maybe_unused]]
 TraceGroup::TraceGroup(const TraceGroup &group)
 {
     *this = group;
 }
 
 /// Move c'tor
+[[maybe_unused]]
 TraceGroup::TraceGroup(TraceGroup &&group) noexcept
 {
     *this = std::move(group);
@@ -74,6 +77,7 @@ void TraceGroup::clear() noexcept
 }
 
 /// Clears the traces
+[[maybe_unused]]
 void TraceGroup::clearTraces() noexcept
 {
     pImpl->mBinaryFileHeader.setNumberOfTraces(0);
@@ -144,11 +148,11 @@ void TraceGroup::read(const std::string &fileName)
         pImpl->mTraces.resize(nTraces);
         for (int i=0; i<nTraces; ++i)
         {
-            int offset = 0*traceLen*i;
+            //int offset = 0*traceLen*i;
             segyfl.read(cdata.data(), traceLen);
             try
             {
-                pImpl->mTraces[i].set(traceLen, cdata.data() + offset);
+                pImpl->mTraces[i].set(traceLen, cdata.data());
             }
             catch (const std::exception &e)
             {

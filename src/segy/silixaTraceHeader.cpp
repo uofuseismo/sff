@@ -53,7 +53,7 @@ public:
         packShort(mTimeBasisCode,            mHeader.data()+168, mSwapBytes);
     }
 //private:
-    std::array<char, 240> mHeader;
+    std::array<char, 240> mHeader{};
     SFF::Utilities::Time mStartTime;
 
     int mTraceNumber = 0;
@@ -73,7 +73,7 @@ public:
     int16_t mCoordinateScalar = 1; 
     int16_t mCorrelated = 2;
     const int16_t mTimeBasisCode = 4; // UTC
-    const bool mSwapBytes = testByteOrder() == LITTLE_ENDIAN ? true : false;
+    const bool mSwapBytes = testByteOrder() == LITTLE_ENDIAN;
 };
 
 /// Constructor
@@ -89,6 +89,7 @@ TraceHeader::TraceHeader(const TraceHeader &header)
 }
 
 /// Move c'tor
+[[maybe_unused]]
 TraceHeader::TraceHeader(TraceHeader &&header) noexcept
 {
     *this = std::move(header);
