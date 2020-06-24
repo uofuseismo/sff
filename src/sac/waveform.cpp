@@ -22,7 +22,7 @@ using namespace SFF::SAC;
 
 namespace
 {
-static float *alignedAllocFloat(const int npts)
+float *alignedAllocFloat(const int npts)
 {
     size_t nbytes = static_cast<size_t> (npts)*sizeof(float);
 #ifdef HAVE_ALIGNED_ALLOC
@@ -109,12 +109,14 @@ Waveform::Waveform() :
 }
 
 /// Copy constructor
+[[maybe_unused]]
 Waveform::Waveform(const Waveform &waveform)
 {
     *this = waveform;
 }
 
 /// Move constructor
+[[maybe_unused]]
 Waveform::Waveform(Waveform &&waveform) noexcept
 {
     *this = std::move(waveform);
@@ -174,7 +176,7 @@ void Waveform::read(const std::string &fileName)
                            + std::to_string(nbytes);
         throw std::invalid_argument(errmsg);
     }
-    std::array<char, 632> cheader;
+    std::array<char, 632> cheader{};
     sacfl.seekg(0, sacfl.beg);
     //std::vector<char> buffer(nbytes); 
     sacfl.read(cheader.data(), cheader.size()*sizeof(char)); //buffer.data(), nbytes);
@@ -276,14 +278,13 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
 #endif
     // Pack the header
     int npts = getNumberOfSamples();
-    size_t nbytes = sizeof(float)*static_cast<size_t> (npts);;//632 + sizeof(float)*static_cast<size_t> (npts);
-    //std::vector<char> cdata(nbytes);
+    auto nbytes = sizeof(float)*static_cast<size_t> (npts);
     std::array<char, 632> cheader{};
     pImpl->mHeader.getBinaryHeader(cheader.data(), lswap); //cdata.data(), lswap);
     // Write header 
     std::ofstream outfile(fileName,
                           std::ofstream::binary | std::ofstream::trunc);
-    outfile.write(cheader.data(), cheader.size()*sizeof(char)); //nbytes);
+    outfile.write(cheader.data(), cheader.size()*sizeof(char));
     // Pack the data
     if (!lswap)
     {
@@ -363,6 +364,7 @@ SFF::Utilities::Time Waveform::getStartTime() const
 }
 
 /// Sets the trace start time
+[[maybe_unused]]
 void Waveform::setStartTime(const Utilities::Time &startTime) noexcept
 {
      pImpl->mHeader.setHeader(SAC::Integer::NZYEAR, startTime.getYear()); 
@@ -376,18 +378,21 @@ void Waveform::setStartTime(const Utilities::Time &startTime) noexcept
 }
 
 /// Sets a double header value
+[[maybe_unused]]
 void Waveform::setHeader(const Double variableName, const double value)
 {
     pImpl->mHeader.setHeader(variableName, value);
 }
 
 /// Gets a double header value
+[[maybe_unused]]
 double Waveform::getHeader(const Double variableName) const noexcept
 {
     return pImpl->mHeader.getHeader(variableName);
 }
 
 /// Sets an integer header value
+[[maybe_unused]]
 void Waveform::setHeader(const Integer variableName, const int value)
 {
     if (variableName == Integer::NPTS)
@@ -408,18 +413,21 @@ int Waveform::getHeader(const Integer variableName) const noexcept
 }
 
 /// Sets a logical header value
+[[maybe_unused]]
 void Waveform::setHeader(const Logical variableName, const bool value) noexcept
 {
     pImpl->mHeader.setHeader(variableName, value);
 }
 
 /// Gets a logical header value
+[[maybe_unused]]
 int Waveform::getHeader(const Logical variableName) const noexcept
 {
     return pImpl->mHeader.getHeader(variableName);
 }
 
 /// Sets a character header value
+[[maybe_unused]]
 void Waveform::setHeader(const Character variableName,
                          const std::string &value) noexcept
 {
@@ -557,6 +565,7 @@ std::vector<double> Waveform::getData() const noexcept
 }
 
 /// Sets the waveform data
+[[maybe_unused]]
 void Waveform::setData(const int npts, const double x[])
 {
     pImpl->freeData();
@@ -576,6 +585,7 @@ void Waveform::setData(const int npts, const double x[])
     //std::memcpy(pImpl->mData, x, static_cast<size_t> (npts)*sizeof(double));
 }
 
+[[maybe_unused]]
 void Waveform::setData(const int npts, const float x[])
 {
     pImpl->freeData();
