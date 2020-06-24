@@ -1,6 +1,7 @@
 #include <cstring>
 #include <algorithm>
 #include <string>
+#include <cmath>
 #include <fstream>
 #include <array>
 #include <stdexcept>
@@ -88,7 +89,7 @@ inline double unpackf4(const char c4[4], const bool lswap)
     union
     {
         char cd[4];
-        float f4;
+        float f4 = 0;
     };
     if (!lswap)
     {
@@ -112,7 +113,7 @@ inline void packf4(const double d8, char c[], const bool lswap)
     union
     {
         char c4[4];
-        float f4;
+        float f4 = 0;
     };
     f4 = static_cast<float> (d8);
     if (!lswap)
@@ -133,7 +134,7 @@ inline void packi4(const int i, char c[], const bool lswap)
     union
     {
         char c4[4];
-        int i4;
+        int i4 = 0;
     };
     i4 = i;
     if (!lswap)
@@ -154,7 +155,7 @@ inline int unpacki4(const char c4[4], const bool lswap)
     union
     {
         char cd[4];
-        int i4;
+        int i4 = 0;
     };
     if (!lswap)
     {
@@ -325,6 +326,7 @@ Header::Header() :
 }
 
 /// Creates a header from a character stream
+[[maybe_unused]]
 Header::Header(const char header[], const bool lswap) :
     pImpl(std::make_unique<HeaderImpl> ())
 {
@@ -338,6 +340,7 @@ Header::Header(const Header &header)
 }
 
 /// Move constructor
+[[maybe_unused]]
 Header::Header(Header &&header) noexcept
 {
     *this = std::move(header);
@@ -1584,7 +1587,7 @@ void Header::read(const std::string &fileName)
 #endif
     // Read the binary file
     std::ifstream sacfl(fileName, std::ios::in | std::ios::binary);
-    std::array<char, 632> cheader; 
+    std::array<char, 632> cheader{};
     sacfl.read(cheader.data(), 632);
     if (!sacfl)
     {
@@ -1601,7 +1604,7 @@ void Header::read(const std::string &fileName)
     union
     {
         char c4[4];
-        int npts;
+        int npts = 0;
     };
     std::memcpy(c4, &cdat[316], 4*sizeof(char));
     size_t nbytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
@@ -1639,7 +1642,8 @@ void Header::setFromBinaryHeader(const char header[632], const bool lswap)
     if (pImpl->delta < 1)
     {   
         pImpl->delta = static_cast<double>
-                       (static_cast<int> (pImpl->delta*1.e6 + 0.5))*1.e-6;
+                       (static_cast<int>
+                        (std::round(pImpl->delta*1.e6))*1.e-6);
     }
     pImpl->depmin     = unpackf4(  &header[4], lswap);
     pImpl->depmax     = unpackf4(  &header[8], lswap);
