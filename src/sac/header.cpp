@@ -1640,10 +1640,11 @@ void Header::setFromBinaryHeader(const char header[632], const bool lswap)
     // on very long time series.  To mitigate this we round delta to the
     // nearest microsecond.
     if (pImpl->delta < 1)
-    {   
-        pImpl->delta = static_cast<double>
-                       (static_cast<int>
-                        (std::round(pImpl->delta*1.e6))*1.e-6);
+    {
+        //pImpl->delta = static_cast<double>
+        //                (static_cast<int> (pImpl->delta*1.e6 + 0.5))*1.e-6;
+        auto nMicroSeconds = static_cast<int> (std::round(pImpl->delta*1.e6));
+        pImpl->delta = static_cast<double> (nMicroSeconds)*1.e-6;
     }
     pImpl->depmin     = unpackf4(  &header[4], lswap);
     pImpl->depmax     = unpackf4(  &header[8], lswap);
