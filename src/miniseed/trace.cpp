@@ -132,13 +132,13 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
     std::string station  = sncl.getStation();
     std::string channel  = sncl.getChannel();
     std::string location = sncl.getLocationCode();
-    char *networkQuery = nullptr;
+    char *networkQuery = NULL;
     if (network.length() > 0){networkQuery = network.data();}
-    char *stationQuery = nullptr;
+    char *stationQuery = NULL;
     if (station.length() > 0){stationQuery = station.data();}
-    char *channelQuery = nullptr;
+    char *channelQuery = NULL;
     if (channel.length() > 0){channelQuery = channel.data();}
-    char *locationQuery = nullptr;
+    char *locationQuery = NULL;
     if (location.length() > 0){locationQuery = location.data();}
     // Pack the SNCL into a miniSEED source identifier (SID)
     std::array<char, LM_SIDLEN+1> sid;
@@ -152,11 +152,11 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
         throw std::runtime_error("Failed to create target SNCL\n");
     }
     // Load the trace list
-    MS3TraceList *traceList = nullptr;
+    MS3TraceList *traceList = NULL;
     uint32_t flags = 0;
     flags = flags | MSF_VALIDATECRC;
     flags = flags | MSF_RECORDLIST;// | ~MSF_UNPACKDATA;
-    MS3Tolerance *tolerance = nullptr;
+    MS3Tolerance *tolerance = NULL;
     retcode = ms3_readtracelist(&traceList, fileName.c_str(),
                                 tolerance, 0, flags, 0);
     if (retcode != MS_NOERROR)
@@ -168,7 +168,7 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
     bool lfound = false;
     bool lfail = false;
     for (auto traceID=traceList->traces;
-         traceID != nullptr;
+         traceID != NULL;
          traceID=traceID->next)
     {
         bool lmatch = false;
@@ -179,7 +179,7 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
         if (!lmatch){continue;}
         lfound = true;
         for (auto segment = traceID->first; 
-             segment != nullptr;
+             segment != NULL;
              segment = segment->next)
         {
             // Check the pointer isn't NULL and this is the first go
@@ -190,7 +190,7 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
             char sampleType;
             ms_encoding_sizetype(segment->recordlist->first->msr->encoding,
                                  &sampleSize, &sampleType);
-            void *dPtr = nullptr;
+            void *dPtr = NULL;
             if (segment->samplecnt > INT_MAX)
             {
                 fprintf(stderr, "%s: Number of samples = %ld can't exceed %d\n",
