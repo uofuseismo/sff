@@ -58,6 +58,14 @@ TEST(Hypo2000, StationArchiveLine)
     
     SFF::Utilities::Time pickTime;
     StationArchiveLine pPick;  
+try
+{
+ pPick.unpackString(pPickString);
+}
+catch (const std::exception &e)
+{
+ std::cout << e.what() << std::endl;
+}
     EXPECT_NO_THROW(pPick.unpackString(pPickString));
     EXPECT_EQ(pPick.getNetworkName(), "UU");
     EXPECT_EQ(pPick.getStationName(), "RBU");

@@ -178,7 +178,7 @@ std::pair<bool, double> unpackDoublePair(const int i1, const int i2,
                                          const int maxLen)
 {
     auto d = unpackDouble(i1, i2, whole, stringPtr, maxLen);
-    return std::pair(d < std::numeric_limits<int>::max(), d);
+    return std::pair(d < std::numeric_limits<double>::max(), d);
 }
 
 std::string unpackString(int i1, int i2, const char *stringPtr,

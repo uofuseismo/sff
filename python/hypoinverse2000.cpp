@@ -2,6 +2,9 @@
 #include "sff/hypoinverse2000/eventSummaryLine.hpp"
 #include "sff/hypoinverse2000/eventSummary.hpp"
 #include "hypoinverse2000.hpp"
+#include <pybind11/stl.h>
+#include <vector>
+#include <string>
 
 using namespace PBSFF::HypoInverse2000;
 
@@ -793,6 +796,15 @@ int EventSummary::getNumberOfPicks() const noexcept
 {
     return mEvent->getNumberOfPicks();
 }
+void EventSummary::unpackString(const std::vector<std::string> &lines)
+{
+    if (lines.empty())
+    {
+        throw std::invalid_argument("Summary lines are empty");
+    }
+    //for (const auto &line: lines){std::cout << line << std::endl;}
+    return mEvent->unpackString(lines);
+}
 std::string EventSummary::packString() const
 {
     return mEvent->packString();
@@ -1142,6 +1154,7 @@ void PBSFF::HypoInverse2000::initialize(pybind11::module &m)
     ev.doc() = "This is used for reading and writing HypoInverse2000 event summaries.  An event summary is comprised of an event summary line and its corresponding picks.";
 
     ev.def("pack_string", &EventSummary::packString, "Converts the class to an output string.");
+    ev.def("unpack_string", &EventSummary::unpackString, "Unpacks the lines comprising an event.  Here the first line corresponds to the header while the subsequent lines correspond to a pick.");
     ev.def("get_event_information", &EventSummary::getEventInformation, "Gets the event summary line.");
     ev.def("clear", &EventSummary::clear, "Resets the class and releases memory.");
     ev.def("clear_picks", &EventSummary::clearPicks, "Removes the picks from the event.");

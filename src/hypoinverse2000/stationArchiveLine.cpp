@@ -200,14 +200,15 @@ void StationArchiveLine::unpackString(const std::string &line)
     }
 
     // P and S pick time
-    SFF::Utilities::Time pickTime;
+    SFF::Utilities::Time pickTime, pickTimeBase;
     auto year = unpackIntPair(17, 21, linePtr, lenos);
     auto month = unpackIntPair(21, 23, linePtr, lenos);
     auto dayOfMonth = unpackIntPair(23, 25, linePtr, lenos);
     auto hour = unpackIntPair(25, 27, linePtr, lenos);
     auto minute = unpackIntPair(27, 29, linePtr, lenos);
-    auto pSecond = unpackIntPair(29, 32, linePtr, lenos);
-    auto pMicroSecond = unpackIntPair(32, 35, linePtr, lenos);
+    //auto pSecond = unpackIntPair(29, 32, linePtr, lenos);
+    //auto pMicroSecond = unpackIntPair(32, 34, linePtr, lenos);
+    auto pDecimalSecond = unpackDoublePair(29, 34, 3, linePtr, lenos);
     if (year.first && month.first && dayOfMonth.first &&
         hour.first && minute.first)
     {
@@ -216,11 +217,19 @@ void StationArchiveLine::unpackString(const std::string &line)
         pickTime.setDayOfMonth(dayOfMonth.second);
         pickTime.setHour(hour.second);
         pickTime.setMinute(minute.second);
+        pickTimeBase = pickTime;
     }
     if (year.first && month.first && dayOfMonth.first &&
-        hour.first && minute.first && pSecond.first && pMicroSecond.first)
+        hour.first && minute.first && pDecimalSecond.first) //(pSecond.first || pMicroSecond.first))
     {
         // Sometimes arrivals have like 70 seconds which breaks things.
+        pickTime = pickTime + pDecimalSecond.second;
+        //double secondSign = +1;
+        //if (pSecond.second < 0){secondSign =-1;}
+        //         + secondSign*(std::abs(pSecond.second)
+        //                     + pMicroSecond.second/100.);
+        //std::cout << secondSign*(std::abs(pSecond.second) + pMicroSecond.second/100.) << "," << pDecimalSecond.second << std::endl;
+/*
         int seconds = pSecond.second;
         int extraSeconds = (seconds/60)*60;
         seconds = seconds%60;
@@ -237,13 +246,23 @@ void StationArchiveLine::unpackString(const std::string &line)
         pMicroSecond.second = pMicroSecond.second*10000;
         pickTime.setMicroSecond(pMicroSecond.second);
         pickTime = pickTime + extraSeconds;
+*/
         result.setPPickTime(pickTime);
     }
-    auto sSecond = unpackIntPair(41, 44, linePtr, lenos);
-    auto sMicroSecond = unpackIntPair(44, 46, linePtr, lenos);
+    //auto sSecond = unpackIntPair(41, 44, linePtr, lenos);
+    //auto sMicroSecond = unpackIntPair(44, 46, linePtr, lenos);
+    auto sDecimalSecond = unpackDoublePair(41, 46, 3, linePtr, lenos);
     if (year.first && month.first && dayOfMonth.first &&
-        hour.first && minute.first && sSecond.first && sMicroSecond.first)
+        hour.first && minute.first && sDecimalSecond.first) //(sSecond.first || sMicroSecond.first))
     {
+        pickTime = pickTimeBase; // Incase there is a P and S time
+        pickTime = pickTime + sDecimalSecond.second;
+        //double secondSign = +1;
+        //if (sSecond.second < 0){secondSign =-1;}
+        //pickTime = pickTime
+        //         + secondSign*(std::abs(sSecond.second)
+        //                     + sMicroSecond.second/100.);
+/*
         int seconds = sSecond.second;
         int extraSeconds = (seconds/60)*60;
         seconds = seconds%60;
@@ -254,7 +273,16 @@ void StationArchiveLine::unpackString(const std::string &line)
         sMicroSecond.second = sMicroSecond.second*10000;
         pickTime.setMicroSecond(sMicroSecond.second);
         pickTime = pickTime + extraSeconds;
+*/
         result.setSPickTime(pickTime);
+    }
+    if (result.havePRemark() && !result.havePPickTime())
+    {
+        std::cerr << "Failed to get P pick time from " << line << std::endl;
+    }
+    if (result.haveSRemark() && !result.haveSPickTime())
+    {
+        std::cerr << "Failed to get S pick time from " << line << std::endl;
     }
     // Weight code (I think UUSS or Jiggle has a bug.  These values are assigned
     // even when there is no corresponding pick).

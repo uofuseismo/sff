@@ -168,7 +168,7 @@ void EventSummary::addPPick(const StationArchiveLine &pick)
     auto nfm = getNumberOfPolarities(pImpl->mPicks);
     pImpl->mHeader.setNumberOfFirstMotions(nfm);
     auto azGap = getAzimuthalGap(pImpl->mPicks);
-    if (azGap >= 0 && azGap <= 360){pImpl->mHeader.setAzimuthalGap(azGap);}
+    if (azGap >= 0 && azGap < 360){pImpl->mHeader.setAzimuthalGap(azGap);}
     auto dmin = getSmallestDistance(pImpl->mPicks);
     if (dmin >= 0){pImpl->mHeader.setDistanceToClosestStation(dmin);}
 }
@@ -176,11 +176,15 @@ void EventSummary::addPPick(const StationArchiveLine &pick)
 /// Adds an s pick
 void EventSummary::addSPick(const StationArchiveLine &pick)
 {
-    if (!pick.havePPickTime())
+    if (!pick.haveSPickTime())
     {
         throw std::invalid_argument("S pick time not set");
     }
     pImpl->mPicks.push_back(pick);
+    auto azGap = getAzimuthalGap(pImpl->mPicks);
+    if (azGap >= 0 && azGap < 360){pImpl->mHeader.setAzimuthalGap(azGap);}
+    auto dmin = getSmallestDistance(pImpl->mPicks);
+    if (dmin >= 0){pImpl->mHeader.setDistanceToClosestStation(dmin);}
 }
 
 /// Unpacks
@@ -194,11 +198,23 @@ void EventSummary::unpackString(const std::vector<std::string> &lines)
     pImpl->mHeader.unpackString(lines[0]);
     for (int i=1; i<static_cast<int> (lines.size()); ++i)
     {
+        // Unpack the pick information
         StationArchiveLine pick;
         try
         {
             pick.unpackString(lines[i]);
-            if (pick.havePPickTime())
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Error unpacking pick: " << std::to_string(i)
+                      << std::endl << e.what() << std::endl
+                      << "lines = " << lines[i] << std::endl;
+            continue;
+       } 
+       // Add it
+       try
+       {
+            if (pick.havePRemark()) //PickTime())
             {
                 addPPick(pick);
             }
@@ -210,7 +226,8 @@ void EventSummary::unpackString(const std::vector<std::string> &lines)
         catch (const std::exception &e)
         {
             std::cerr << "Error adding pick: " << std::to_string(i)
-                      << std::endl << e.what() << std::endl;
+                      << std::endl << e.what() << std::endl
+                      << "lines = " << lines[i] << std::endl;
         }
     }
 }
