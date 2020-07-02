@@ -149,13 +149,15 @@ void EventSummaryLine::unpackString(const std::string &line)
     // Unpack the latitude
     auto latDegrees = unpackIntPair(16, 18, headerPtr, lenos);
     auto lSouth = unpackCharPair(18, headerPtr, lenos);
-    auto latMinutes = unpackIntPair(19, 21, headerPtr, lenos);
-    auto latMinutesFrac = unpackIntPair(21, 23, headerPtr, lenos);
-    if (latDegrees.first && latMinutes.first && latMinutesFrac.first)
+    //auto latMinutes = unpackIntPair(19, 21, headerPtr, lenos);
+    //auto latMinutesFrac = unpackIntPair(21, 23, headerPtr, lenos);
+    auto latFracMinutes = unpackDoublePair(19, 23, 2, headerPtr, lenos);
+    if (latDegrees.first && latFracMinutes.first) //latMinutes.first && latMinutesFrac.first)
     {
         auto latitude = latDegrees.second
-                      + static_cast<double> (latMinutes.second)/60.
-                      + static_cast<double> (latMinutesFrac.second)/(60.*100.);
+                      + latFracMinutes.second/60;
+//                      + static_cast<double> (latMinutes.second)/60.
+//                      + static_cast<double> (latMinutesFrac.second)/(60.*100.);
         if (lSouth.first)
         {
             if (lSouth.second == 'S'){latitude = -latitude;}
@@ -173,13 +175,15 @@ void EventSummaryLine::unpackString(const std::string &line)
     // Unpack the longitude
     auto lonDegrees = unpackIntPair(23, 26, headerPtr, lenos);
     auto lEast = unpackCharPair(26, headerPtr, lenos);
-    auto lonMinutes = unpackIntPair(27, 29, headerPtr, lenos);
-    auto lonMinutesFrac = unpackIntPair(29, 31, headerPtr, lenos);
-    if (lonDegrees.first && lonMinutes.first && lonMinutesFrac.first)
+    //auto lonMinutes = unpackIntPair(27, 29, headerPtr, lenos);
+    //auto lonMinutesFrac = unpackIntPair(29, 31, headerPtr, lenos);
+    auto lonFracMinutes = unpackDoublePair(27, 31, 2, headerPtr, lenos);
+    if (lonDegrees.first && lonFracMinutes.first) //lonMinutes.first && lonMinutesFrac.first)
     {
         auto longitude =-lonDegrees.second
-                       - static_cast<double> (lonMinutes.second)/60.
-                       - static_cast<double> (lonMinutesFrac.second)/(60.*100.);
+                       - lonFracMinutes.second/60;
+//                       - static_cast<double> (lonMinutes.second)/60.
+//                       - static_cast<double> (lonMinutesFrac.second)/(60.*100.);
         if (lEast.first)
         {
             if (lEast.second == 'E'){longitude = -longitude;}
