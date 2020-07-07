@@ -42,14 +42,14 @@ else()
 endif()
 
 include(CheckIncludeFileCXX)
-check_include_file_cxx(filesystem RTSEIS_HAVE_STD_FS)
+check_include_file_cxx(filesystem SFF_HAVE_STD_FS)
 #link_libraries(stdc++fs ${GeographicLib_LIBRARIES})
-if (${RTSEIS_HAVE_STD_FS})
+if (${SFF_HAVE_STD_FS})
    MESSAGE("Using filesystem")
    link_libraries(stdc++fs)
 else()
-   check_include_file_cxx(experimental/filesystem RTSEIS_HAVE_EXP_FS)
-   if (${RTSEIS_HAVE_EXP_FS})
+   check_include_file_cxx(experimental/filesystem SFF_HAVE_EXP_FS)
+   if (${SFF_HAVE_EXP_FS})
       MESSAGE("Using experimental/filesystem")
       link_libraries(stdc++fs)
    else()
@@ -65,6 +65,10 @@ file(DOWNLOAD
      ${CMAKE_SOURCE_DIR}/testing/data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
      INACTIVITY_TIMEOUT 5)
 #    SHOW_PROGRESS)
+#file(DOWNLOAD
+#     http://home.chpc.utah.edu/~u6024448/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
+#     ${CMAKE_SOURCE_DIR}/testing/data/002b.fcnt
+#     INACTIVITY_TIMEOUT 5)
 
 ################################################################################
 #                         Look For Some Required Libraries                     #
@@ -114,6 +118,8 @@ set(SRC
     src/segy/silixaTrace.cpp
     src/segy/silixaTraceGroup.cpp
     src/segy/textualFileHeader.cpp
+    src/nodal/generalHeader1.cpp
+    src/nodal/rg16.cpp
     src/hypoinverse2000/eventSummary.cpp
     src/hypoinverse2000/eventSummaryLine.cpp
     src/hypoinverse2000/stationArchiveLine.cpp
@@ -160,6 +166,7 @@ add_executable(tests
                testing/utilities/time.cpp
                testing/sac/sac.cpp
                testing/segy/silixa.cpp
+               testing/nodal/rg16.cpp
                testing/hypoinverse2000/hypoinverse2000.cpp
                ${MINISEED_TEST_SRC})
 target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
