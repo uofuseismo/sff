@@ -103,6 +103,13 @@ public:
      */
     [[nodiscard]] std::string packString() const;
     /*!
+     * @brief Sets the event summary information (e.g., latitude, longitude,
+     *        depth, origin time, etc.)
+     * @param[in] eventSummary  The event information.
+     * @note Some of this information may be overwritten.
+     */
+    void setEventInformation(const EventSummaryLine &eventSummary);
+    /*!
      * @brief Gets the event summary line.
      */
     [[nodiscard]] EventSummaryLine getEventInformation() const;

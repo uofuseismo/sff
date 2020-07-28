@@ -809,6 +809,10 @@ std::string EventSummary::packString() const
 {
     return mEvent->packString();
 }
+void EventSummary::setEventInformation(const EventSummaryLine &eventSummary)
+{
+    mEvent->setEventInformation(eventSummary.getNativeClass());
+}
 EventSummaryLine EventSummary::getEventInformation() const
 {
     EventSummaryLine result(mEvent->getEventInformation());
@@ -1155,6 +1159,7 @@ void PBSFF::HypoInverse2000::initialize(pybind11::module &m)
 
     ev.def("pack_string", &EventSummary::packString, "Converts the class to an output string.");
     ev.def("unpack_string", &EventSummary::unpackString, "Unpacks the lines comprising an event.  Here the first line corresponds to the header while the subsequent lines correspond to a pick.");
+    ev.def("set_event_information", &EventSummary::setEventInformation, "Sets the event summary information such as latitude, longitude, depth, etc.  Note, some information may be overwritten.");
     ev.def("get_event_information", &EventSummary::getEventInformation, "Gets the event summary line.");
     ev.def("clear", &EventSummary::clear, "Resets the class and releases memory.");
     ev.def("clear_picks", &EventSummary::clearPicks, "Removes the picks from the event.");

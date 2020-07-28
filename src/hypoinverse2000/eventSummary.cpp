@@ -232,6 +232,18 @@ void EventSummary::unpackString(const std::vector<std::string> &lines)
     }
 }
 
+/// Sets the event information
+void EventSummary::setEventInformation(const EventSummaryLine &eventSummary)
+{
+    pImpl->mHeader = eventSummary;
+    auto nfm = getNumberOfPolarities(pImpl->mPicks);
+    pImpl->mHeader.setNumberOfFirstMotions(nfm);
+    auto azGap = getAzimuthalGap(pImpl->mPicks);
+    if (azGap >= 0 && azGap < 360){pImpl->mHeader.setAzimuthalGap(azGap);}
+    auto dmin = getSmallestDistance(pImpl->mPicks);
+    if (dmin >= 0){pImpl->mHeader.setDistanceToClosestStation(dmin);}
+}
+
 /// Gets the event information
 EventSummaryLine EventSummary::getEventInformation() const
 {
