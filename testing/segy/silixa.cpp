@@ -220,6 +220,14 @@ TEST(SEGY, Trace)
 TEST(SEGY, TraceGroup)
 {
     SEGY::Silixa::TraceGroup group;
+try
+{
+ group.read("data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy");
+}
+catch (const std::exception &e)
+{
+std::cout << e.what() << std::endl;
+}
     EXPECT_NO_THROW(
         group.read("data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy"));
     EXPECT_EQ(group.getNumberOfTraces(), 1280);
