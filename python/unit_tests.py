@@ -16,6 +16,7 @@ def test_time():
     tf.set_minute(12)
     tf.set_second(8)
     tf.set_microsecond(800000)
+    assert tf.to_string() == "2020-01-09T00:12:08.800000", 'string conversion failed'
     assert tf.get_epoch() == 1578528728.8, 'get epoch failed'
     tf2 = tf
     tf2.set_julian_day(9)

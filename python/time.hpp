@@ -59,6 +59,8 @@ public:
     int getMicroSecond() const; 
 
     SFF::Utilities::Time getNativeClass() const;
+
+    std::string toString() const noexcept;
 private:
     std::unique_ptr<SFF::Utilities::Time> mTime;
 };

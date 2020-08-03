@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
+#include <sstream>
+#include <string>
 #include "sff/utilities/time.hpp"
 #include "time.hpp"
 
@@ -169,6 +171,14 @@ int Time::getMicroSecond() const
     return mTime->getMicroSecond();
 }
 
+/// Converts a time to string
+std::string Time::toString() const noexcept
+{
+    std::stringstream ss;
+    ss << *mTime;
+    return ss.str();
+}
+
 /// Creates the class
 void PBSFF::initializeTime(pybind11::module &m)
 {
@@ -245,4 +255,8 @@ void PBSFF::initializeTime(pybind11::module &m)
     time.def("set_microsecond",
              &PBSFF::Time::setMicroSecond,
              "This specifies the microsecond and must be in the range [0,999999].");
+
+    time.def("to_string",
+             &PBSFF::Time::toString,
+             "Converts a time to a string representation with the format: YYYY-MM-DDTHH:MM::SS.SSSSSS");
 }
