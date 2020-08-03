@@ -200,6 +200,7 @@ void PBSFF::initializeTime(pybind11::module &m)
     {   
         return a - b;
     }, pybind11::is_operator());
+    time.def("__repr__", &PBSFF::Time::toString);
     time.doc() = "This is used for managing converting between epochal and date-times.";
     time.def("get_epoch",
              &PBSFF::Time::getEpochalTime,
