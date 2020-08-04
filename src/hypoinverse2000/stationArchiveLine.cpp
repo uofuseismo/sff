@@ -14,6 +14,17 @@ using namespace SFF::HypoInverse2000;
 class StationArchiveLine::StationArchiveLineImpl
 {
 public:
+    /*
+    StationArchiveLineImpl()
+    {
+        mNetwork.reserve(2);
+        mStation.reserve(5);
+        mChannel.reserve(3);
+        mLocationCode.reserve(2);
+        mPRemark.reserve(2);
+        mSRemark.reserve(2);
+    }
+    */
     void clear() noexcept
     {
         mPPick.clear();
@@ -1286,7 +1297,6 @@ bool StationArchiveLine::havePeriodOfAmplitudeMeasurement() const noexcept
 }
 
 /// Duration of coda magnitude
-
 void StationArchiveLine::setCodaDuration(const double duration)
 {
     if (duration <= 0)
@@ -1309,3 +1319,12 @@ bool StationArchiveLine::haveCodaDuration() const noexcept
 {
     return pImpl->mCodaDuration > 0;
 }
+
+/// Output
+std::ostream&
+SFF::HypoInverse2000::operator<<(std::ostream &os,
+                                 const StationArchiveLine &station)
+{
+    return os << station.packString();
+}
+

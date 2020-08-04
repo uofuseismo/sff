@@ -640,5 +640,7 @@ private:
     class StationArchiveLineImpl;
     std::unique_ptr<StationArchiveLineImpl> pImpl;
 };
+std::ostream& operator<<(std::ostream &os,
+                         const StationArchiveLine &station);
 }
 #endif

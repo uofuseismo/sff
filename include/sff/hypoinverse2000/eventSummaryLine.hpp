@@ -317,5 +317,7 @@ private:
     class EventSummaryLineImpl;
     std::unique_ptr<EventSummaryLineImpl> pImpl;
 };
+
+std::ostream& operator<<(std::ostream &os, const EventSummaryLine &event);
 }
 #endif

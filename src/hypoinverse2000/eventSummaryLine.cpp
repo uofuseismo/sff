@@ -633,3 +633,11 @@ bool EventSummaryLine::haveDistanceToClosestStation() const noexcept
 {
     return pImpl->mDistanceToClosestStation >= 0;
 }
+
+/// Output
+std::ostream&
+SFF::HypoInverse2000::operator<<(std::ostream &os,
+                                 const EventSummaryLine &event)
+{
+    return os << event.packString();
+}
