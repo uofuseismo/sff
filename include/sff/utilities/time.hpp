@@ -36,6 +36,12 @@ public:
      *                   in UTC for which the date will be initialized.
      */ 
     explicit Time(double epoch);
+    /*!
+     * @brief Creates a time from a string representation that must have format:
+     *        YYYY-MM-DDTHH:MM:SS.SSSSSS.
+     * @param[in] time  The time string from which to initalize the time.
+     */
+    explicit Time(const std::string &time);
     /*! @} */
 
     /*!

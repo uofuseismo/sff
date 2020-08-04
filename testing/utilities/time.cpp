@@ -32,6 +32,15 @@ TEST(UtilitiesTime, EpochToCalendar)
     EXPECT_EQ(50, moveTime.getMinute());
     EXPECT_EQ(32, moveTime.getSecond());
     EXPECT_EQ(844000, moveTime.getMicroSecond());
+    // Test the string constructor
+    Time strTime("2020-03-17T08:01:33.009000"); // St Patty's day 2020
+    EXPECT_EQ(strTime.getYear(), 2020);
+    EXPECT_EQ(strTime.getMonth(), 3);
+    EXPECT_EQ(strTime.getDayOfMonth(), 17);
+    EXPECT_EQ(strTime.getHour(), 8);
+    EXPECT_EQ(strTime.getMinute(), 1);
+    EXPECT_EQ(strTime.getSecond(), 33);
+    EXPECT_EQ(strTime.getMicroSecond(), 9000); 
 }
 
 TEST(UtilitiesTime, clear)

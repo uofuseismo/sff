@@ -125,6 +125,30 @@ Time::Time(Time &&time) noexcept
     *this = std::move(time);
 }
 
+Time::Time(const std::string &time) :
+    pImpl(std::make_unique<TimeImpl>())
+{
+    int year;
+    int month;
+    int dom;
+    int hour;
+    int minute;
+    int second;
+    int microSecond;
+    sscanf(time.c_str(),
+           "%04d-%02d-%02dT%02d:%02d:%02d.%06d",
+           &year, &month, &dom, &hour, &minute, &second, &microSecond); 
+    Time temp;
+    temp.setYear(year);
+    temp.setMonth(month);
+    temp.setDayOfMonth(dom);
+    temp.setHour(hour);
+    temp.setMinute(minute);
+    temp.setSecond(second);
+    temp.setMicroSecond(microSecond);
+    *this = std::move(temp);
+}
+
 Time& Time::operator=(const Time &time)
 {
     if (&time == this){return *this;}
