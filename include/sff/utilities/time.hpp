@@ -61,31 +61,6 @@ public:
      * @result The input class.
      */
     Time& operator=(Time &&time) noexcept;
-    /*!
-     * @brief Equality operator.
-     * @result True indicates that the given time 
-     *         equals the time represented by this class.
-     */
-    bool operator==(const Time &time);
-    /*!
-     * @brief Inequality operator.
-     * @param[in] time  Class to test for inequality.
-     * @result True indicates that the given time
-     *         does not equal the time represented by this class.
-     */
-    bool operator!=(const Time &time);
-    /*!
-     * @brief Greater than operator.
-     * @param[in] time  Class to test.
-     * @result True indicates that *this > time.
-     */
-    bool operator>(const Time &time);
-    /*!
-     * Less than operator.
-     * @param[in] time  Class to test.
-     * @result True indicates that *this < time.
-     */
-    bool operator<(const Time &time);
     /*! @} */
 
     /*! @name Destructors
@@ -314,6 +289,30 @@ Time operator-(const Time &x, const Time &y);
  *         number of seconds in y: x - y.
  */
 Time operator-(const Time &x, double y);
+/*!
+ * @param[in] lhs  The left hand side of the equality.
+ * @param[in] rhs  The right hand side of the equality.
+ * @result True indicates that lhs == rhs, i.e., the times are equal.
+ */
+bool operator==(const Time &lhs, const Time &rhs);
+/*!
+ * @param[in] lhs  The left hand side of the inequality.
+ * @param[in] rhs  The right hand side of the inequality.
+ * @result True indicates that lhs != rhs, i.e., the times are not equal.
+ */
+bool operator!=(const Time &lhs, const Time &rhs);
+/*!
+ * @param[in] lhs  The left hand side of the comparitor.
+ * @param[in] rhs  The right hand side of the comparitor.
+ * @result True indicates that lhs > rhs, i.e., the lhs is later than the rhs.
+ */
+bool operator>(const Time &lhs, const Time &rhs);
+/*!
+ * @param[in] lhs  The left hand side of the comparitor.
+ * @param[in] rhs  The right hand side of the compatitor.
+ * @result True indicates that lhs < rhs, i.e, the lhs is earlier than the rhs.
+ */
+bool operator<(const Time &lhs, const Time &rhs);
 /*!
  * @brief Outputs a time as YYYY-MM-DDTHH:MM:SS.SSSSSS
  * @param[in] os    An output stream object.

@@ -163,6 +163,7 @@ Time& Time::operator=(Time &&time) noexcept
     return *this;
 }
 
+/*
 bool Time::operator==(const Time &time)
 {
     if (pImpl->year   != time.getYear()){return false;}
@@ -194,6 +195,7 @@ bool Time::operator<(const Time &time)
 {
     return pImpl->epoch < time.getEpochalTime();
 }
+*/
 
 void Time::setEpochalTime(const double epoch)
 {
@@ -392,6 +394,38 @@ Time SFF::Utilities::operator-(const Time &x, const double y)
     return tout;
 }
 
+/// lhs == rhs
+bool SFF::Utilities::operator==(const Time &lhs, const Time &rhs)
+{
+    if (lhs.getYear()       != rhs.getYear()){return false;}
+    if (lhs.getMonth()      != rhs.getMonth()){return false;}
+    if (lhs.getJulianDay()  != rhs.getJulianDay()){return false;}
+    if (lhs.getDayOfMonth() != rhs.getDayOfMonth()){return false;}
+    if (lhs.getHour()       != rhs.getHour()){return false;}
+    if (lhs.getMinute()     != rhs.getMinute()){return false;}
+    if (lhs.getSecond()     != rhs.getSecond()){return false;}
+    return lhs.getMicroSecond() == rhs.getMicroSecond();
+}
+
+/// lhs != rhs
+bool SFF::Utilities::operator!=(const Time &lhs, const Time &rhs)
+{
+    return !(lhs == rhs);
+}
+
+/// lhs > rhs
+bool SFF::Utilities::operator>(const Time &lhs, const Time &rhs)
+{
+    return lhs.getEpochalTime() > rhs.getEpochalTime();
+}
+
+/// lhs < rhs
+bool SFF::Utilities::operator<(const Time &lhs, const Time &rhs)
+{
+    return lhs.getEpochalTime() < rhs.getEpochalTime();
+}
+
+/// std::cout << time << std::endl;
 std::ostream&
 SFF::Utilities::operator<<(std::ostream &os, const Time &time)
 {
