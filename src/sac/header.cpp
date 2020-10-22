@@ -975,7 +975,7 @@ void Header::setHeader(const Integer variableName, const int value)
         if (value < 1 || value > 366)
         {
             std::string errmsg = "nzjday = " + std::to_string(value)
-                               + "must be in range [1,366]";
+                               + " must be in range [1,366]";
             throw std::invalid_argument(errmsg);
         }
         pImpl->nzjday = value;
@@ -985,7 +985,7 @@ void Header::setHeader(const Integer variableName, const int value)
         if (value < 0 || value > 23)
         {
             std::string errmsg = "nzhour = " + std::to_string(value)
-                               + "must be in range [0,23]";
+                               + " must be in range [0,23]";
             throw std::invalid_argument(errmsg);
         }
         pImpl->nzhour = value;
@@ -995,7 +995,7 @@ void Header::setHeader(const Integer variableName, const int value)
         if (value < 0 || value > 59)
         {
             std::string errmsg = "nzmin = " + std::to_string(value)
-                               + "must be in range [0,59]";
+                               + " must be in range [0,59]";
             throw std::invalid_argument(errmsg);
         }
         pImpl->nzmin = value;
@@ -1005,7 +1005,7 @@ void Header::setHeader(const Integer variableName, const int value)
         if (value < 0 || value > 59)
         {
             std::string errmsg = "nzsec = " + std::to_string(value)
-                               + "must be in range [0,59]";
+                               + " must be in range [0,59]";
             throw std::invalid_argument(errmsg);
         }
         pImpl->nzsec = value;
@@ -1015,7 +1015,7 @@ void Header::setHeader(const Integer variableName, const int value)
         if (value < 0 || value > 999)
         {
             std::string errmsg = "nzmseec = " + std::to_string(value)
-                               + "must be in range [0,999]";
+                               + " must be in range [0,999]";
             throw std::invalid_argument(errmsg);
         }
         pImpl->nzmsec = value;
@@ -1037,7 +1037,7 @@ void Header::setHeader(const Integer variableName, const int value)
         if (value < 0)
         {
             std::string errmsg = "npts = " + std::to_string(value)
-                               + "cannot be negative";
+                               + " cannot be negative";
             throw std::invalid_argument(errmsg);
         }
         pImpl->npts = value;
