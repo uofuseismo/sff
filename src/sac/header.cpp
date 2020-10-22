@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cstring>
 #include <algorithm>
 #include <string>
@@ -173,13 +172,6 @@ inline int unpacki4(const char c4[4], const bool lswap)
         cd[3] = c4[0];
     }
     return i4;
-}
-
-/// https://stackoverflow.com/questions/3220163/how-to-find-leap-year-programmatically-in-c
-bool isLeapYear(const int year)
-{
-    if ((year & 3) == 0 && ((year % 25) != 0 || (year & 15) == 0)){return true;}
-    return false;
 }
 
 } /// End anonymous namespace
@@ -1726,28 +1718,6 @@ void Header::setFromBinaryHeader(const char header[632], const bool lswap)
     // Integers
     pImpl->nzyear     = unpacki4(&header[280], lswap);
     pImpl->nzjday     = unpacki4(&header[284], lswap);
-    // Possibly need to fix the Julian day.  Some people think its cool to
-    // overrun this number
-    if (isLeapYear(pImpl->nzyear))
-    {
-        if (pImpl->nzjday > 365)
-        {
-            std::cerr << "Julian day exceeds 365 for year " << pImpl->nzyear
-                      << ".  Attempting to add one to year" << std::endl;
-            pImpl->nzyear = pImpl->nzyear + 1;
-            pImpl->nzjday = pImpl->nzjday - 365;
-        }
-    }
-    else
-    {
-        if (pImpl->nzjday > 366)
-        {
-            std::cerr << "Julian day exceeds 366 for year " << pImpl->nzyear
-                      << ".  Attempting to add one to year" << std::endl;
-            pImpl->nzyear = pImpl->nzyear + 1;
-            pImpl->nzjday = pImpl->nzjday - 366;
-        }
-    }
     pImpl->nzhour     = unpacki4(&header[288], lswap);
     pImpl->nzmin      = unpacki4(&header[292], lswap);
     pImpl->nzsec      = unpacki4(&header[296], lswap);
