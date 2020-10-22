@@ -478,17 +478,19 @@ void calendar2epoch(
         epoch = epoch + frac;
         // Copy result
         yearOut   = year;
-        jdayOut   = t.tm_yday + 2;
+        //jdayOut   = t.tm_yday + 2;
         // This fixes weird wrap around on clear to 1970
         if (t.tm_mon + 1 == 12 && t.tm_mday + 1 == 32)
         {
             monthOut  = 1;
             domOut    = 1;
+            jdayOut   = 1;
         }
         else
         {
             monthOut  = t.tm_mon + 1; //month;
             domOut    = t.tm_mday + 1; // dom + 1;
+            jdayOut   = t.tm_yday + 2;
         }
         hourOut   = hour;
         minuteOut = minute;
