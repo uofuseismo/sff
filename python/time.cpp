@@ -184,6 +184,14 @@ void PBSFF::initializeTime(pybind11::module &m)
 {
     pybind11::class_<PBSFF::Time> time(m, "Time");
     time.def(pybind11::init<> ());
+    time.def("__copy__", [](const PBSFF::Time &self)
+    {
+        return PBSFF::Time(self);
+    });
+    //time.def("__deepcopy__", [](const PBSFF::Time &self, pybind11::dict)
+    //{
+    //    return PBSFF::Time(self);
+    //}, "memo"_a);
     time.def("__add__", [](PBSFF::Time &a, const PBSFF::Time &b)
     {
         return a + b;

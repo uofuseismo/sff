@@ -41,6 +41,17 @@ TEST(UtilitiesTime, EpochToCalendar)
     EXPECT_EQ(strTime.getMinute(), 1);
     EXPECT_EQ(strTime.getSecond(), 33);
     EXPECT_EQ(strTime.getMicroSecond(), 9000); 
+
+    Time tTest1(1230784385.5);
+    EXPECT_EQ(tTest1.getYear(), 2009);
+    EXPECT_EQ(tTest1.getMonth(), 1);
+    EXPECT_EQ(tTest1.getDayOfMonth(), 1);
+    EXPECT_EQ(tTest1.getJulianDay(), 1);
+    EXPECT_EQ(tTest1.getHour(), 4);
+    EXPECT_EQ(tTest1.getMinute(), 33);
+    EXPECT_EQ(tTest1.getSecond(), 5);
+    EXPECT_EQ(tTest1.getMicroSecond(), 500000);
+
 }
 
 TEST(UtilitiesTime, clear)
