@@ -16,7 +16,7 @@ static float *alignedAllocFloat(const int npts)
 {
     size_t nbytes = static_cast<size_t> (npts)*sizeof(float);
 #ifdef HAVE_ALIGNED_ALLOC
-    float *data = static_cast<float *> (std::aligned_alloc(64, nbytes));
+    float *data = static_cast<float *> (aligned_alloc(64, nbytes));
 #else
     void *dataTemp = malloc(nbytes);
     posix_memalign(&dataTemp, 64, nbytes);
