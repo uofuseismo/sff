@@ -86,7 +86,7 @@ public:
      * @brief Sets the start time of the trace.
      * param[in] startTime  The trace start time.
      */
-    void setStartTime(SFF::Utilities::Time &startTime) noexcept;
+    void setStartTime(const SFF::Utilities::Time &startTime) noexcept;
     /*!
      * @brief Gets the start time of the trace.
      * @result The start time of the trace.

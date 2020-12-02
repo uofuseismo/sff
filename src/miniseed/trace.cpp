@@ -275,6 +275,12 @@ Precision Trace::getPrecision() const
     return pImpl->mPrecision;
 }
 
+/// Set the start time
+void Trace::setStartTime(const SFF::Utilities::Time &startTime) noexcept
+{
+    pImpl->mStartTime = startTime;
+}
+
 /// Start time
 SFF::Utilities::Time Trace::getStartTime() const
 {
