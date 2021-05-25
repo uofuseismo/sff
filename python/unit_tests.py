@@ -10,8 +10,8 @@ def test_time():
     # Try out the setters
     tf = pysff.Time()
     tf.set_year(2020)
-    tf.set_month(1)
-    tf.set_day_of_month(9)
+    tf.set_month_and_day((1, 9))
+    #tf.set_day_of_month(9)
     tf.set_hour(0)
     tf.set_minute(12)
     tf.set_second(8)
@@ -19,7 +19,7 @@ def test_time():
     assert tf.to_string() == "2020-01-09T00:12:08.800000", 'string conversion failed'
     assert tf.get_epoch() == 1578528728.8, 'get epoch failed'
     tf2 = tf
-    tf2.set_julian_day(9)
+    tf2.set_day_of_year(9)
     assert tf2.get_epoch() == 1578528728.8, 'get epoch failed'
     # Do it the other way
     t = pysff.Time()
@@ -27,7 +27,7 @@ def test_time():
     assert t.get_year() == 2020, 'get year failed'
     assert t.get_month() == 1, 'get month failed'
     assert t.get_day_of_month() == 9, 'get day of month failed'
-    assert t.get_julian_day() == 9, 'get julian day failed'
+    assert t.get_day_of_year() == 9, 'get day of year failed'
     assert t.get_hour() == 0, 'get hour failed'
     assert t.get_minute() == 12, 'get minute failed'
     assert t.get_second() == 8, 'get second failed'
@@ -39,7 +39,7 @@ def test_time():
     assert tnew.get_year() == 2020, 'get year failed'
     assert tnew.get_month() == 1, 'get month failed'
     assert tnew.get_day_of_month() == 10, 'get day of month failed'
-    assert tnew.get_julian_day() == 10, 'get julian day failed'
+    assert tnew.get_day_of_year() == 10, 'get day of year failed'
     assert tnew.get_hour() == 0, 'get hour failed'
     assert tnew.get_minute() == 12, 'get minute failed'
     assert tnew.get_second() == 8, 'get second failed'
@@ -49,7 +49,7 @@ def test_time():
     assert tnew.get_year() == 2020, 'get year failed - add double'
     assert tnew.get_month() == 1, 'get month failed - add double'
     assert tnew.get_day_of_month() == 10, 'get day of month failed - add double'
-    assert tnew.get_julian_day() == 10, 'get julian day failed - add double'
+    assert tnew.get_day_of_year() == 10, 'get day of year failed - add double'
     assert tnew.get_hour() == 0, 'get hour failed - add double'
     assert tnew.get_minute() == 12, 'get minute failed - add double'
     assert tnew.get_second() == 8, 'get second failed - add double'
@@ -62,7 +62,7 @@ def test_time():
     assert tsub.get_year() == 2020, 'get year failed'
     assert tsub.get_month() == 1, 'get month failed'
     assert tsub.get_day_of_month() == 9, 'get day of month failed'
-    assert tsub.get_julian_day() == 9, 'get julian day failed'
+    assert tsub.get_day_of_year() == 9, 'get day of year failed'
     assert tsub.get_hour() == 12, 'get hour failed'
     assert tsub.get_minute() == 12, 'get minute failed'
     assert tsub.get_second() == 8, 'get second failed'
@@ -72,7 +72,7 @@ def test_time():
     assert tsub.get_year() == 2020, 'get year failed - sub double'
     assert tsub.get_month() == 1, 'get month failed - sub double'
     assert tsub.get_day_of_month() == 9, 'get day of month failed - sub double'
-    assert tsub.get_julian_day() == 9, 'get julian day failed - sub double'
+    assert tsub.get_day_of_year() == 9, 'get day of year failed - sub double'
     assert tsub.get_hour() == 12, 'get hour failed - sub double'
     assert tsub.get_minute() == 12, 'get minute failed - sub double'
     assert tsub.get_second() == 8, 'get second failed - sub double'
