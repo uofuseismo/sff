@@ -3,78 +3,54 @@
 #include <memory>
 namespace SFF::Utilities
 {
-/*!
- * @class Time time.hpp "sff/utilities/time.hpp"
- * @brief A class for managing calendar and epochal time.
- * @copyright Ben Baker (University of Utah) distributed under the MIT license.
- */
+/// @class Time time.hpp "sff/utilities/time.hpp"
+/// @brief A class for managing calendar and epochal time.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 class Time
 {
 public:
-    /*! @name Constructors
-     * @{
-     */
-    /*!
-     * @brief Default constructor which initializes epochal time to the
-     *        epoch, i.e., January 01, 1970.
-     */
+    /// @name Constructors
+    /// @{
+    /// @brief Default constructor which initializes epochal time to the
+    ///        epoch, i.e., January 01, 1970.
     Time();
-    /*!
-     * @brief Copy constructor.
-     * @param[in] time  The class from which to initialize this class.
-     */
+    /// @brief Copy constructor.
+    /// @param[in] time  The class from which to initialize this class.
     Time(const Time &time); 
-    /*!
-     * @brief Move constructor.
-     * @param[in,out] time  The class from which to initialize.  On exit
-     *                      time's behavior will be undefined.
-     */
+    /// @brief Move constructor.
+    /// @param[in,out] time  The class from which to initialize.  On exit
+    ///                      time's behavior will be undefined.
     Time(Time &&time) noexcept;
-    /*!
-     * @brief Constructs an Earthworm time class from an epochal time.
-     * @param[in] epoch  The number of seconds since the epoch (Jan 1, 1970)
-     *                   in UTC for which the date will be initialized.
-     */ 
+    /// @brief Constructs an Earthworm time class from an epochal time.
+    /// @param[in] epoch  The number of seconds since the epoch (Jan 1, 1970)
+    ///                   in UTC for which the date will be initialized.
     explicit Time(double epoch);
-    /*!
-     * @brief Creates a time from a string representation that must have format:
-     *        YYYY-MM-DDTHH:MM:SS.SSSSSS.
-     * @param[in] time  The time string from which to initalize the time.
-     */
+    /// @brief Creates a time from a string representation that must have format:
+    ///        YYYY-MM-DDTHH:MM:SS.SSSSSS.
+    /// @param[in] time  The time string from which to initalize the time.
     explicit Time(const std::string &time);
-    /*! @} */
+    /// @}
 
-    /*!
-     * @name Operators
-     * @{
-     */
-    /*!
-     * @brief Assignment operator.
-     * @param[in] time  The class to copy.
-     * @result A deep copy of the input class.
-     */
+    /// @name Operators
+    /// @{
+    /// @brief Assignment operator.
+    /// @param[in] time  The class to copy.
+    /// @result A deep copy of the input class.
     Time& operator=(const Time &time);
-    /*!
-     * @brief Move assignment operator.
-     * @param[in,out] time  The class to move.  On exit time's behavior
-     *                      will be undefined.
-     * @result The input class.
-     */
+    /// @brief Move assignment operator.
+    /// @param[in,out] time  The class to move.  On exit time's behavior
+    ///                      will be undefined.
+    /// @result The input class.
     Time& operator=(Time &&time) noexcept;
-    /*! @} */
+    /// @}
 
-    /*! @name Destructors
-     * @{
-     */
-    /*!
-     * @brief Default destructor.
-     */
+    /// @name Destructors
+    /// @{
+    /// @brief Default destructor.
     ~Time();
-    /*!
-     * Resets the time on the class to January 01, 1970.
-     */
+    /// @brief Resets the time on the class to January 01, 1970.
     void clear() noexcept;
-    /*! @} */
+    /// @}
 
     /*!
      * @name Epochal Time Setters/Getters
@@ -85,170 +61,104 @@ public:
      * @param[in] epoch  The number of seconds since the epoch (Jan 1, 1970)
      *                   in UTC for which the date will be initialized.
      */
-    void setEpochalTime(double epoch);
+    void setEpoch(double epoch);
     /*!
      * @brief Gets the epochal time (seconds) correpsonding to the time
      *        set in the class.
      * @result The UTC epochal time in seconds since the epoch.
      * @throws std::invalid_argument if the time is improperly set.
      */
-    [[nodiscard]] double getEpochalTime() const;
+    [[nodiscard]] double getEpoch() const;
     /*! @} */
 
-    /*!
-     * @name Year
-     * @{
-     */
-    /*!
-     * @brief Sets the year.
-     * @param[in] year  The 4-digit year to set.  This should be greater
-     *                  than 1900.
-     * @throws std::invalid_argument if year is less than 1900.
-     */
+    /// @name Year
+    /// @{
+    /// @brief Sets the year.
+    /// @param[in] year  The 4-digit year to set.
     void setYear(int year);
-    /*!
-     * @brief Gets the year corresponding to the time set in the class.
-     * @result The 4-digit year.
-     */
+    /// @result The 4-digit year.
     [[nodiscard]] int getYear() const noexcept;
-    /*! @} */
+    /// @}
 
-    /*!
-     * @name Julian Day
-     * @{
-     */
-    /*!
-     * @brief Sets the day of the year.
-     * @note This will invalidate the calendar day set with 
-     *       \c setMonth() and \c setDayOfMonth().
-     * @param[in] jday  The Julian day of the year to set.  This is in the
-     *                  range of [1,366].  Note, additional checking for
-     *                  leap years will not be performed.
-     * @throws std::invalid_argument if jday is out of range.
-     */
-    void setJulianDay(int jday);
-    /*!
-     * @brief Gets the Julian day corresponding to the time set in
-     *        the class.
-     * @result The Julian day.  This is in the range [1,366] where 366
-     *         accounts for leap years.
-     */
-    [[nodiscard]] int getJulianDay() const noexcept;
-    /*! @} */
+    /// @name Day of Year
+    /// @{
+    /// @brief Sets the day of the year.
+    /// @note This will override the month and day of month set with
+    ///       \c setMonthAndDay().
+    /// @param[in] jday  The day of the year to set.  This is in the
+    ///                  range of [1,366] for leap years and [1,365]
+    ///                  for non-leap years.
+    /// @throws std::invalid_argument if jday is out of range.
+    void setDayOfYear(int jday);
+    /// @result The day of the year.  This is in the range [1,366] where 366
+    ///         accounts for leap years.
+    [[nodiscard]] int getDayOfYear() const noexcept;
+    /// @}
 
-    /*!
-     * @name Calendar Day
-     * @{
-     */
-    /*!
-     * @brief Sets the months.
-     * @note When using this setter the day of the month must be set with 
-     *       \c setDayOfMonth().  This will invalidate the current Julian day.
-     * @param[in] month  The month to set.  This is in the range [1,12].
-     * @throws std::invalid_argument if month is out of range.
-     */
-    void setMonth(int month);
-    /*!
-     * @brief Gets the month corresponding to the time set in the class.
-     * @result The month.  This is in the range [1,12].
-     */
+    /// @name Calendar Day
+    /// @{
+    /// @brief Sets the month and the day of the month.
+    /// @note This will override the current day of the year.
+    /// @param[in] monthAndDay  monthAndDay.first is the month which must
+    ///                        be in the range [1,12] and monthAndDay.second
+    ///                        is the day of the month which must be in the
+    ///                        range [1,31].
+    /// @throws std::invalid_argument if month or day of month is out of range.
+    void setMonthAndDay(const std::pair<int, int> &monthAndDay);
+    /// @result The month.  This is in the range [1,12].
     [[nodiscard]] int getMonth() const noexcept;
-    /*!
-     * @brief Sets the day of the month.
-     * @note  When using this setter the month must also be set with
-     *        \c setMonthDayOfMonth().  This will invalidate the current
-     *        Julian day.
-     * @param[in] dom  The day of the month to set.  This must be in the
-     *                 range [1,31].  Further checking for the correct
-     *                 number of days in the month will not be performed.
-     * @throws std::invalid_argument if dom is out of bounds.
-     */
-    void setDayOfMonth(int dom);
-    /*!
-     * @brief Gets the day of the month corresponding to the time set
-     *        in the class.
-     * @result The day of the month.  This is in the range [1,31].
-     */
+    /// @brief Gets the day of the month corresponding to the time set
+    ///        in the class.
+    /// @result The day of the month.  This is in the range [1,31].
     [[nodiscard]] int getDayOfMonth() const noexcept;
-    /*! @} */
+    /// @}
 
-    /*!
-     * @name Hour
-     * @{
-     */
-    /*!
-     * @brief Sets the hour.
-     * @param[in] hour  The hour to set.  This is in the range [0,23].
-     * @throws std::invalid_argument if hour is out of range.
-     */
+    /// @name Hour
+    /// @{
+    /// @brief Sets the hour.
+    /// @param[in] hour  The hour to set.  This is in the range [0,23].
+    /// @throws std::invalid_argument if hour is out of range.
     void setHour(int hour);
-    /*!
-     * @brief Gets the hour corresponding to the time set in the class.
-     * @result The time of the day.  This is in the range [0,23].
-     */
+    /// @result The hour of the day.  This is in the range [0,23].
     [[nodiscard]] int getHour() const noexcept;
-    /*! @} */
+    /// @}
 
-    /*!
-     * @name Minute
-     * @{
-     */
-    /*!
-     * @brief Sets the minute.
-     * @param[in] minute  The minute to set.  This is in the range [0,59].
-     * @throws std::invalid_argument if minute is out of range.
-     */
+    /// @name Minute
+    /// @{
+    /// @brief Sets the minute.
+    /// @param[in] minute  The minute to set.  This is in the range [0,59].
+    /// @throws std::invalid_argument if minute is out of range.
     void setMinute(int minute);
-    /*!
-     * @brief Gets the minute corresponding to the time set in the class.
-     * @result The minute of the hour.  This is in the range [0,59].
-     */
+    /// @result The minute of the hour.  This is in the range [0,59].
     [[nodiscard]] int getMinute() const noexcept;
-    /*! @} */
+    /// @}
 
-    /*!
-     * @name Second
-     * @{
-     */
-    /*!
-     * @brief The integer part of the second to set.
-     * @param[in] second  The integral second to set.  This is in the
-     *                    range [0,59].
-     * @throws std::invalid_argument if second is out of range.
-     */
+    /// @name Second
+    /// @{
+    /// @brief The integer part of the second to set.
+    /// @param[in] second  The integral second to set.  This is in the
+    ///                    range [0,59].
+    /// @throws std::invalid_argument if second is out of range.
     void setSecond(int second);
-    /*!
-     * @brief Gets the second corresponding to the time set in the class.
-     * @result The second.  This is in the range [0,59].
-     */
+    /// @result The integer second.  This is in the range [0,59].
     [[nodiscard]] int getSecond() const noexcept;
-    /*! @} */
+    /// @}
 
-    /*!
-     * @name Microsecond
-     * @{
-     */
-    /*!
-     * @brief Sets the microsecond.  
-     * @param[in] musec  The microsecond to set.  This must be in the range
-     *                   [0,999999].
-     * @throws std::invalid_argument if microsecond is negative or too large.
-     */
+    /// @name Micro-second
+    /// @{
+    /// @brief Sets the microsecond.  
+    /// @param[in] musec  The microsecond to set.  This must be in the range
+    ///                   [0,999999].
+    /// @throws std::invalid_argument if microsecond is negative or too large.
     void setMicroSecond(int musec);
-    /*!
-     * @brief Gets the microsecond corresonding to the time set in the class.
-     * @result The microsecond.
-     */
+    /// @result The microsecond component of the set time.
     [[nodiscard]] int getMicroSecond() const noexcept;
-    /*!
-     * @} 
-    */
+    ///
+    /// @} 
 
-    /*!
-     * @brief Swaps two time classes.
-     * @param[in,out] lhs  Class to exchange with rhs.
-     * @param[in,out] rhs  Class to exchange with lhs.
-     */
+    /// @brief Swaps two time classes.
+    /// @param[in,out] lhs  Class to exchange with rhs.
+    /// @param[in,out] rhs  Class to exchange with lhs.
     friend void swap(Time &lhs, Time &rhs);
 private:
      class TimeImpl;

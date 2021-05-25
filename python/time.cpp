@@ -75,12 +75,12 @@ Time::~Time() = default;
 /// Get/Set Epochal Time
 void Time::setEpochalTime(const double time)
 {
-    mTime->setEpochalTime(time);    
+    mTime->setEpoch(time);    
 }
 
 double Time::getEpochalTime() const
 {
-    return mTime->getEpochalTime();
+    return mTime->getEpoch();
 }
 
 /// Get/Set Year
@@ -94,32 +94,26 @@ int Time::getYear() const
     return mTime->getYear();
 }
 
-/// Get/Set Julian day
-void Time::setJulianDay(const int jday)
+/// Get/Set day of year
+void Time::setDayOfYear(const int jday)
 {
-    mTime->setJulianDay(jday);
+    mTime->setDayOfYear(jday);
 }
 
-int Time::getJulianDay() const
+int Time::getDayOfYear() const
 {
-    return mTime->getJulianDay();
+    return mTime->getDayOfYear();
 }
 
 /// Get/Set month
-void Time::setMonth(const int month)
+void Time::setMonthAndDay(const std::pair<int, int> &md)
 {
-    mTime->setMonth(month);
+    mTime->setMonthAndDay(md);
 }
 
 int Time::getMonth() const
 {
     return mTime->getMonth();
-}
-
-/// Get/Set day of month
-void Time::setDayOfMonth(const int dom)
-{
-    mTime->setDayOfMonth(dom);
 }
 
 int Time::getDayOfMonth() const
@@ -221,25 +215,22 @@ void PBSFF::initializeTime(pybind11::module &m)
              "Gets the year.");
     time.def("set_year",
              &PBSFF::Time::setYear,
-             "This defines the time's year - e.g., 2020 indicates the year 2020.  This must be greater than 1900.");
-    time.def("get_julian_day",
-             &PBSFF::Time::getJulianDay,
-             "Gets the Julian day (day of the year).");
-    time.def("set_julian_day",
-             &PBSFF::Time::setJulianDay,
-             "There are two ways to specify the day of the year.  The first is the Julian day.  In this case, this must be in the range [1,366] where 366 accounts for leap years.  Setting this variable will invalidate the month and day of the month.");
+             "This defines the time's year - e.g., 2020 indicates the year 2020.");
+    time.def("get_day_of_year",
+             &PBSFF::Time::getDayOfYear,
+             "Gets the day of the year.");
+    time.def("set_day_of_year",
+             &PBSFF::Time::setDayOfYear,
+             "There are two ways to specify the day of the year.  The first is with this function.  In this case, this must be in the range [1,366] where 366 accounts for leap years.  Setting this variable will invalidate the month and day of the month.");
     time.def("get_month",
              &PBSFF::Time::getMonth,
              "Gets the month of the year.");
-    time.def("set_month",
-             &PBSFF::Time::setMonth,
-             "The other way to specify the day of the year is by specifying the month and the day of the month with the day_of_month attribute.  This is the month and must be in the range [1,12].  Setting this variable then this will invalidate the Julian day.");
+    time.def("set_month_and_day",
+             &PBSFF::Time::setMonthAndDay,
+             "Sets the day of the year by setting the month and day of month.  The month must be in the range [1,12] and day of the month must be in the range [1,31]");
     time.def("get_day_of_month",
              &PBSFF::Time::getDayOfMonth,
              "Gets the day of the month.");
-    time.def("set_day_of_month",
-             &PBSFF::Time::setDayOfMonth,
-             "The other way to specify the day of the year is by speciyfing the month with the month attribute and the day of the month.  This is the day of the month and must be in the range [1,31].  Setting this variable will invalidate the Julian day.");
     time.def("get_hour",
              &PBSFF::Time::getHour,
              "Gets the hour of the day.");

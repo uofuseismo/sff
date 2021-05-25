@@ -126,9 +126,16 @@ void EventSummaryLine::unpackString(const std::string &line)
     auto year = unpackIntPair(0, 4, headerPtr, lenos);
     if (year.first){originTime.setYear(year.second);}
     auto month = unpackIntPair(4, 6, headerPtr, lenos);
-    if (month.first){originTime.setMonth(month.second);}
     auto dayOfMonth = unpackIntPair(6, 8, headerPtr, lenos);
-    if (dayOfMonth.first){originTime.setDayOfMonth(dayOfMonth.second);}
+    if (month.first && dayOfMonth.first)
+    {
+        int mTemp = month.second;
+        int dTemp = dayOfMonth.second;
+        originTime.setMonthAndDay(std::pair<int, int> (mTemp, dTemp));
+    }
+    //if (month.first){originTime.setMonth(month.second);}
+    //auto dayOfMonth = unpackIntPair(6, 8, headerPtr, lenos);
+    //if (dayOfMonth.first){originTime.setDayOfMonth(dayOfMonth.second);}
     auto hour = unpackIntPair(8, 10, headerPtr, lenos);
     if (hour.first){originTime.setHour(hour.second);}
     auto minute = unpackIntPair(10, 12, headerPtr, lenos);

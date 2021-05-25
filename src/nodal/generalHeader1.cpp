@@ -211,7 +211,7 @@ void GeneralHeader1::unpack(const char data[])
 
     SFF::Utilities::Time t0;
     t0.setYear(year);
-    t0.setJulianDay(day);
+    t0.setDayOfYear(day);
     t0.setHour(hour);
     t0.setMinute(minute);
     t0.setSecond(sec);

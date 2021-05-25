@@ -351,15 +351,15 @@ SFF::Utilities::Time Waveform::getStartTime() const
     // Create the time
     Utilities::Time startTime;
     startTime.setYear(year);
-    startTime.setJulianDay(jday);
+    startTime.setDayOfYear(jday);
     startTime.setHour(hour);
     startTime.setMinute(minute);
     startTime.setSecond(isec);
     startTime.setMicroSecond(musec);
     // May have to deal with b
     if (b == 0){return startTime;}
-    double epochalTime = startTime.getEpochalTime() + b;
-    startTime.setEpochalTime(epochalTime);
+    double epochalTime = startTime.getEpoch() + b;
+    startTime.setEpoch(epochalTime);
     return startTime;
 }
 
@@ -368,7 +368,7 @@ SFF::Utilities::Time Waveform::getStartTime() const
 void Waveform::setStartTime(const Utilities::Time &startTime) noexcept
 {
      pImpl->mHeader.setHeader(SAC::Integer::NZYEAR, startTime.getYear()); 
-     pImpl->mHeader.setHeader(SAC::Integer::NZJDAY, startTime.getJulianDay());
+     pImpl->mHeader.setHeader(SAC::Integer::NZJDAY, startTime.getDayOfYear());
      pImpl->mHeader.setHeader(SAC::Integer::NZHOUR, startTime.getHour());
      pImpl->mHeader.setHeader(SAC::Integer::NZMIN,  startTime.getMinute());
      pImpl->mHeader.setHeader(SAC::Integer::NZSEC,  startTime.getSecond());

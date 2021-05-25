@@ -235,7 +235,7 @@ void Trace::read(const std::string &fileName, const SNCL &sncl)
             }
             // Set the start time (nstime is in nanoseconds)
             double startTime = (segment->starttime)*1.e-9;
-            pImpl->mStartTime.setEpochalTime(startTime);
+            pImpl->mStartTime.setEpoch(startTime);
             // Unpack the data
             size_t outputSize = segment->samplecnt*sampleSize;
             auto unpacked = mstl3_unpack_recordlist(traceID, segment,

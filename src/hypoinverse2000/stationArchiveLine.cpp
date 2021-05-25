@@ -224,8 +224,9 @@ void StationArchiveLine::unpackString(const std::string &line)
         hour.first && minute.first)
     {
         pickTime.setYear(year.second);
-        pickTime.setMonth(month.second);
-        pickTime.setDayOfMonth(dayOfMonth.second);
+        //pickTime.setMonth(month.second);
+        //pickTime.setDayOfMonth(dayOfMonth.second);
+        pickTime.setMonthAndDay(std::pair(month.second, dayOfMonth.second));
         pickTime.setHour(hour.second);
         pickTime.setMinute(minute.second);
         pickTimeBase = pickTime;
@@ -464,7 +465,7 @@ std::string StationArchiveLine::packString() const noexcept
             auto p = getPPickTime();
             auto s = getSPickTime();
             if (p.getYear() != s.getYear() ||
-                p.getJulianDay() != s.getJulianDay() ||
+                p.getDayOfYear() != s.getDayOfYear() ||
                 p.getHour() != s.getHour() ||
                 p.getMinute() != s.getMinute())
             {

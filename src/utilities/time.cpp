@@ -7,9 +7,248 @@
 #include <ostream>
 #include <stdexcept>
 #include "sff/utilities/time.hpp"
+#include "time/utc.hpp"
 
-using namespace SFF::Utilities;
+namespace SFU = SFF::Utilities;
 
+class SFU::Time::TimeImpl
+{
+public:
+    ::Time::UTC mTime;
+};
+
+/// C'tor
+SFU::Time::Time() :
+    pImpl(std::make_unique<TimeImpl> ())
+{
+}
+
+/// C'tor
+SFU::Time::Time(const double epoch) :
+    pImpl(std::make_unique<TimeImpl> ())
+{
+    setEpoch(epoch); 
+}
+
+SFU::Time::Time(const std::string &time) :
+    pImpl(std::make_unique<TimeImpl> ())
+{
+    ::Time::UTC t(time);
+    setEpoch(t.getEpoch());
+}
+
+/// Copy c'tor
+SFU::Time::Time(const Time &time)
+{
+    *this = time;
+}
+
+/// Move c'tor
+SFU::Time::Time(Time &&time) noexcept
+{
+    *this = std::move(time);
+}
+
+/// Destructor
+SFU::Time::~Time() = default;
+
+/// Reset class
+void SFU::Time::clear() noexcept
+{
+    pImpl->mTime.clear();
+}
+
+/// Copy assignment
+SFU::Time& SFU::Time::operator=(const SFU::Time &time)
+{
+    if (&time == this){return *this;}
+    pImpl = std::make_unique<TimeImpl> (*time.pImpl); // use default copy
+    return *this;
+}
+
+/// Move assignment
+SFU::Time& SFU::Time::operator=(SFU::Time &&time) noexcept
+{
+    if (&time == this){return *this;}
+    pImpl = std::move(time.pImpl);
+    return *this;
+}
+
+/// Epochal time
+void SFU::Time::setEpoch(const double epoch)
+{
+    pImpl->mTime.setEpoch(epoch); 
+}
+
+double SFU::Time::getEpoch() const
+{
+    return pImpl->mTime.getEpoch();
+}
+
+/// Year
+void SFU::Time::setYear(const int year)
+{
+    pImpl->mTime.setYear(year);
+}
+
+int SFU::Time::getYear() const noexcept
+{
+    return pImpl->mTime.getYear();
+}
+
+/// Month and day
+void SFU::Time::setMonthAndDay(const std::pair<int, int> &md)
+{
+    pImpl->mTime.setMonthAndDay(md);
+}
+
+/// Day of year
+void SFU::Time::setDayOfYear(const int jday)
+{
+    pImpl->mTime.setDayOfYear(jday);
+}
+
+int SFU::Time::getDayOfYear() const noexcept
+{
+    return pImpl->mTime.getDayOfYear();
+}
+
+/// Month
+int SFU::Time::getMonth() const noexcept
+{
+    return pImpl->mTime.getMonth();
+}
+
+
+int SFU::Time::getDayOfMonth() const noexcept
+{
+    return pImpl->mTime.getDayOfMonth();
+}
+
+/// Hour
+void SFU::Time::setHour(const int hour)
+{
+    pImpl->mTime.setHour(hour);
+}
+
+int SFU::Time::getHour() const noexcept
+{
+    return pImpl->mTime.getHour();
+}
+
+/// Minute
+void SFU::Time::setMinute(const int minute)
+{
+    pImpl->mTime.setMinute(minute);
+}
+
+int SFU::Time::getMinute() const noexcept
+{
+    return pImpl->mTime.getMinute();
+}
+
+/// Second
+void SFU::Time::setSecond(const int second)
+{
+    pImpl->mTime.setSecond(second);
+}
+
+int SFU::Time::getSecond() const noexcept
+{
+    return pImpl->mTime.getSecond();
+}
+
+/// Microsecond
+void SFU::Time::setMicroSecond(const int musec)
+{
+    pImpl->mTime.setMicroSecond(musec);
+}
+
+int SFU::Time::getMicroSecond() const noexcept
+{
+    return pImpl->mTime.getMicroSecond();
+}
+
+/// Swap times
+void SFF::Utilities::swap(Time &lhs, Time &rhs)
+{
+    std::swap(lhs.pImpl, rhs.pImpl);
+}
+
+/// Add times
+SFU::Time SFF::Utilities::operator+(const SFU::Time &x, const SFU::Time &y) 
+{
+    return x + y.getEpoch();
+}
+
+SFU::Time SFF::Utilities::operator+(const SFU::Time &x, const double y)  
+{
+    auto t = x.getEpoch() + y;
+    SFU::Time tout(t);
+    return tout;
+}
+
+/// Subtract times
+SFU::Time SFF::Utilities::operator-(const SFU::Time &x, const SFU::Time &y) 
+{
+    return x - y.getEpoch();
+}
+ 
+SFU::Time SFF::Utilities::operator-(const SFU::Time &x, const double y)  
+{
+    auto t = x.getEpoch() - y;
+    SFU::Time tout(t);
+    return tout;
+}
+
+/// Comparisons
+/// lhs == rhs
+bool SFF::Utilities::operator==(const SFU::Time &lhs, const SFU::Time &rhs)
+{
+    if (lhs.getYear()       != rhs.getYear()){return false;}
+    if (lhs.getMonth()      != rhs.getMonth()){return false;}
+    if (lhs.getDayOfYear()  != rhs.getDayOfYear()){return false;}
+    if (lhs.getDayOfMonth() != rhs.getDayOfMonth()){return false;}
+    if (lhs.getHour()       != rhs.getHour()){return false;}
+    if (lhs.getMinute()     != rhs.getMinute()){return false;}
+    if (lhs.getSecond()     != rhs.getSecond()){return false;}
+    return lhs.getMicroSecond() == rhs.getMicroSecond();
+}
+
+/// lhs != rhs
+bool SFF::Utilities::operator!=(const SFU::Time &lhs, const SFU::Time &rhs)
+{
+    return !(lhs == rhs);
+}
+
+/// lhs > rhs
+bool SFF::Utilities::operator>(const SFU::Time &lhs, const SFU::Time &rhs)
+{
+    return lhs.getEpoch() > rhs.getEpoch();
+}
+
+/// lhs < rhs
+bool SFF::Utilities::operator<(const SFU::Time &lhs, const SFU::Time &rhs)
+{
+    return lhs.getEpoch() < rhs.getEpoch();
+}
+
+
+/// std::cout << time << std::endl;
+std::ostream&
+SFF::Utilities::operator<<(std::ostream &os, const SFU::Time &time)
+{
+    char result[27];
+    std::fill(result, result+27, '\0');
+    sprintf(result, "%04d-%02d-%02dT%02d:%02d:%02d.%06d",
+            time.getYear(), time.getMonth(), time.getDayOfMonth(),
+            time.getHour(), time.getMinute(), time.getSecond(),
+            time.getMicroSecond());
+    return os << result;
+}
+
+
+/*
 #define CALENDAR_2_EPOCH 0
 #define EPOCH_2_CALENDAR 1
 std::mutex timeMutex;
@@ -24,7 +263,7 @@ static void calendar2epoch(
     int &secondOut, int &musecOut,
     double &epochOut);
 
-class  Time::TimeImpl
+class Time::TimeImpl
 {
 public:
     void updateEpochalTime()
@@ -162,6 +401,7 @@ Time& Time::operator=(Time &&time) noexcept
     pImpl = std::move(time.pImpl);
     return *this;
 }
+*/
 
 /*
 bool Time::operator==(const Time &time)
@@ -197,6 +437,7 @@ bool Time::operator<(const Time &time)
 }
 */
 
+/*
 void Time::setEpochalTime(const double epoch)
 {
     calendar2epoch(EPOCH_2_CALENDAR,
@@ -518,3 +759,4 @@ void calendar2epoch(
         epochOut  = etime;
     }
 }
+*/

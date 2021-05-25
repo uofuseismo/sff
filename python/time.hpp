@@ -37,13 +37,12 @@ public:
     void setYear(int year);
     int getYear() const;
 
-    void setJulianDay(int jday);
-    int getJulianDay() const;
+    void setDayOfYear(int jday);
+    int getDayOfYear() const;
 
-    void setMonth(int month);
+    void setMonthAndDay(const std::pair<int, int>  &md);
     int getMonth() const;
 
-    void setDayOfMonth(int dom);
     int getDayOfMonth() const;
 
     void setHour(int hour);

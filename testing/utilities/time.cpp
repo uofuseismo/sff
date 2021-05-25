@@ -14,10 +14,10 @@ using namespace SFF::Utilities;
 TEST(UtilitiesTime, EpochToCalendar)
 {
     Time time(1408117832.844000);
-    //time.setEpochalTime(1408117832.844000);
+    //time.setEpoch(1408117832.844000);
     EXPECT_EQ(2014, time.getYear());
     EXPECT_EQ(8, time.getMonth());
-    EXPECT_EQ(227, time.getJulianDay());
+    EXPECT_EQ(227, time.getDayOfYear());
     EXPECT_EQ(15, time.getDayOfMonth());
     EXPECT_EQ(15, time.getHour());
     EXPECT_EQ(50, time.getMinute());
@@ -46,7 +46,7 @@ TEST(UtilitiesTime, EpochToCalendar)
     EXPECT_EQ(tTest1.getYear(), 2009);
     EXPECT_EQ(tTest1.getMonth(), 1);
     EXPECT_EQ(tTest1.getDayOfMonth(), 1);
-    EXPECT_EQ(tTest1.getJulianDay(), 1);
+    EXPECT_EQ(tTest1.getDayOfYear(), 1);
     EXPECT_EQ(tTest1.getHour(), 4);
     EXPECT_EQ(tTest1.getMinute(), 33);
     EXPECT_EQ(tTest1.getSecond(), 5);
@@ -59,14 +59,14 @@ TEST(UtilitiesTime, clear)
     Time time(1408117832.844000);
     time.clear();
     EXPECT_EQ(1970, time.getYear());
-    EXPECT_EQ(1,    time.getJulianDay());
+    EXPECT_EQ(1,    time.getDayOfYear());
     EXPECT_EQ(1,    time.getMonth());
     EXPECT_EQ(1,    time.getDayOfMonth());
     EXPECT_EQ(0,    time.getHour());
     EXPECT_EQ(0,    time.getMinute());
     EXPECT_EQ(0,    time.getSecond());
     EXPECT_EQ(0,    time.getMicroSecond());
-    EXPECT_NEAR(0,  time.getEpochalTime(), 1.e-4);
+    EXPECT_NEAR(0,  time.getEpoch(), 1.e-4);
 }
 
 TEST(UtilitiesTime, swap)
@@ -85,24 +85,24 @@ TEST(UtilitiesTime, CalendarToEpoch)
     Time time;
     // Build time from day of month
     time.setYear(2016);
-    time.setMonth(4);
-    time.setDayOfMonth(11);
+    time.setMonthAndDay(std::pair(4, 11));
+    //time.setDayOfMonth(11);
     time.setHour(19);
     time.setMinute(13);
     time.setSecond(45);
     time.setMicroSecond(255000);
-    EXPECT_NEAR(1460402025.255, time.getEpochalTime(), 1.e-4);
+    EXPECT_NEAR(1460402025.255, time.getEpoch(), 1.e-4);
     // Build time from julian day
     Time timej;
     timej.setYear(2016);
-    timej.setJulianDay(102); // Add 1 for leap year
+    timej.setDayOfYear(102); // Add 1 for leap year
     timej.setHour(19);
     timej.setMinute(13);
     timej.setSecond(45);
     timej.setMicroSecond(255000); 
     // Test the copy constructor
     Time copyTime(timej);
-    EXPECT_NEAR(1460402025.255, copyTime.getEpochalTime(), 1.e-4); 
+    EXPECT_NEAR(1460402025.255, copyTime.getEpoch(), 1.e-4); 
 }
 
 TEST(UtilitiesTime, CompareTime)
@@ -119,8 +119,8 @@ TEST(UtilitiesTime, TimeOperators)
 {
     Time time1; // 1578513045.372
     time1.setYear(2020);
-    time1.setMonth(1);
-    time1.setDayOfMonth(8);
+    time1.setMonthAndDay(std::pair(1, 8));
+    //time1.setDayOfMonth(8);
     time1.setHour(19);
     time1.setMinute(50);
     time1.setSecond(45);
@@ -128,9 +128,9 @@ TEST(UtilitiesTime, TimeOperators)
  
     Time day(86400); // Add 2 days
     auto time3 = time1 + day + day;
-    EXPECT_NEAR(time3.getEpochalTime(), 1578513045.372 + 86400*2, 1.e-4);
+    EXPECT_NEAR(time3.getEpoch(), 1578513045.372 + 86400*2, 1.e-4);
     auto time4 = time3 - day; // Now subtract a day
-    EXPECT_NEAR(time4.getEpochalTime(), 1578513045.372 + 86400, 1.e-4); 
+    EXPECT_NEAR(time4.getEpoch(), 1578513045.372 + 86400, 1.e-4); 
 }
 
 /*
@@ -147,14 +147,14 @@ TEST(UtilitiesTime, LeapSeconds)
     time.setMicroSecond(0);
     int nls;
     // Jan 1, 1972 starts the list at 10
-    nls = ls.getNumberOfLeapSeconds(time.getEpochalTime());
+    nls = ls.getNumberOfLeapSeconds(time.getEpoch());
     EXPECT_EQ(nls, 37);
-    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpochalTime(), true), 27);
+    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpoch(), true), 27);
 
     time.setYear(1969);
-    nls = ls.getNumberOfLeapSeconds(time.getEpochalTime());
+    nls = ls.getNumberOfLeapSeconds(time.getEpoch());
     EXPECT_EQ(nls, 10);
-    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpochalTime(), true), 0);
+    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpoch(), true), 0);
 
     time.setYear(1972);
     time.setMonth(7);
@@ -163,9 +163,9 @@ TEST(UtilitiesTime, LeapSeconds)
     time.setMinute(0);
     time.setSecond(0);
     time.setMicroSecond(0);
-    nls = ls.getNumberOfLeapSeconds(time.getEpochalTime());
+    nls = ls.getNumberOfLeapSeconds(time.getEpoch());
     EXPECT_EQ(nls, 11);
-    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpochalTime(), true), 1);
+    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpoch(), true), 1);
     // Now try some edge cases - 36 starts at July 2015
     time.setYear(2015);
     time.setMonth(6);
@@ -174,9 +174,9 @@ TEST(UtilitiesTime, LeapSeconds)
     time.setMinute(59);
     time.setSecond(59);
     time.setMicroSecond(0);
-    nls = ls.getNumberOfLeapSeconds(time.getEpochalTime());
+    nls = ls.getNumberOfLeapSeconds(time.getEpoch());
     EXPECT_EQ(nls, 35);
-    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpochalTime(), true), 25);
+    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpoch(), true), 25);
 
     time.setYear(1996);
     time.setMonth(1);
@@ -185,9 +185,9 @@ TEST(UtilitiesTime, LeapSeconds)
     time.setMinute(0);
     time.setSecond(0);
     time.setMicroSecond(0);
-    nls = ls.getNumberOfLeapSeconds(time.getEpochalTime());
+    nls = ls.getNumberOfLeapSeconds(time.getEpoch());
     EXPECT_EQ(nls, 30);
-    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpochalTime(), true), 20);
+    EXPECT_EQ(ls.getNumberOfLeapSeconds(time.getEpoch(), true), 20);
 
     // October 1, 2012
     nls = ls.getNumberOfLeapSeconds(1349101514);

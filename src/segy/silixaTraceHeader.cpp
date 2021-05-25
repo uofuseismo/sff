@@ -13,7 +13,7 @@ class TraceHeader::TraceHeaderImpl
 public:
     TraceHeaderImpl()
     {
-        mStartTime.setEpochalTime(0);
+        mStartTime.setEpoch(0);
         clear();
     } 
     /// Resets the header
@@ -46,7 +46,7 @@ public:
     void packStartTime()
     {
         packShort(mStartTime.getYear(),      mHeader.data()+156, mSwapBytes);
-        packShort(mStartTime.getJulianDay(), mHeader.data()+158, mSwapBytes);
+        packShort(mStartTime.getDayOfYear(), mHeader.data()+158, mSwapBytes);
         packShort(mStartTime.getHour(),      mHeader.data()+160, mSwapBytes);
         packShort(mStartTime.getMinute(),    mHeader.data()+162, mSwapBytes);
         packShort(mStartTime.getSecond(),    mHeader.data()+164, mSwapBytes);
@@ -159,7 +159,7 @@ void TraceHeader::set(const char *header)
         throw std::invalid_argument("Can only handle UTC time\n");
     }
     pImpl->mStartTime.setYear(year);
-    pImpl->mStartTime.setJulianDay(julday);
+    pImpl->mStartTime.setDayOfYear(julday);
     pImpl->mStartTime.setHour(hour);
     pImpl->mStartTime.setMinute(minute);
     pImpl->mStartTime.setSecond(second);

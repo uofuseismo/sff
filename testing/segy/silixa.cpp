@@ -117,7 +117,7 @@ TEST(SEGY, TraceHeader)
  
     auto startTime = header.getStartTime();
     EXPECT_EQ(startTime.getYear(), 2019);
-    EXPECT_EQ(startTime.getJulianDay(), 117);
+    EXPECT_EQ(startTime.getDayOfYear(), 117);
     EXPECT_EQ(startTime.getMonth(), 4);
     EXPECT_EQ(startTime.getDayOfMonth(), 27);
     EXPECT_EQ(startTime.getHour(),   0);
@@ -133,7 +133,7 @@ TEST(SEGY, TraceHeader)
     EXPECT_EQ(headerCopy.getTraceNumber(), 1);
     auto startTimeCopy = headerCopy.getStartTime();
     EXPECT_EQ(startTimeCopy.getYear(), 2019);
-    EXPECT_EQ(startTimeCopy.getJulianDay(), 117);
+    EXPECT_EQ(startTimeCopy.getDayOfYear(), 117);
     EXPECT_EQ(startTimeCopy.getMonth(), 4);
     EXPECT_EQ(startTimeCopy.getDayOfMonth(), 27);
     EXPECT_EQ(startTimeCopy.getHour(),   0);
@@ -145,7 +145,7 @@ TEST(SEGY, TraceHeader)
 
     // Test writing some variables
     startTimeCopy.setYear(2020);
-    startTimeCopy.setJulianDay(45);
+    startTimeCopy.setDayOfYear(45);
     startTimeCopy.setHour(1);
     startTimeCopy.setMinute(1);
     startTimeCopy.setSecond(1);
@@ -158,7 +158,7 @@ TEST(SEGY, TraceHeader)
     header.set(temp.data());
     startTime = header.getStartTime();
     EXPECT_EQ(startTime.getYear(), 2020);
-    EXPECT_EQ(startTime.getJulianDay(), 45);
+    EXPECT_EQ(startTime.getDayOfYear(), 45);
     EXPECT_EQ(startTime.getHour(),   1); 
     EXPECT_EQ(startTime.getMinute(), 1); 
     EXPECT_EQ(startTime.getSecond(), 1);

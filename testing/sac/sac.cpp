@@ -415,7 +415,7 @@ TEST(SAC, waveform)
     EXPECT_EQ(startTime.getYear(), 2005);
     EXPECT_EQ(startTime.getMonth(), 10);
     EXPECT_EQ(startTime.getDayOfMonth(), 6);
-    EXPECT_EQ(startTime.getJulianDay(), 279);
+    EXPECT_EQ(startTime.getDayOfYear(), 279);
     EXPECT_EQ(startTime.getHour(), 7); 
     EXPECT_EQ(startTime.getMinute(), 21);
     EXPECT_EQ(startTime.getSecond(), 59);
