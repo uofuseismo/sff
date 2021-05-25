@@ -146,11 +146,7 @@ add_library(sff ${SRC} ${MINISEED_SRC})
 #                      CXX_EXTENSIONS NO) 
 target_link_libraries(sff ${TIME_LIBRARY})
 target_include_directories(sff PUBLIC  ${PUBLIC_HEADER_FILES})
-if (${MINISEED_FOUND})
-    target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
-else()
-    target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES} ${TIME_INCLUDE_DIR})
-endif()
+target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
 
 if (WRAP_PYTHON)
    add_library(pysff MODULE
