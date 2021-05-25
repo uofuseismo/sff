@@ -60,11 +60,11 @@ endif()
 ################################################################################
 #                           Download the test data file                        #
 ################################################################################
-file(DOWNLOAD
-     http://home.chpc.utah.edu/~u6024448/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
-     ${CMAKE_SOURCE_DIR}/testing/data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
-     INACTIVITY_TIMEOUT 5)
-#    SHOW_PROGRESS)
+#file(DOWNLOAD
+#     http://home.chpc.utah.edu/~u6024448/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
+#     ${CMAKE_SOURCE_DIR}/testing/data/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
+#     INACTIVITY_TIMEOUT 5
+#     SHOW_PROGRESS)
 #file(DOWNLOAD
 #     http://home.chpc.utah.edu/~u6024448/FORGE_78-32_iDASv3-P11_UTC190427000008.sgy
 #     ${CMAKE_SOURCE_DIR}/testing/data/002b.fcnt
@@ -75,10 +75,12 @@ file(DOWNLOAD
 ################################################################################
 find_package(GTest REQUIRED)
 set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
+set(FindTime_DIR     ${CMAKE_SOURCE_DIR}/CMakeModules)
 find_package(FindMiniSEED)
+find_package(FindTime REQUIRED)
 
-if (${MINISEED_FOUND})
-   message("Found miniSEED")
+if (${FindMiniSEED_FOUND})
+   message("Found MiniSEED")
    link_libraries(${MINISEED_LIBRARY})
 endif()
 
@@ -124,12 +126,15 @@ set(SRC
     src/hypoinverse2000/eventSummaryLine.cpp
     src/hypoinverse2000/stationArchiveLine.cpp
     )
-if (${MINISEED_FOUND})
+if (${FindMiniSEED_FOUND})
    set(MINISEED_SRC
        src/miniseed/sncl.cpp
        src/miniseed/trace.cpp
        src/miniseed/traceGroup.cpp)
    set(MINISEED_TEST_SRC testing/miniseed/miniseed.cpp)
+endif()
+if (${TIME_FOUND})
+message("hey")
 endif()
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
@@ -139,6 +144,7 @@ add_library(sff ${SRC} ${MINISEED_SRC})
 #                      CXX_STANDARD 17
 #                      CXX_STANDARD_REQUIRED YES 
 #                      CXX_EXTENSIONS NO) 
+target_link_libraries(sff ${TIME_LIBRARY})
 target_include_directories(sff PUBLIC  ${PUBLIC_HEADER_FILES})
 target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES})
 if (${MINISEED_FOUND})
