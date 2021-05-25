@@ -76,7 +76,7 @@ TEST(LibraryDataReadersMiniSEED, Trace)
     sncl.setLocationCode("01");
     // Load the reference data file
     std::vector<int> referenceSignal = loadIntegerData(wyFileName, 14609);
-    EXPECT_EQ(referenceSignal.size(), 14609); 
+    EXPECT_EQ(static_cast<int> (referenceSignal.size()), 14609); 
 /*
     std::string fileName = "data/test.mseed";
     sncl.setNetwork("IU");
