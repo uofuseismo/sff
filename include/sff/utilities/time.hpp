@@ -164,73 +164,51 @@ private:
      class TimeImpl;
      std::unique_ptr<TimeImpl> pImpl;
 }; // End class
-/*!
- *  @brief Swaps two time classes, lhs and rhs.
- *  @param[in,out] lhs  On exit this will contain the information in rhs.
- *  @param[in,out] rhs  On exit this will contain the information in lhs.
- */
+/// @brief Swaps two time classes, lhs and rhs.
+/// @param[in,out] lhs  On exit this will contain the information in rhs.
+/// @param[in,out] rhs  On exit this will contain the information in lhs.
 void swap(Time &lhs, Time &rhs);
-/*!
- * @brief Computes the sum of two times a la: x + y.
- * @param[in] x   The time.
- * @param[in] y   The time to add to x.
- * @result The sum of the two times: x + y.
- */
+/// @brief Computes the sum of two times a la: x + y.
+/// @param[in] x   The time.
+/// @param[in] y   The time to add to x.
+/// @result The sum of the two times: x + y.
 Time operator+(const Time &x, const Time &y);
-/*!
- * @brief Adds seconds to a time a la: x + y (seconds).
- * @param[in] x   The time.
- * @param[in] y   The number of seconds to add to x.
- * @result The sum of the time in x with the number of seconds in y: x + y. 
- */
+/// @brief Adds seconds to a time a la: x + y (seconds).
+/// @param[in] x   The time.
+/// @param[in] y   The number of seconds to add to x.
+/// @result The sum of the time in x with the number of seconds in y: x + y. 
 Time operator+(const Time &x, double y); 
-/*!
- * @brief Computes the difference between two times a la: x - y.
- * @param[in] x   The time.
- * @param[in] y   The time to subtract from x.
- * @result The difference between the two times: x - y.
- */
+/// @brief Computes the difference between two times a la: x - y.
+/// @param[in] x   The time.
+/// @param[in] y   The time to subtract from x.
+/// @result The difference between the two times: x - y.
 Time operator-(const Time &x, const Time &y);
-/*!
- * @brief Removes seconds from a time a la: x - y (seconds).
- * @param[in] x   The time.
- * @param[in] y   The number of seconds to subtract from to x.
- * @result The difference between the time in x and the
- *         number of seconds in y: x - y.
- */
+/// @brief Removes seconds from a time a la: x - y (seconds).
+/// @param[in] x   The time.
+/// @param[in] y   The number of seconds to subtract from to x.
+/// @result The difference between the time in x and the
+///         number of seconds in y: x - y.
 Time operator-(const Time &x, double y);
-/*!
- * @param[in] lhs  The left hand side of the equality.
- * @param[in] rhs  The right hand side of the equality.
- * @result True indicates that lhs == rhs, i.e., the times are equal.
- */
+/// @param[in] lhs  The left hand side of the equality.
+/// @param[in] rhs  The right hand side of the equality.
+/// @result True indicates that lhs == rhs, i.e., the times are equal.
 bool operator==(const Time &lhs, const Time &rhs);
-/*!
- * @param[in] lhs  The left hand side of the inequality.
- * @param[in] rhs  The right hand side of the inequality.
- * @result True indicates that lhs != rhs, i.e., the times are not equal.
- */
+/// @param[in] lhs  The left hand side of the inequality.
+/// @param[in] rhs  The right hand side of the inequality.
+/// @result True indicates that lhs != rhs, i.e., the times are not equal.
 bool operator!=(const Time &lhs, const Time &rhs);
-/*!
- * @param[in] lhs  The left hand side of the comparitor.
- * @param[in] rhs  The right hand side of the comparitor.
- * @result True indicates that lhs > rhs, i.e., the lhs is later than the rhs.
- */
+/// @param[in] lhs  The left hand side of the comparitor.
+/// @param[in] rhs  The right hand side of the comparitor.
+/// @result True indicates that lhs > rhs, i.e., the lhs is later than the rhs.
 bool operator>(const Time &lhs, const Time &rhs);
-/*!
- * @param[in] lhs  The left hand side of the comparitor.
- * @param[in] rhs  The right hand side of the compatitor.
- * @result True indicates that lhs < rhs, i.e, the lhs is earlier than the rhs.
- */
+/// @param[in] lhs  The left hand side of the comparitor.
+/// @param[in] rhs  The right hand side of the compatitor.
+/// @result True indicates that lhs < rhs, i.e, the lhs is earlier than the rhs.
 bool operator<(const Time &lhs, const Time &rhs);
-/*!
- * @brief Outputs a time as YYYY-MM-DDTHH:MM:SS.SSSSSS
- * @param[in] os    An output stream object.
- * @param[in] time  The time stamp
- * @return A formatted time.
- */
+/// @brief Outputs a time as YYYY-MM-DDTHH:MM:SS.SSSSSS
+/// @param[in] os    An output stream object.
+/// @param[in] time  The time stamp
+/// @return A formatted time.
 std::ostream& operator<<(std::ostream &os, const Time &time);
-
 }
-
 #endif
