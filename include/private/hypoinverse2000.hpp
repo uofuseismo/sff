@@ -1,6 +1,7 @@
 #ifndef SFF_PRIVATE_HYPOINVERSE2000_HPP
 #define SFF_PRIVATE_HYPOINVERSE2000_HPP
 #include <cmath>
+#include <array>
 #include <locale>
 #include <algorithm>
 namespace
@@ -79,11 +80,12 @@ uint64_t unpackUInt64(const int i1, const int i2, const char *stringPtr,
                       const int maxLen)
 {
     if (i1 >= maxLen){return std::numeric_limits<int>::max();}
-    char subString[10] = {"\0\0\0\0\0\0\0\0\0"};
-    std::copy(stringPtr+i1,  stringPtr+std::min(i1 + maxLen, i2), subString);
+    std::array<char, 11> subString{"\0\0\0\0\0\0\0\0\0\0"};
+    std::copy(stringPtr + i1,  stringPtr + std::min(i1 + maxLen, i2),
+              subString.data());
     try
     {
-        return std::stol(subString);
+        return std::stol(subString.data());
     }
     catch (const std::exception &e)
     {
