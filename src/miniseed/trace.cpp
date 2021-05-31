@@ -54,8 +54,8 @@ public:
         mPrecision = Precision::UNKNOWN;
         mNumberOfSamples = 0;
     }
-    class Utilities::Time mStartTime;
-    class SNCL mSNCL;
+    Utilities::Time mStartTime;
+    SNCL mSNCL;
     std::vector<double> mData64f;
     std::vector<float> mData32f;
     std::vector<int> mData32i;

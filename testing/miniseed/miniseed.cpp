@@ -40,6 +40,9 @@ TEST(LibraryDataReadersMiniSEED, SNCL)
     sncl.setLocationCode(location);
     ASSERT_STREQ(sncl.getLocationCode().c_str(), location.c_str());
     EXPECT_FALSE(sncl.isEmpty());
+    std::ostringstream stream;
+    stream << sncl;
+    EXPECT_EQ(stream.str(), "UU.DUG.HHZ.--");
     // Test copy constructor
     MiniSEED::SNCL snclCopy(sncl);
     ASSERT_TRUE(snclCopy == sncl);

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <array>
 #include <algorithm>
 #include "sff/miniseed/sncl.hpp"
 
@@ -15,31 +16,10 @@ using namespace SFF::MiniSEED;
 class SNCL::SNCLImpl
 {
 public:
-    SNCLImpl() = default;
-    SNCLImpl(const SNCLImpl &sncl)
-    {
-        *this = sncl;
-    }
-    SNCLImpl& operator=(const SNCLImpl &sncl)
-    {
-        if (&sncl == this){return *this;}
-        std::memcpy(mNetwork,  sncl.mNetwork, NETWORK_LENGTH*sizeof(char));
-        std::memcpy(mStation,  sncl.mStation, STATION_LENGTH*sizeof(char));
-        std::memcpy(mChannel,  sncl.mChannel, CHANNEL_LENGTH*sizeof(char));
-        std::memcpy(mLocation, sncl.mLocation, LOCATION_LENGTH*sizeof(char));
-        return *this;
-    }
-    void clear()
-    {
-        std::memset(mNetwork,  0, NETWORK_LENGTH*sizeof(char));
-        std::memset(mStation,  0, STATION_LENGTH*sizeof(char));
-        std::memset(mChannel,  0, CHANNEL_LENGTH*sizeof(char));
-        std::memset(mLocation, 0, LOCATION_LENGTH*sizeof(char)); 
-    } 
-    char mNetwork[NETWORK_LENGTH+1]   = {"\0\0\0\0\0\0\0\0\0\0"};
-    char mStation[STATION_LENGTH+1]   = {"\0\0\0\0\0\0\0\0\0\0"};
-    char mChannel[CHANNEL_LENGTH+1]   = {"\0\0\0\0\0\0\0\0\0\0"};
-    char mLocation[LOCATION_LENGTH+1] = {"\0\0\0\0\0\0\0\0\0\0"};
+    std::array<char, NETWORK_LENGTH + 1> mNetwork{"\0\0\0\0\0\0\0\0\0\0"};
+    std::array<char, STATION_LENGTH + 1> mStation{"\0\0\0\0\0\0\0\0\0\0"};
+    std::array<char, CHANNEL_LENGTH + 1> mChannel{"\0\0\0\0\0\0\0\0\0\0"};
+    std::array<char, LOCATION_LENGTH + 1> mLocation{"\0\0\0\0\0\0\0\0\0\0"};
 };
 
 /// Constructors
@@ -92,7 +72,10 @@ SNCL::~SNCL() = default;
 
 void SNCL::clear() noexcept
 {
-    pImpl->clear();
+    std::fill(pImpl->mNetwork.begin(),  pImpl->mNetwork.end(),  '\0');
+    std::fill(pImpl->mStation.begin(),  pImpl->mStation.end(),  '\0');
+    std::fill(pImpl->mChannel.begin(),  pImpl->mChannel.end(),  '\0');
+    std::fill(pImpl->mLocation.begin(), pImpl->mLocation.end(), '\0');
 }
 
 /// Network
@@ -103,7 +86,7 @@ int SNCL::getMaximumNetworkLength() const noexcept
 
 std::string SNCL::getNetwork() const noexcept
 {
-    std::string result(pImpl->mNetwork); //, NETWORK_LENGTH);
+    std::string result(pImpl->mNetwork.data()); //, NETWORK_LENGTH);
     return result;
 }
 
@@ -111,8 +94,8 @@ void SNCL::setNetwork(const std::string &str) noexcept
 {
     constexpr size_t maxlen = NETWORK_LENGTH;
     size_t len = std::min(str.size(), maxlen);
-    std::memset(pImpl->mNetwork, 0, NETWORK_LENGTH*sizeof(char));
-    std::memcpy(pImpl->mNetwork, str.data(), len*sizeof(char));
+    std::memset(pImpl->mNetwork.data(), 0, NETWORK_LENGTH*sizeof(char));
+    std::memcpy(pImpl->mNetwork.data(), str.data(), len*sizeof(char));
 }
 
 /// Station
@@ -123,7 +106,7 @@ int SNCL::getMaximumStationLength() const noexcept
 
 std::string SNCL::getStation() const noexcept
 {
-    std::string result(pImpl->mStation); //, STATION_LENGTH);
+    std::string result(pImpl->mStation.data()); //, STATION_LENGTH);
     return result;
 }
 
@@ -131,8 +114,8 @@ void SNCL::setStation(const std::string &str) noexcept
 {
     constexpr size_t maxlen = STATION_LENGTH;
     size_t len = std::min(str.size(), maxlen);
-    std::memset(pImpl->mStation, 0, STATION_LENGTH*sizeof(char));
-    std::memcpy(pImpl->mStation, str.data(), len*sizeof(char));
+    std::memset(pImpl->mStation.data(), 0, STATION_LENGTH*sizeof(char));
+    std::memcpy(pImpl->mStation.data(), str.data(), len*sizeof(char));
 }
 
 /// Channel
@@ -143,7 +126,7 @@ int SNCL::getMaximumChannelLength() const noexcept
 
 std::string SNCL::getChannel() const noexcept
 {
-    std::string result(pImpl->mChannel); //, CHANNEL_LENGTH);
+    std::string result(pImpl->mChannel.data()); //, CHANNEL_LENGTH);
     return result;
 }
 
@@ -151,8 +134,8 @@ void SNCL::setChannel(const std::string &str) noexcept
 {
     constexpr size_t maxlen = CHANNEL_LENGTH;
     size_t len = std::min(str.size(), maxlen);
-    std::memset(pImpl->mChannel, 0, CHANNEL_LENGTH*sizeof(char));
-    std::memcpy(pImpl->mChannel, str.data(), len*sizeof(char));
+    std::memset(pImpl->mChannel.data(), 0, CHANNEL_LENGTH*sizeof(char));
+    std::memcpy(pImpl->mChannel.data(), str.data(), len*sizeof(char));
 }
 
 /// Location code
@@ -163,7 +146,7 @@ int SNCL::getMaximumLocationCodeLength() const noexcept
 
 std::string SNCL::getLocationCode() const noexcept
 {
-    std::string result(pImpl->mLocation); //LOCATION_LENGTH);
+    std::string result(pImpl->mLocation.data()); //LOCATION_LENGTH);
     return result;
 }
 
@@ -171,16 +154,54 @@ void SNCL::setLocationCode(const std::string &str) noexcept
 {
     constexpr size_t maxlen = LOCATION_LENGTH;
     size_t len = std::min(str.size(), maxlen);
-    std::memset(pImpl->mLocation, 0, LOCATION_LENGTH*sizeof(char));
-    std::memcpy(pImpl->mLocation, str.data(), len*sizeof(char));
+    std::memset(pImpl->mLocation.data(), 0, LOCATION_LENGTH*sizeof(char));
+    std::memcpy(pImpl->mLocation.data(), str.data(), len*sizeof(char));
 }
 
 bool SNCL::isEmpty() const noexcept
 {
-    size_t lenos = strnlen(pImpl->mNetwork,  NETWORK_LENGTH)
-                 + strnlen(pImpl->mStation,  STATION_LENGTH)
-                 + strnlen(pImpl->mChannel,  CHANNEL_LENGTH)
-                 + strnlen(pImpl->mLocation, LOCATION_LENGTH);
+    size_t lenos = strnlen(pImpl->mNetwork.data(),  NETWORK_LENGTH)
+                 + strnlen(pImpl->mStation.data(),  STATION_LENGTH)
+                 + strnlen(pImpl->mChannel.data(),  CHANNEL_LENGTH)
+                 + strnlen(pImpl->mLocation.data(), LOCATION_LENGTH);
     if (lenos == 0){return true;}
     return false;
+}
+
+/// std::cout << sncl << std::endl;
+std::ostream&
+SFF::MiniSEED::operator<<(std::ostream &os, const SNCL &sncl)
+{
+    std::string result;
+    auto network = sncl.getNetwork();
+    auto station = sncl.getStation();
+    auto channel = sncl.getChannel();
+    auto location = sncl.getLocationCode(); 
+    if (!network.empty() || !station.empty() ||
+        !channel.empty() || !location.empty())
+    {
+        if (!network.empty())
+        {
+            result = network;
+            if (!station.empty() || !channel.empty() || !location.empty())
+            {
+                result = result + ".";
+            }
+        }
+        if (!station.empty())
+        {
+            result = result + station;
+            if (!channel.empty() || !location.empty())
+            {
+                result = result + ".";
+            }
+        }
+        if (!channel.empty())
+        {
+            result = result + channel;
+            if (!location.empty()){result = result + ".";}
+        }
+        if (!location.empty()){result = result + location;}
+    }
+    return os << result;
 }
