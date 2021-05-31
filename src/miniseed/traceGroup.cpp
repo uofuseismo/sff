@@ -151,11 +151,9 @@ void TraceGroup::read(const std::string &fileName)
     int i = 0;
     for (auto sncl : pImpl->mSNCLs)
     {
-std::cout << sncl.getNetwork() << " " << sncl.getStation() << " " << sncl.getChannel() << " " << sncl.getLocationCode() << std::endl;
         try
         {
             pImpl->mTraces[i].read(fileName, sncl);
-std::cout << "read it" << std::endl;
         }
         catch (const std::exception &e)
         {
