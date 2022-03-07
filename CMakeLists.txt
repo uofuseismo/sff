@@ -3,7 +3,7 @@ project(SFF VERSION 0.1.0 LANGUAGES CXX)
 enable_testing()
 
 include(CheckCXXCompilerFlag)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(FindOpenMP QUIET)
 if (OPENMP_FOUND)
@@ -103,9 +103,9 @@ include_directories(
 configure_file(${CMAKE_SOURCE_DIR}/include/private/version.hpp.in
                ${CMAKE_SOURCE_DIR}/include/sff/version.hpp)
 set(PUBLIC_HEADER_DIRECTORIES
-    include/sff)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/sff)
 set(PRIVATE_HEADER_DIRECTORIES
-    include/private)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/private)
 
 ################################################################################
 #                               Set Source and Libraries                       #
@@ -126,12 +126,25 @@ set(SRC
     src/hypoinverse2000/eventSummaryLine.cpp
     src/hypoinverse2000/stationArchiveLine.cpp
     )
+set(HEADERS
+    include/sff/abstractBaseClass/trace.hpp
+    include/sff/sac/enums.hpp
+    include/sff/sac/header.hpp
+    include/sff/sac/waveform.hpp
+    include/sff/hypoinverse2000/eventSummary.hpp
+    include/sff/hypoinverse2000/eventSummaryLine.hpp
+    include/sff/hypoinverse2000/stationArchiveLine.hpp)
 if (${FindMiniSEED_FOUND})
    set(MINISEED_SRC
        src/miniseed/sncl.cpp
        src/miniseed/trace.cpp
        src/miniseed/traceGroup.cpp)
    set(MINISEED_TEST_SRC testing/miniseed/miniseed.cpp)
+   set(MINISEED_HEADERS
+       include/sff/miniseed/enums.hpp
+       include/sff/miniseed/sncl.hpp
+       include/sff/miniseed/trace.hpp
+       include/sff/miniseed/traceGroup.hpp)
 endif()
 if (${TIME_FOUND})
 message("hey")
@@ -139,14 +152,17 @@ endif()
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
 set(BUILD_SHARED_LIBS YES)
-add_library(sff ${SRC} ${MINISEED_SRC})
-#set_target_properties(sff PROPERTIES
-#                      CXX_STANDARD 17
-#                      CXX_STANDARD_REQUIRED YES 
-#                      CXX_EXTENSIONS NO) 
+add_library(sff ${SRC} ${MINISEED_SRC})# ${HEADERS} ${MINISEED_HEADERS})
+set_target_properties(sff PROPERTIES
+                      CXX_STANDARD 20
+                      CXX_STANDARD_REQUIRED YES 
+                      CXX_EXTENSIONS NO)
 target_link_libraries(sff ${TIME_LIBRARY})
-target_include_directories(sff PUBLIC  ${PUBLIC_HEADER_FILES})
-target_include_directories(sff PRIVATE ${PRIVATE_HEADER_FILES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
+target_include_directories(sff
+                           PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR}>
+                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
+                                  $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+#target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
 
 if (WRAP_PYTHON)
    add_library(pysff MODULE
@@ -184,7 +200,7 @@ file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 #                                Installation                                  #
 ################################################################################
 include(GNUInstallDirs)
-if (MFLIB_WRAP_PYTHON)
+if (WRAP_PYTHON)
    install(TARGETS sff pysff
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -197,16 +213,21 @@ else()
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
            PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
-
+install(DIRECTORY ${PUBLIC_HEADER_DIRECTORIES}
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 ##########################################################################################
 #                                     CPACK Packaging                                    #
 ##########################################################################################
-set(CPACK_PACKAGE_NAME "sff")
-set(CPACK_PACKAGE_VENDOR "UUSS")
-set(CPACK_PACKAGE_CONTACT "bbaker@seis.utah.edu")
+set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+set(CPACK_GENERATOR "TGZ")
 set(CPACK_PACKAGE_LICENSE "MIT")
+set(CPACK_PACKAGE_VENDOR "UUSS")
+set(CPACK_PACKAGE_CONTACT "ben.baker@utah.edu")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A toolkit for reading and writing various seismic file formats.")
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_COMPONENTS_ALL libraries headers)
+#set(CPACK_COMPONENTS_ALL applications libraries headers)
+include(CPack)
