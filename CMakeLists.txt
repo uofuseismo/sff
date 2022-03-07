@@ -126,25 +126,25 @@ set(SRC
     src/hypoinverse2000/eventSummaryLine.cpp
     src/hypoinverse2000/stationArchiveLine.cpp
     )
-set(HEADERS
-    include/sff/abstractBaseClass/trace.hpp
-    include/sff/sac/enums.hpp
-    include/sff/sac/header.hpp
-    include/sff/sac/waveform.hpp
-    include/sff/hypoinverse2000/eventSummary.hpp
-    include/sff/hypoinverse2000/eventSummaryLine.hpp
-    include/sff/hypoinverse2000/stationArchiveLine.hpp)
+#set(HEADERS
+#    include/sff/abstractBaseClass/trace.hpp
+#    include/sff/sac/enums.hpp
+#    include/sff/sac/header.hpp
+#    include/sff/sac/waveform.hpp
+#    include/sff/hypoinverse2000/eventSummary.hpp
+#    include/sff/hypoinverse2000/eventSummaryLine.hpp
+#    include/sff/hypoinverse2000/stationArchiveLine.hpp)
 if (${FindMiniSEED_FOUND})
    set(MINISEED_SRC
        src/miniseed/sncl.cpp
        src/miniseed/trace.cpp
        src/miniseed/traceGroup.cpp)
    set(MINISEED_TEST_SRC testing/miniseed/miniseed.cpp)
-   set(MINISEED_HEADERS
-       include/sff/miniseed/enums.hpp
-       include/sff/miniseed/sncl.hpp
-       include/sff/miniseed/trace.hpp
-       include/sff/miniseed/traceGroup.hpp)
+   #set(MINISEED_HEADERS
+   #    include/sff/miniseed/enums.hpp
+   #    include/sff/miniseed/sncl.hpp
+   #    include/sff/miniseed/trace.hpp
+   #    include/sff/miniseed/traceGroup.hpp)
 endif()
 if (${TIME_FOUND})
 message("hey")
