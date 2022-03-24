@@ -159,7 +159,7 @@ set_target_properties(sff PROPERTIES
                       CXX_EXTENSIONS NO)
 target_link_libraries(sff ${TIME_LIBRARY})
 target_include_directories(sff
-                           PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR}>
+                           PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                                   $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 #target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
@@ -224,10 +224,18 @@ set(CPACK_PACKAGE_LICENSE "MIT")
 set(CPACK_PACKAGE_VENDOR "UUSS")
 set(CPACK_PACKAGE_CONTACT "ben.baker@utah.edu")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A toolkit for reading and writing various seismic file formats.")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY ${CPACK_PACKAGE_NAME})
+set(CPACK_VERBATIM_VARIABLES YES)
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_COMPONENTS_ALL libraries headers)
-#set(CPACK_COMPONENTS_ALL applications libraries headers)
+set(CPACK_SOURCE_IGNORE_FILES
+  /\\.git/
+  \\.swp
+  \\.orig
+  /CMakeLists\\.txt\\.user
+  /private/
+)
 include(CPack)
