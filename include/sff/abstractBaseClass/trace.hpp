@@ -6,12 +6,10 @@
 #include "sff/formats.hpp"
 namespace SFF::AbstractBaseClass
 {
-/*!
- * @class ITrace time.hpp "sff/utilities/time.hpp"
- * @brief The abstract base class for a seismic trace.  For example, a SAC file
- *        is a seismic trace is it simply encapsulates a time series.
- * @copyright Ben Baker (University of Utah) distributed under the MIT license.  
- */
+/// @class ITrace ITrace.hpp "sff/utilities/trace.hpp"
+/// @brief The abstract base class for a seismic trace.  For example, a SAC file
+///        is a seismic trace is it simply encapsulates a time series.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.  
 class ITrace
 {
 public:

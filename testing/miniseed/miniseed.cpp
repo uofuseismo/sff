@@ -17,6 +17,7 @@ std::vector<int>
 loadIntegerData(const std::string &textFileName, const int npts);
 
 using namespace SFF;
+using namespace SFF::MiniSEED;
 
 TEST(LibraryDataReadersMiniSEED, SNCL)
 {
@@ -32,36 +33,36 @@ TEST(LibraryDataReadersMiniSEED, SNCL)
     std::string channel = "HHZ";
     std::string location = "--";
     sncl.setNetwork(network);
-    ASSERT_STREQ(sncl.getNetwork().c_str(), network.c_str()); 
+    EXPECT_EQ(sncl.getNetwork(), network); 
     sncl.setStation(station);
-    ASSERT_STREQ(sncl.getStation().c_str(), station.c_str());
+    EXPECT_EQ(sncl.getStation(), station);
     sncl.setChannel(channel);
-    ASSERT_STREQ(sncl.getChannel().c_str(), channel.c_str());
+    EXPECT_EQ(sncl.getChannel(), channel);
     sncl.setLocationCode(location);
-    ASSERT_STREQ(sncl.getLocationCode().c_str(), location.c_str());
+    EXPECT_EQ(sncl.getLocationCode(), location);
     EXPECT_FALSE(sncl.isEmpty());
     std::ostringstream stream;
     stream << sncl;
     EXPECT_EQ(stream.str(), "UU.DUG.HHZ.--");
     // Test copy constructor
     MiniSEED::SNCL snclCopy(sncl);
-    ASSERT_TRUE(snclCopy == sncl);
-    ASSERT_STREQ(snclCopy.getNetwork().c_str(), network.c_str()); 
-    ASSERT_STREQ(snclCopy.getStation().c_str(), station.c_str());
-    ASSERT_STREQ(snclCopy.getChannel().c_str(), channel.c_str());
-    ASSERT_STREQ(snclCopy.getLocationCode().c_str(), location.c_str());
+    EXPECT_TRUE(snclCopy == sncl);
+    EXPECT_EQ(snclCopy.getNetwork(), network); 
+    EXPECT_EQ(snclCopy.getStation(), station);
+    EXPECT_EQ(snclCopy.getChannel(), channel);
+    EXPECT_EQ(snclCopy.getLocationCode(), location);
     // Try to overfill buffers
     std::string networkTooBig  = "12345678910UU";
     std::string stationTooBig  = "12345678910DUG";
     std::string channelTooBig  = "12345678910HHZ";
     std::string locationTooBig = "12345678910--";
-    ASSERT_TRUE(sncl == snclCopy);
+    EXPECT_TRUE(sncl == snclCopy);
     sncl.setNetwork(networkTooBig);
     sncl.setStation(stationTooBig);
     sncl.setChannel(channelTooBig);
     sncl.setLocationCode(locationTooBig);
-    ASSERT_FALSE(sncl == snclCopy);
-    ASSERT_STREQ(sncl.getNetwork().c_str(), "1234567891");
+    EXPECT_FALSE(sncl == snclCopy);
+    EXPECT_STREQ(sncl.getNetwork().c_str(), "1234567891");
     ASSERT_STREQ(sncl.getStation().c_str(), "1234567891");
     ASSERT_STREQ(sncl.getChannel().c_str(), "1234567891");
     ASSERT_STREQ(sncl.getLocationCode().c_str(), "1234567891");

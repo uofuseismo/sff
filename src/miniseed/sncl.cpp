@@ -53,6 +53,7 @@ SNCL& SNCL::operator=(SNCL &&sncl) noexcept
     return *this;
 }
 
+/*
 bool SNCL::operator==(const SNCL &sncl) noexcept
 {
     if (getNetwork() != sncl.getNetwork()){return false;}
@@ -65,6 +66,20 @@ bool SNCL::operator==(const SNCL &sncl) noexcept
 bool SNCL::operator!=(const SNCL &sncl) noexcept
 {
     return !(*this == sncl);
+}
+*/
+bool SFF::MiniSEED::operator==(const SNCL &lhs, const SNCL &rhs)
+{
+    if (lhs.getNetwork() != rhs.getNetwork()){return false;}
+    if (lhs.getStation() != rhs.getStation()){return false;}
+    if (lhs.getChannel() != rhs.getChannel()){return false;}
+    if (lhs.getLocationCode() != rhs.getLocationCode()){return false;}
+    return true;
+}
+
+bool SFF::MiniSEED::operator!=(const SNCL &lhs, const SNCL &rhs)
+{
+    return !(lhs == rhs);
 }
 
 /// Destructors

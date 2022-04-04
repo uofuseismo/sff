@@ -12,12 +12,11 @@ class SNCL
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Default constructor.
     SNCL();
-    /*!
-     * @brief Copy constructor.
-     * @param[in] sncl  The SNCL class from which to initialize.
-     */
+    /// @brief Copy constructor.
+    /// @param[in] sncl  The SNCL class from which to initialize.
     SNCL(const SNCL &sncl);
     /// @brief Move constructor.
     /// @param[in,out] sncl  The SNCL class to initialize from.  On exit
@@ -27,6 +26,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy assignment operator.
     /// @param[in] sncl  SNCL to copy.
     /// @result A deep copy of sncl.
@@ -38,16 +38,17 @@ public:
     /// @brief Equality operator.
     /// @result True indicates that the given SNCL 
     ///         equals the SNCL represented by this class.
-    bool operator==(const SNCL &sncl) noexcept;
+    //bool operator==(const SNCL &sncl) noexcept;
     /// @brief Inequality operator.
     /// @param[in] time  Class to test for inequality.
     /// @result True indicates that the given  SNCL
     ///         does not equal the SNCL represented by this class.
-    bool operator!=(const SNCL &sncl) noexcept;
+    //bool operator!=(const SNCL &sncl) noexcept;
     /// @}
 
     /// @name Destructors
     /// @{
+
     /// @brief Default destructor.
     ~SNCL();
     /// @brief Clears the SNCL.
@@ -56,6 +57,7 @@ public:
 
     /// @name Network
     /// @{
+
     /// @brief Sets the network name.  If the network name exceeds
     ///        \c getMaximumNetworkength() then this will be truncated.
     /// @param[in] name  The name of the network.
@@ -69,6 +71,7 @@ public:
 
     /// @name Station
     /// @{
+
     /// @brief Sets the station name.  If the station name exceeds
     ///        \c getMaximumStationLength() then this will be truncated.
     /// @param[in] name  The name of the station.
@@ -116,6 +119,8 @@ private:
     class SNCLImpl;
     std::unique_ptr<SNCLImpl> pImpl;
 };
+[[nodiscard]] bool operator==(const SNCL &lhs, const SNCL &rhs);
+[[nodiscard]] bool operator!=(const SNCL &lhs, const SNCL &rhs);
 /// @brief Will write the contents of the SNCL in the form:
 ///        NETWORK.STATION.CHANNEL.LOCATION. 
 std::ostream& operator<<(std::ostream &os, const SNCL &sncl);

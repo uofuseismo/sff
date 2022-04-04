@@ -2,12 +2,11 @@
 #define SFF_SAC_ENUMS_HPP
 namespace SFF::SAC
 {
-/*!
- * @brief Identifies a SAC floating point header variable.
- * @note SAC files internally store 32-bit float numbers.
- *       However, this interface will deal exclusively in doubles.
- *       Consequently, there will be truncation errors on write.
- */
+/// @brief Identifies a SAC floating point header variable.
+/// @note SAC files internally store 32-bit float numbers.
+///       However, this interface will deal exclusively in doubles.
+///       Consequently, there will be truncation errors on write.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class Double
 {
     DELTA,     /*!< The sampling period in seconds.  This is required
@@ -91,9 +90,8 @@ enum class Double
     UNUSED6    /*!< Seventh unused header variable. */
 };
 
-/*!
- * @brief Identifies a SAC integer header variable.
- */
+/// @brief Identifies a SAC integer header variable.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class Integer
 {
     NZYEAR,    /*!< The four-digit GMT year. */
@@ -144,12 +142,11 @@ enum class Integer
     UNUSED9    /*!< The tenth unused header variable. */
 };
 
-/*!
- * @brief Identifies a SAC logical header variable.
- * @note SAC files internally store logical variables as
- *       32-bit integer.  This format will be retained as
- *       three states are required to indicate yes, no, and undefined.
- */
+/// @brief Identifies a SAC logical header variable.
+/// @note SAC files internally store logical variables as
+///       32-bit integer.  This format will be retained as
+///       three states are required to indicate yes, no, and undefined.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class Logical
 {
     LEVEN,     /*!< True if the data are evenly spaced. */
@@ -162,11 +159,10 @@ enum class Logical
     UNUSED     /*!< Undefined.  The user can specify this. */
 };
 
-/*!
- * @brief Identifies a SAC character header variable.
- *        Note, all character header variables have length 8 except for
- *        KEVNM which has length 16.
- */
+/// @brief Identifies a SAC character header variable.
+///        Note, all character header variables have length 8 except for
+///        KEVNM which has length 16.
+/// @copyright Ben Baker (University of Utah) distributed under the MIT license.
 enum class Character
 {
     KSTNM,  /*!< The station name. */
