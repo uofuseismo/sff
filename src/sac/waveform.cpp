@@ -406,9 +406,9 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
             float f4 = 0;
         };
         std::vector<char> cdata(nBytes); 
-        auto mData = pImpl->mData;
-        #pragma omp simd aligned(mData: 64)
-        for (int i=0; i<npts; ++i)
+        auto mData = pImpl->mData.data();
+        //#pragma omp simd aligned(mData: 64)
+        for (int i = 0; i < npts; ++i)
         {
             f4 = static_cast<float> (mData[i]); //pImpl->mData[i]);
             auto indx = i*4; //632 + i*4;
