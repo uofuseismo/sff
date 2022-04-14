@@ -15,6 +15,7 @@ class Trace : public SFF::AbstractBaseClass::ITrace
 public:
     /// @name Constructors
     /// @{
+
     /// @brief Constructor.
     Trace();
     /// @brief Copy constructor.
@@ -28,6 +29,7 @@ public:
 
     /// @name Operators
     /// @{
+
     /// @brief Copy operator.
     /// @param[in] trace  The trace to copy.
     /// @result A deep copy of trace.
@@ -38,16 +40,9 @@ public:
     Trace& operator=(Trace &&trace) noexcept;
     /// @}
 
-    /// @name Destructors
-    /// @{
-    /// @brief Destructor.
-    ~Trace();
-    /// @brief Releases memory on the class and resets all variables.
-    void clear() noexcept;
-    /// @}
-
     /// @name File IO
     /// @{
+
     /// @brief Reads a trace with a given SNCL from a miniSEED file.
     /// @param[in] fileName  The name of the miniSEED file to read.
     /// @param[in] sncl      The SNCL to read.
@@ -74,6 +69,7 @@ public:
 
     /// @name Sampling Rate
     /// @{
+
     /// @brief Sets the sampling rate.
     /// @param[in] samplingRate  The sampling rate in Hz.
     /// @throws std::invalid_argument if sampling rate is not positive.
@@ -94,6 +90,7 @@ public:
 
     /// @name Precision
     /// @{
+
     /// @result The precision of the underlying time series data.
     /// @throws std::runtime_error if a time series was never set or read
     ///         from disk.
@@ -102,6 +99,7 @@ public:
 
     /// @name SNCL
     /// @{
+
     /// @brief Sets the station, network, channel, and location code.
     /// @param[in] sncl  The SNCL to set.
     /// @throws std::invalid_argument if all the elements of the SNCL are 
@@ -115,6 +113,7 @@ public:
 
     /// @name Time Series Data
     /// @{
+
     /// @result A vector containing the time series data.
     /// @throws std::runtime_error if the time series data was never set
     ///         or read from disk.
@@ -169,6 +168,15 @@ public:
 
     /// @result The seismic data format which in this instance is MINISEED.
     [[nodiscard]] SFF::Format getFormat() const noexcept override;
+
+    /// @name Destructors
+    /// @{
+
+    /// @brief Releases memory on the class and resets all variables.
+    void clear() noexcept;
+    /// @brief Destructor.
+    ~Trace() override;
+    /// @}
 private:
     class TraceImpl;
     std::unique_ptr<TraceImpl> pImpl;

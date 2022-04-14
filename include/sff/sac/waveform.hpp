@@ -45,15 +45,6 @@ public:
     Waveform& operator=(Waveform &&waveform) noexcept;
     /// @}
 
-    /// @name Destructors
-    /// @{
-
-    /// @brief Destructor.
-    virtual ~Waveform();
-    /// @brief Resets the header and clears the time series.
-    void clear() noexcept;
-    /// @}
-
     /// @name double Header Variables
     /// @{
 
@@ -187,12 +178,36 @@ public:
     /// @throws std::invalid_argument if fileName does not exist
     ///         or the SAC file is unreadable.
     void read(const std::string &fileName);
+    /// @brief Loads a SAC data file between the desired times t0 and t1.
+    /// @param[in] fileName  The name of the file to read.
+    /// @param[in] t0        The start time to read.  Upon a successful
+    ///                      read all samples in the trace will be at or
+    ///                      after this time.
+    /// @param[in] t1        The end time to read.  Upon a successful read
+    ///                      all samples in the trace will be before or
+    ///                      at this time.
+    /// @throws std::invalid_argument if t0 >= t1, t1 is before the start
+    ///         time of the trace, or t0 is after the end time of the
+    ///         trace, the fileName does not exist or the SAC files is
+    ///         unreadable. 
+    void read(const std::string &fileName,
+              const SFF::Utilities::Time &t0,
+              const SFF::Utilities::Time &t1);
     /// @brief Writes the SAC file.
     /// @param[out] fileName  The SAC file to write.
     /// @throws std::invalid_argument if the path to fileName is invalid.
     /// @throws std::runtime_error if the SAC class is not valid or.
     /// @sa \c isValid()
     void write(const std::string &fileName, const bool lswap = false) const;
+
+    /// @name Destructors
+    /// @{
+
+    /// @brief Resets the header and clears the time series.
+    void clear() noexcept;
+    /// @brief Destructor.
+    ~Waveform() override;
+    /// @}
 private:
     class WaveformImpl;
     std::unique_ptr<WaveformImpl> pImpl;

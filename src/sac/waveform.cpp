@@ -1,10 +1,13 @@
-#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <array>
 #include <cmath>
+#include <limits>
 #include <algorithm>
 #include <fstream>
+#ifndef NDEBUG
+#include <cassert>
+#endif
 #include "sff/utilities/time.hpp"
 #include "sff/sac/waveform.hpp"
 #include "sff/sac/header.hpp"
@@ -17,6 +20,7 @@
  namespace fs = std::experimental::filesystem;
  #define USE_FILESYSTEM 1
 #endif
+#include "private/byteSwap.hpp"
 
 using namespace SFF::SAC;
 
@@ -24,17 +28,50 @@ namespace
 {
 float *alignedAllocFloat(const int npts)
 {
-    size_t nbytes = static_cast<size_t> (npts)*sizeof(float);
+    size_t nBytes = static_cast<size_t> (npts)*sizeof(float);
 #ifdef HAVE_ALIGNED_ALLOC
-    float *data = static_cast<float *> (aligned_alloc(64, nbytes));
+    float *data = static_cast<float *> (aligned_alloc(64, nBytes));
 #else
-    void *dataTemp = malloc(nbytes);
-    posix_memalign(&dataTemp, 64, nbytes);
+    void *dataTemp = malloc(nBytes);
+    posix_memalign(&dataTemp, 64, nBytes);
     auto data = static_cast<float *> (dataTemp);
 #endif
     return data;
 }
+
+[[nodiscard]]
+SFF::Utilities::Time headerToStartTime(const SFF::SAC::Header &header)
+{
+    int year   = header.getHeader(SFF::SAC::Integer::NZYEAR);
+    int jday   = header.getHeader(SFF::SAC::Integer::NZJDAY);
+    int hour   = header.getHeader(SFF::SAC::Integer::NZHOUR);
+    int minute = header.getHeader(SFF::SAC::Integer::NZMIN);
+    int isec   = header.getHeader(SFF::SAC::Integer::NZSEC);
+    int musec  = header.getHeader(SFF::SAC::Integer::NZMSEC)*1000;
+    double b = header.getHeader(SFF::SAC::Double::B);
+    if (year   ==-12345 || jday ==-12345 || hour  ==-12345 ||
+        minute ==-12345 || isec ==-12345 || musec ==-12345 ||
+        b ==-12345.0)
+    {
+        throw std::runtime_error("Header start time is not yet set");
+    }
+    // Create the time
+    SFF::Utilities::Time startTime;
+    startTime.setYear(year);
+    startTime.setDayOfYear(jday);
+    startTime.setHour(hour);
+    startTime.setMinute(minute);
+    startTime.setSecond(isec);
+    startTime.setMicroSecond(musec);
+    // May have to deal with b
+    if (b == 0){return startTime;}
+    double epochalTime = startTime.getEpoch() + b;
+    startTime.setEpoch(epochalTime);
+    return startTime;
 }
+
+}
+
 //static double *alignedAllocDouble(const int npts);
 
 class Waveform::WaveformImpl
@@ -75,8 +112,8 @@ public:
         if (npts > 0 && waveform.mData)
         {
             mData = alignedAllocFloat(npts);
-            auto nbytes = static_cast<size_t> (npts)*sizeof(float);
-            std::memcpy(mData, waveform.mData, nbytes);
+            auto nBytes = static_cast<size_t> (npts)*sizeof(float);
+            std::memcpy(mData, waveform.mData, nBytes);
         }
         return *this;
     }
@@ -152,9 +189,17 @@ void Waveform::clear() noexcept
 }
 
 /// Loads a waveform
-void Waveform::read(const std::string &fileName)
+void Waveform::read(const std::string &fileName,
+                    const SFF::Utilities::Time &t0,
+                    const SFF::Utilities::Time &t1)
 {
     clear();
+    auto t0Epoch = t0.getEpoch();
+    auto t1Epoch = t1.getEpoch();
+    if (t0Epoch >= t1Epoch)
+    {
+        throw std::invalid_argument("t0 must be less than t1");
+    }
 #if USE_FILESYSTEM == 1
     if (!fs::exists(fileName))
     {
@@ -162,26 +207,20 @@ void Waveform::read(const std::string &fileName)
         throw std::invalid_argument(errmsg);
     }
 #endif
-    // Old way
-    //std::ifstream sacfl(fileName, std::ios::in | std::ios::binary);
-    //std::vector<char> buffer(std::istreambuf_iterator<char> (sacfl), {});
-    //size_t nbytes = buffer.size();
     // Read the binary file
     std::ifstream sacfl(fileName, std::ios::in | std::ios::binary);
     sacfl.seekg(0, sacfl.end);
-    size_t nbytes = sacfl.tellg();
-    if (nbytes < 632)
+    size_t nBytes = sacfl.tellg();
+    if (nBytes < 632)
     {
-        std::string errmsg = "SAC file has less than 632 bytes; nbytes = "
-                           + std::to_string(nbytes);
+        std::string errmsg = "SAC file has less than 632 bytes; nBytes = "
+                           + std::to_string(nBytes);
         throw std::invalid_argument(errmsg);
     }
     std::array<char, 632> cheader{};
     sacfl.seekg(0, sacfl.beg);
-    //std::vector<char> buffer(nbytes); 
-    sacfl.read(cheader.data(), cheader.size()*sizeof(char)); //buffer.data(), nbytes);
-    auto nbytesRemaining = nbytes - cheader.size()*sizeof(char);
-    //sacfl.close();
+    sacfl.read(cheader.data(), cheader.size()*sizeof(char));
+    auto nBytesRemaining = nBytes - cheader.size()*sizeof(char);
     // Figure out the byte order
     const char *cdat = cheader.data(); //buffer.data();
     union
@@ -190,13 +229,13 @@ void Waveform::read(const std::string &fileName)
         int npts = 0;
     };
     std::memcpy(c4, &cdat[316], 4*sizeof(char));
-    size_t nbytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
+    size_t nBytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
     bool lswap = false;
-    if (nbytesEst != nbytes)
+    if (nBytesEst != nBytes)
     {
         std::reverse(c4, c4+4);
-        nbytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
-        if (nbytesEst != nbytes)
+        nBytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
+        if (nBytesEst != nBytes)
         {
             std::string errmsg = "Cannot determine endianness of file";
             throw std::invalid_argument(errmsg);
@@ -213,46 +252,97 @@ void Waveform::read(const std::string &fileName)
         pImpl->mHeader.clear();
         throw std::invalid_argument(ia);
     }
-    // Unpack the data
-    pImpl->mData = alignedAllocFloat(npts);
-    if (!lswap)
+    // Am I reading the entire file?
+    auto t0File = headerToStartTime(pImpl->mHeader);
+    auto dt = getSamplingPeriod(); //pImpl->mHeader.getHeader(Double::DELTA);
+    if (dt <= 0){throw std::runtime_error("Sampling rate not yet set");}
+    bool readAll = true;
+    auto t0FileEpoch = t0File.getEpoch();
+    auto t1FileEpoch = t0FileEpoch + std::max(0, (npts - 1))*dt;
+    int nPtsToRead = npts;
+    int i0 = 0;
+    int i1 = npts;
+    if (t0FileEpoch >= t0Epoch && t1FileEpoch <= t1Epoch)
     {
-        auto cdata = reinterpret_cast<char *> (pImpl->mData);
-        sacfl.read(cdata, nbytesRemaining);
-/*
-        auto fdata = reinterpret_cast<const float *> (buffer.data() + 632);
-        auto *mData = pImpl->mData;
-        #pragma omp simd aligned(mData: 64)
-        for (auto i=0; i<npts; i++)
-        {
-            mData[i] = static_cast<double> (fdata[i]);
-        }
-*/
+        readAll = true;
+        nPtsToRead = npts;
     }
     else
     {
-        std::vector<char> buffer(nbytesRemaining);
-        sacfl.read(buffer.data(), nbytesRemaining);
-        auto cdata = buffer.data(); //reinterpret_cast<const char *> (buffer.data() + 632);
+        if (t0FileEpoch > t1Epoch)
+        {
+            clear();
+            throw std::invalid_argument(
+               "Desired start time is after trace end time");
+        }
+        if (t1FileEpoch < t0Epoch)
+        {
+            clear();
+            throw std::invalid_argument(
+               "Desired end time is before trace start time");
+        }
+        i0 = static_cast<int> (std::floor((t0FileEpoch - t0Epoch)/dt));
+        i0 = std::max(0, i0);
+        i1 = static_cast<int> (std::ceil(t1FileEpoch - t0Epoch)/dt) + 1;
+        i1 = std::min(npts, i1);
+#ifndef NDEBUG
+        assert(i1 >= i0);
+#endif         
+        nPtsToRead = i1 - i0;
+        auto startByte = cheader.size() + sizeof(float)*i0;
+        auto lastByte  = cheader.size() + sizeof(float)*i1;
+        auto nBytesRemaining = lastByte - startByte;
+#ifndef NDEBUG
+        assert(nBytesRemaining%4 == 0);
+#endif
+        pImpl->mHeader.setHeader(Integer::NPTS, nPtsToRead);
+    }
+    // Unpack the data
+    pImpl->mData = alignedAllocFloat(nPtsToRead);
+    if (!lswap)
+    {
+        auto cdata = reinterpret_cast<char *> (pImpl->mData);
+        sacfl.read(cdata, nBytesRemaining);
+    }
+    else
+    {
+        std::vector<char> buffer(nBytesRemaining);
+        sacfl.read(buffer.data(), nBytesRemaining);
+        char *__restrict__ cdata = buffer.data();
+/*
         // Reverse the byte order
         union
         {
             char crev[4];
             float f4 = 0;
         };
-        #pragma omp simd
-        for (auto i=0; i<npts; i++)
+*/
+        constexpr bool swapBytes = true;
+        //#pragma omp simd
+        for (int i = 0; i < npts; i++)
         {
+            auto indx = 4*i;
+            pImpl->mData[i] = unpackFloat(cdata + indx, swapBytes);
+/*
             auto indx = 4*i; //632 + 4*i;
-            crev[0] = cdata[indx+3];
-            crev[1] = cdata[indx+2];
-            crev[2] = cdata[indx+1];
-            crev[3] = cdata[indx+0];
+            crev[0] = cdata[indx + 3];
+            crev[1] = cdata[indx + 2];
+            crev[2] = cdata[indx + 1];
+            crev[3] = cdata[indx + 0];
             //std::reverse_copy(&cdat[632+4*i], &cdat[632+4*i]+4, crev);
             pImpl->mData[i] = f4; //static_cast<double> (f4);
+*/
         }
     }
     sacfl.close();
+}
+
+/// Loads a waveform
+void Waveform::read(const std::string &fileName)
+{
+    SFF::Utilities::Time t0(std::numeric_limits<double>::lowest());
+    SFF::Utilities::Time t1(std::numeric_limits<double>::max());
+    read(fileName, t0, t1); 
 }
 
 /// Writes a waveform
@@ -278,7 +368,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
 #endif
     // Pack the header
     int npts = getNumberOfSamples();
-    auto nbytes = sizeof(float)*static_cast<size_t> (npts);
+    auto nBytes = sizeof(float)*static_cast<size_t> (npts);
     std::array<char, 632> cheader{};
     pImpl->mHeader.getBinaryHeader(cheader.data(), lswap); //cdata.data(), lswap);
     // Write header 
@@ -289,17 +379,8 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
     if (!lswap)
     {
         auto cdata = reinterpret_cast<const char *> (pImpl->mData);
-        outfile.write(cdata, nbytes);
+        outfile.write(cdata, nBytes);
         outfile.close();
-/*
-        auto fdata = reinterpret_cast<float *> (cdata.data() + 632);
-        auto mData = pImpl->mData;
-        #pragma omp simd aligned(mData: 64)
-        for (auto i=0; i<npts; ++i)
-        {
-            fdata[i] = static_cast<float> (mData[i]);//pImpl->mData[i]);
-        }
-*/
     }
     else
     {
@@ -308,7 +389,7 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
             char c4[4];
             float f4 = 0;
         };
-        std::vector<char> cdata(nbytes); 
+        std::vector<char> cdata(nBytes); 
         auto mData = pImpl->mData;
         #pragma omp simd aligned(mData: 64)
         for (int i=0; i<npts; ++i)
@@ -320,21 +401,16 @@ void Waveform::write(const std::string &fileName, const bool lswap) const
             cdata[indx+2] = c4[1];
             cdata[indx+3] = c4[0];
         }
-        outfile.write(cdata.data(), nbytes);
+        outfile.write(cdata.data(), nBytes);
         outfile.close();
     }
-/*
-    // Write it 
-    std::ofstream outfile(fileName,
-                          std::ofstream::binary | std::ofstream::trunc);
-    outfile.write(cdata.data(), nbytes);
-    outfile.close();
-*/
 }
 
 /// Gets the trace start time
 SFF::Utilities::Time Waveform::getStartTime() const
 {
+    return headerToStartTime(pImpl->mHeader);
+/*
     int year   = pImpl->mHeader.getHeader(SAC::Integer::NZYEAR);
     int jday   = pImpl->mHeader.getHeader(SAC::Integer::NZJDAY);
     int hour   = pImpl->mHeader.getHeader(SAC::Integer::NZHOUR);
@@ -361,6 +437,7 @@ SFF::Utilities::Time Waveform::getStartTime() const
     double epochalTime = startTime.getEpoch() + b;
     startTime.setEpoch(epochalTime);
     return startTime;
+*/
 }
 
 /// Sets the trace start time
@@ -608,12 +685,12 @@ void Waveform::setData(const int npts, const float x[])
 /*
 static double *alignedAllocDouble(const int npts)
 {
-    size_t nbytes = static_cast<size_t> (npts)*sizeof(double);
+    size_t nBytes = static_cast<size_t> (npts)*sizeof(double);
 #ifdef HAVE_ALIGNED_ALLOC
-    double *data = static_cast<double *> (std::aligned_alloc(64, nbytes));
+    double *data = static_cast<double *> (std::aligned_alloc(64, nBytes));
 #else
-    void *dataTemp = malloc(nbytes);
-    posix_memalign(&dataTemp, 64, nbytes);
+    void *dataTemp = malloc(nBytes);
+    posix_memalign(&dataTemp, 64, nBytes);
     auto data = static_cast<double *> (dataTemp);
 #endif
     return data;
