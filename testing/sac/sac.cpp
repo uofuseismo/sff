@@ -443,6 +443,9 @@ TEST(SAC, waveform)
                                   - nLessPoints*samplingPeriod);
     waveformRead.read(scratchFile, startTimeNew, endTime);
     EXPECT_EQ(waveformRead.getNumberOfSamples(), nSamples - nLessPoints);
+    EXPECT_NEAR(waveformRead.getStartTime().getEpoch(),
+                startTimeNew.getEpoch(),
+                samplingPeriod/5);
     dVec = waveformRead.getData();
     resmax8 = 0;
     for (int i = 0; i < nSamples - nLessPoints; ++i)
