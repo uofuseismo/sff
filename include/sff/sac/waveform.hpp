@@ -149,6 +149,11 @@ public:
     ///         start time (NZYEAR, NZJDAY, NZHOUR, NZMIN, NZMSEC, B) were not
     ///         set.
     [[nodiscard]] SFF::Utilities::Time getStartTime() const override;
+    /// @result The end time.
+    /// @throws std::runtime_error if \c getStartTime() throws,
+    ///         \c getSamplingPeriod() throws, or
+    ///         \c getNumberOfSamples() throws.
+    [[nodiscard]] SFF::Utilities::Time getEndTime() const;
     /// @brief Gets the seismic data format.
     /// @result The seismic data format which in this instance is SAC.
     [[nodiscard]] SFF::Format getFormat() const noexcept override; 

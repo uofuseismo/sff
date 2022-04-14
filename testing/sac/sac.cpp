@@ -344,21 +344,23 @@ TEST(SAC, headerRead)
 TEST(SAC, waveform)
 {
     const std::string sacFile = "data/debug.sac";
+    const double samplingPeriod = 0.005;
+    const int nSamples = 100;
     SAC::Waveform waveform; 
-    ASSERT_EQ(waveform.getFormat(), SFF::Format::SAC);
-    ASSERT_EQ(waveform.getHeader(SAC::Integer::NVHDR), 6);
-    ASSERT_EQ(waveform.getHeader(SAC::Integer::IFTYPE), 1);
+    EXPECT_EQ(waveform.getFormat(), SFF::Format::SAC);
+    EXPECT_EQ(waveform.getHeader(SAC::Integer::NVHDR), 6);
+    EXPECT_EQ(waveform.getHeader(SAC::Integer::IFTYPE), 1);
     waveform.read(sacFile);
-    ASSERT_EQ(waveform.getNumberOfSamples(), 100);    
-    ASSERT_NEAR(waveform.getSamplingPeriod(), 0.005, 1.e-7);
-    EXPECT_NEAR(waveform.getSamplingRate(), 1/0.005, 1.e-2);
-    ASSERT_STREQ(waveform.getHeader(SAC::Character::KNETWK).c_str(), "FK");
-    ASSERT_STREQ(waveform.getHeader(SAC::Character::KSTNM).c_str(),  "NEW");
-    ASSERT_STREQ(waveform.getHeader(SAC::Character::KCMPNM).c_str(), "HHZ");
-    ASSERT_STREQ(waveform.getHeader(SAC::Character::KHOLE).c_str(),  "10");
+    EXPECT_EQ(waveform.getNumberOfSamples(), nSamples);    
+    EXPECT_NEAR(waveform.getSamplingPeriod(), samplingPeriod,   1.e-7);
+    EXPECT_NEAR(waveform.getSamplingRate(),   1/samplingPeriod, 1.e-2);
+    EXPECT_EQ(waveform.getHeader(SAC::Character::KNETWK), "FK");
+    EXPECT_EQ(waveform.getHeader(SAC::Character::KSTNM),  "NEW");
+    EXPECT_EQ(waveform.getHeader(SAC::Character::KCMPNM), "HHZ");
+    EXPECT_EQ(waveform.getHeader(SAC::Character::KHOLE),  "10");
     const float *dPtr = waveform.getDataPointer();
     float resmax = 0;
-    for (int i=0; i<waveform.getNumberOfSamples(); ++i)
+    for (int i = 0; i < waveform.getNumberOfSamples(); ++i)
     {
         float res = dPtr[i] - static_cast<float> (i + 1);
         resmax = std::max(std::abs(res), resmax);
@@ -367,7 +369,7 @@ TEST(SAC, waveform)
 
     std::vector<double> dVec = waveform.getData();
     double resmax8 = 0;
-    for (int i=0; i<waveform.getNumberOfSamples(); ++i)
+    for (int i = 0; i < waveform.getNumberOfSamples(); ++i)
     {
         double res = dVec[i] - static_cast<double> (i + 1);
         resmax8 = std::max(std::abs(res), resmax8);
@@ -385,8 +387,8 @@ TEST(SAC, waveform)
     waveform.write(scratchFile);
     SAC::Waveform waveformRead;
     waveformRead.read(scratchFile);
-    waveform = waveformRead;
-    ASSERT_EQ(waveform.getNumberOfSamples(), 100);    
+    waveform = waveformRead; // Test copy
+    ASSERT_EQ(waveform.getNumberOfSamples(), nSamples);    
     ASSERT_NEAR(waveform.getSamplingPeriod(), 0.005, 1.e-7);
     ASSERT_STREQ(waveform.getHeader(SAC::Character::KNETWK).c_str(), "FK");
     ASSERT_STREQ(waveform.getHeader(SAC::Character::KSTNM).c_str(),  "NEW");
@@ -394,7 +396,7 @@ TEST(SAC, waveform)
     ASSERT_STREQ(waveform.getHeader(SAC::Character::KHOLE).c_str(),  "10");
     dPtr = waveform.getDataPointer();
     resmax = 0;
-    for (int i=0; i<waveform.getNumberOfSamples(); ++i)
+    for (int i = 0; i < waveform.getNumberOfSamples(); ++i)
     {   
         float res = dPtr[i] - static_cast<float> (i + 1); 
         resmax = std::max(std::abs(res), resmax);
@@ -403,15 +405,18 @@ TEST(SAC, waveform)
 
     dVec = waveform.getData();
     resmax8 = 0;
-    for (int i=0; i<waveform.getNumberOfSamples(); ++i)
+    for (int i = 0; i < waveform.getNumberOfSamples(); ++i)
     {
         double res = dVec[i] - static_cast<double> (i + 1); 
         resmax8 = std::max(std::abs(res), resmax8);
     }
-    ASSERT_NEAR(resmax8, 0.0, 1.e-7);
+    auto dVecRef = dVec;
+    EXPECT_NEAR(resmax8, 0.0, 1.e-7);
     
     SFF::Utilities::Time startTime;
+    SFF::Utilities::Time endTime;
     EXPECT_NO_THROW(startTime = waveform.getStartTime());
+    EXPECT_NO_THROW(endTime = waveform.getEndTime());
     EXPECT_EQ(startTime.getYear(), 2005);
     EXPECT_EQ(startTime.getMonth(), 10);
     EXPECT_EQ(startTime.getDayOfMonth(), 6);
@@ -421,10 +426,29 @@ TEST(SAC, waveform)
     EXPECT_EQ(startTime.getSecond(), 59);
     EXPECT_EQ(startTime.getMicroSecond(), 850000);
 
+    EXPECT_NEAR(startTime.getEpoch() + (nSamples - 1)*samplingPeriod,
+                endTime.getEpoch(), 1.e-4);
+
     EXPECT_NO_THROW(waveform.setSamplingRate(45));
     EXPECT_NEAR(waveform.getSamplingRate(), 45, 1.e-10);
     EXPECT_NO_THROW(waveform.setSamplingPeriod(0.4));
     EXPECT_NEAR(waveform.getSamplingPeriod(), 0.4, 1.e-10);
+
+    /// Read subset of data 
+    int nLessPoints = 4;
+    SFF::Utilities::Time startTimeNew(startTime.getEpoch()
+                                    + nLessPoints*samplingPeriod);
+    SFF::Utilities::Time endTimeNew(waveform.getEndTime());
+    waveformRead.read(scratchFile, startTimeNew, endTimeNew);
+    EXPECT_EQ(waveformRead.getNumberOfSamples(), nSamples - nLessPoints);
+    dVec = waveformRead.getData();
+    resmax8 = 0;
+    for (int i = 0; i < nSamples - nLessPoints; ++i)
+    {
+        auto res = std::abs(dVecRef.at(i + nLessPoints) - dVec.at(i));
+        resmax8 = std::max(resmax8, res);
+    } 
+    EXPECT_NEAR(resmax8, 0.0, 1.e-7); 
 
 }
 

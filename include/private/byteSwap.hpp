@@ -10,12 +10,10 @@
 namespace
 {
 
-/*!
- * @brief Determines the byte order.
- * @result A flag indicating this architecture is BIG_ENDIAN or
- *         LITTLE_ENDIAN.
- */
-int testByteOrder()
+/// @brief Determines the byte order.
+/// @result A flag indicating this architecture is BIG_ENDIAN or
+///         LITTLE_ENDIAN.
+[[nodiscard]] int testByteOrder()
 {
     short int word = 0x0001;
     char *b = (char *) &word;
@@ -238,6 +236,29 @@ int testByteOrder()
         c[6] = c8[6];
         c[7] = c8[7];
     }
+}
+
+///--------------------------------------------------------------------------///
+///                            Reverse Bytes for a Number                    ///
+///--------------------------------------------------------------------------///
+[[nodiscard]] float swapFloat(const float f4)
+{
+    union
+    {
+        char c4[4];
+        float val;
+    };
+    val = f4;
+    union 
+    {
+        char c4r[4]; 
+        float result;
+    };
+    c4r[3] = c4[0];
+    c4r[2] = c4[1];
+    c4r[1] = c4[2];
+    c4r[0] = c4[3];
+    return result;
 }
 
 }

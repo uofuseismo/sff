@@ -1,3 +1,5 @@
+#include <iostream>
+#include <iomanip>
 #include <cstring>
 #include <string>
 #include <array>
@@ -112,8 +114,9 @@ public:
         if (npts > 0 && waveform.mData)
         {
             mData = alignedAllocFloat(npts);
-            auto nBytes = static_cast<size_t> (npts)*sizeof(float);
-            std::memcpy(mData, waveform.mData, nBytes);
+            std::copy(waveform.mData, waveform.mData + npts, mData);
+            //auto nBytes = static_cast<size_t> (npts)*sizeof(float);
+            //std::memcpy(mData, waveform.mData, nBytes);
         }
         return *this;
     }
@@ -228,12 +231,13 @@ void Waveform::read(const std::string &fileName,
         char c4[4];
         int npts = 0;
     };
+    //std::copy(cdat + 316*sizeof(char), cdat + 320*sizeof(char), c4);
     std::memcpy(c4, &cdat[316], 4*sizeof(char));
     size_t nBytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
     bool lswap = false;
     if (nBytesEst != nBytes)
     {
-        std::reverse(c4, c4+4);
+        std::reverse(c4, c4 + 4);
         nBytesEst = static_cast<size_t> (npts)*sizeof(float) + 632;
         if (nBytesEst != nBytes)
         {
@@ -256,7 +260,6 @@ void Waveform::read(const std::string &fileName,
     auto t0File = headerToStartTime(pImpl->mHeader);
     auto dt = getSamplingPeriod(); //pImpl->mHeader.getHeader(Double::DELTA);
     if (dt <= 0){throw std::runtime_error("Sampling rate not yet set");}
-    bool readAll = true;
     auto t0FileEpoch = t0File.getEpoch();
     auto t1FileEpoch = t0FileEpoch + std::max(0, (npts - 1))*dt;
     int nPtsToRead = npts;
@@ -264,7 +267,6 @@ void Waveform::read(const std::string &fileName,
     int i1 = npts;
     if (t0FileEpoch >= t0Epoch && t1FileEpoch <= t1Epoch)
     {
-        readAll = true;
         nPtsToRead = npts;
     }
     else
@@ -281,9 +283,11 @@ void Waveform::read(const std::string &fileName,
             throw std::invalid_argument(
                "Desired end time is before trace start time");
         }
-        i0 = static_cast<int> (std::floor((t0FileEpoch - t0Epoch)/dt));
+        // Play it safe and try to push the desired boundaries a bit more than
+        // the user asked for.
+        i0 = static_cast<int> (std::round((t0Epoch - dt/4 - t0FileEpoch)/dt));
         i0 = std::max(0, i0);
-        i1 = static_cast<int> (std::ceil(t1FileEpoch - t0Epoch)/dt) + 1;
+        i1 = static_cast<int> (std::round(t1Epoch + dt/4 - t0FileEpoch)/dt);
         i1 = std::min(npts, i1);
 #ifndef NDEBUG
         assert(i1 >= i0);
@@ -292,49 +296,31 @@ void Waveform::read(const std::string &fileName,
         auto startByte = cheader.size() + sizeof(float)*i0;
         auto lastByte  = cheader.size() + sizeof(float)*i1;
         auto nBytesRemaining = lastByte - startByte;
+        //std::cout << startByte << " " << lastByte << " " << nBytesRemaining << " " << nBytes << std::endl;
 #ifndef NDEBUG
+        assert(lastByte <= nBytes);
         assert(nBytesRemaining%4 == 0);
 #endif
-        pImpl->mHeader.setHeader(Integer::NPTS, nPtsToRead);
+        sacfl.seekg(startByte, sacfl.beg);
     }
-    // Unpack the data
+    // Correct the header information
+    pImpl->freeData(); // Resets npts
+    pImpl->mHeader.setHeader(Integer::NPTS, nPtsToRead);
+    t0File.setEpoch(t0File.getEpoch() + i0*dt);
+    setStartTime(t0File);
     pImpl->mData = alignedAllocFloat(nPtsToRead);
-    if (!lswap)
+    // Now read it
+    char *__restrict__ cdata = reinterpret_cast<char *> (pImpl->mData);
+    sacfl.read(cdata, nBytesRemaining);
+    sacfl.close();
+    if (lswap)
     {
-        auto cdata = reinterpret_cast<char *> (pImpl->mData);
-        sacfl.read(cdata, nBytesRemaining);
-    }
-    else
-    {
-        std::vector<char> buffer(nBytesRemaining);
-        sacfl.read(buffer.data(), nBytesRemaining);
-        char *__restrict__ cdata = buffer.data();
-/*
-        // Reverse the byte order
-        union
-        {
-            char crev[4];
-            float f4 = 0;
-        };
-*/
-        constexpr bool swapBytes = true;
-        //#pragma omp simd
-        for (int i = 0; i < npts; i++)
+        for (int i = 0; i < nPtsToRead; i++)
         {
             auto indx = 4*i;
-            pImpl->mData[i] = unpackFloat(cdata + indx, swapBytes);
-/*
-            auto indx = 4*i; //632 + 4*i;
-            crev[0] = cdata[indx + 3];
-            crev[1] = cdata[indx + 2];
-            crev[2] = cdata[indx + 1];
-            crev[3] = cdata[indx + 0];
-            //std::reverse_copy(&cdat[632+4*i], &cdat[632+4*i]+4, crev);
-            pImpl->mData[i] = f4; //static_cast<double> (f4);
-*/
+            pImpl->mData[i] = swapFloat(pImpl->mData[i]);
         }
     }
-    sacfl.close();
 }
 
 /// Loads a waveform
@@ -438,6 +424,16 @@ SFF::Utilities::Time Waveform::getStartTime() const
     startTime.setEpoch(epochalTime);
     return startTime;
 */
+}
+
+/// End time
+SFF::Utilities::Time Waveform::getEndTime() const
+{
+    auto t0 = getStartTime();
+    auto samplingPeriod = getSamplingPeriod();
+    auto nSamples = getNumberOfSamples();
+    t0.setEpoch(t0.getEpoch() + std::max(0, nSamples - 1)*samplingPeriod);
+    return t0;
 }
 
 /// Sets the trace start time
@@ -645,7 +641,6 @@ std::vector<double> Waveform::getData() const noexcept
 [[maybe_unused]]
 void Waveform::setData(const int npts, const double x[])
 {
-    pImpl->freeData();
     if (npts <= 0)
     {
         throw std::invalid_argument("npts = " + std::to_string(npts)
@@ -655,17 +650,16 @@ void Waveform::setData(const int npts, const double x[])
     {
         throw std::invalid_argument("x is NULL");
     }
+    pImpl->freeData();
     pImpl->mHeader.setHeader(Integer::NPTS, npts);
     pImpl->mData = alignedAllocFloat(npts);
     auto mData = pImpl->mData;
-    std::copy(x, x+npts, mData); 
-    //std::memcpy(pImpl->mData, x, static_cast<size_t> (npts)*sizeof(double));
+    std::copy(x, x + npts, mData); 
 }
 
 [[maybe_unused]]
 void Waveform::setData(const int npts, const float x[])
 {
-    pImpl->freeData();
     if (npts <= 0)
     {
         throw std::invalid_argument("npts = " + std::to_string(npts)
@@ -675,6 +669,7 @@ void Waveform::setData(const int npts, const float x[])
     {
         throw std::invalid_argument("x is NULL");
     }
+    pImpl->freeData();
     pImpl->mHeader.setHeader(Integer::NPTS, npts);
     pImpl->mData = alignedAllocFloat(npts);
     auto mData = pImpl->mData;

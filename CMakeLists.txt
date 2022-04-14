@@ -187,8 +187,8 @@ add_executable(tests
                testing/main.cpp
                testing/utilities/time.cpp
                testing/sac/sac.cpp
-               testing/segy/silixa.cpp
-               testing/nodal/rg16.cpp
+               #testing/segy/silixa.cpp
+               #testing/nodal/rg16.cpp
                testing/hypoinverse2000/hypoinverse2000.cpp
                ${MINISEED_TEST_SRC})
 target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES} ${TIME_LIBRARY})
