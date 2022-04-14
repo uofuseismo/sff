@@ -441,10 +441,8 @@ TEST(SAC, waveform)
                                     + nLessPoints*samplingPeriod);
     SFF::Utilities::Time endTimeNew(endTime.getEpoch()
                                   - nLessPoints*samplingPeriod);
-    waveformRead.read(scratchFile, startTimeNew, endTimeNew);
-std::cout << waveformRead.getNumberOfSamples() << std::endl;
-//    EXPECT_EQ(waveformRead.getNumberOfSamples(), nSamples - 2*nLessPoints - 1);
-/*
+    waveformRead.read(scratchFile, startTimeNew, endTime);
+    EXPECT_EQ(waveformRead.getNumberOfSamples(), nSamples - nLessPoints);
     dVec = waveformRead.getData();
     resmax8 = 0;
     for (int i = 0; i < nSamples - nLessPoints; ++i)
@@ -453,8 +451,28 @@ std::cout << waveformRead.getNumberOfSamples() << std::endl;
         resmax8 = std::max(resmax8, res);
     } 
     EXPECT_NEAR(resmax8, 0.0, 1.e-7); 
-*/
 
+    waveformRead.read(scratchFile, startTime, endTimeNew);
+    EXPECT_EQ(waveformRead.getNumberOfSamples(), nSamples - nLessPoints);
+    dVec = waveformRead.getData();
+    resmax8 = 0;
+    for (int i = 0; i < nSamples - nLessPoints; ++i)
+    {
+        auto res = std::abs(dVecRef.at(i) - dVec.at(i));
+        resmax8 = std::max(resmax8, res);
+    }   
+    EXPECT_NEAR(resmax8, 0.0, 1.e-7); 
+
+    waveformRead.read(scratchFile, startTimeNew, endTimeNew);
+    EXPECT_EQ(waveformRead.getNumberOfSamples(), nSamples - 2*nLessPoints);
+    dVec = waveformRead.getData();
+    resmax8 = 0;
+    for (int i = nLessPoints; i < nSamples - nLessPoints; ++i)
+    {
+        auto res = std::abs(dVecRef.at(i) - dVec.at(i - nLessPoints));
+        resmax8 = std::max(resmax8, res);
+    }
+    EXPECT_NEAR(resmax8, 0.0, 1.e-7);
 }
 
 }
