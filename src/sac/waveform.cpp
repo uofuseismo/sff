@@ -262,6 +262,7 @@ void Waveform::read(const std::string &fileName,
     if (dt <= 0){throw std::runtime_error("Sampling rate not yet set");}
     auto t0FileEpoch = t0File.getEpoch();
     auto t1FileEpoch = t0FileEpoch + std::max(0, (npts - 1))*dt;
+std::cout << t1FileEpoch - t0FileEpoch << " " << dt <<std::endl;
     int nPtsToRead = npts;
     int i0 = 0;
     int i1 = npts;
@@ -287,30 +288,35 @@ void Waveform::read(const std::string &fileName,
         // the user asked for.
         i0 = static_cast<int> (std::round((t0Epoch - dt/4 - t0FileEpoch)/dt));
         i0 = std::max(0, i0);
-        i1 = static_cast<int> (std::round(t1Epoch + dt/4 - t0FileEpoch)/dt);
+        i1 = static_cast<int> (std::round((t1Epoch + dt/4 - t0FileEpoch)/dt)) + 1;
         i1 = std::min(npts, i1);
 #ifndef NDEBUG
         assert(i1 >= i0);
 #endif         
         nPtsToRead = i1 - i0;
         auto startByte = cheader.size() + sizeof(float)*i0;
-        auto lastByte  = cheader.size() + sizeof(float)*i1;
+        auto lastByte  = startByte + nPtsToRead*sizeof(float);
+#ifndef NDEBUG
+        assert(lastByte <= nBytes);
+#endif
         auto nBytesRemaining = lastByte - startByte;
-        //std::cout << startByte << " " << lastByte << " " << nBytesRemaining << " " << nBytes << std::endl;
+        std::cout << startByte << " " << lastByte << " " << nBytesRemaining << " " << nBytes << std::endl;
 #ifndef NDEBUG
         assert(lastByte <= nBytes);
         assert(nBytesRemaining%4 == 0);
+        assert(nBytesRemaining == sizeof(float)*nPtsToRead);
 #endif
         sacfl.seekg(startByte, sacfl.beg);
     }
     // Correct the header information
     pImpl->freeData(); // Resets npts
+std::cout << nPtsToRead << std::endl;
     pImpl->mHeader.setHeader(Integer::NPTS, nPtsToRead);
     t0File.setEpoch(t0File.getEpoch() + i0*dt);
     setStartTime(t0File);
     pImpl->mData = alignedAllocFloat(nPtsToRead);
     // Now read it
-    char *__restrict__ cdata = reinterpret_cast<char *> (pImpl->mData);
+    auto cdata = reinterpret_cast<char *> (pImpl->mData);
     sacfl.read(cdata, nBytesRemaining);
     sacfl.close();
     if (lswap)
