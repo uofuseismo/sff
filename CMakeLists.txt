@@ -81,7 +81,6 @@ find_package(FindTime REQUIRED)
 
 if (${FindMiniSEED_FOUND})
    message("Found MiniSEED")
-   link_libraries(${MINISEED_LIBRARY})
 endif()
 
 if (WRAP_PYTHON)
@@ -146,20 +145,24 @@ if (${FindMiniSEED_FOUND})
    #    include/sff/miniseed/trace.hpp
    #    include/sff/miniseed/traceGroup.hpp)
 endif()
-if (${TIME_FOUND})
-message("hey")
-endif()
 
 #cmake -DBUILD_SHARED_LIBS=YES /path/to/source 
+set(SFF_PRIVATE_INCLUDES ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR})
+set(SFF_PRIVATE_LIBRARIES ${TIME_LIBRARY})
+if (${FindMiniSEED_FOUND})
+   set(SFF_PRIVATE_INCLUDES ${SFF_PRIVATE_INCLUDES} ${MINISEED_INCLUDE_DIR})
+   set(SFF_PRIVATE_LIBRARIES ${SFF_PRIVATE_LIBRARES} ${MINISEED_LIBRARY})
+endif()
+
 set(BUILD_SHARED_LIBS YES)
 add_library(sff ${SRC} ${MINISEED_SRC})# ${HEADERS} ${MINISEED_HEADERS})
 set_target_properties(sff PROPERTIES
                       CXX_STANDARD 20
                       CXX_STANDARD_REQUIRED YES 
                       CXX_EXTENSIONS NO)
-target_link_libraries(sff ${TIME_LIBRARY})
+target_link_libraries(sff PRIVATE ${SFF_PRIVATE_LIBRARIES})
 target_include_directories(sff
-                           PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR} ${MINISEED_INCLUDE_DIR}
+                           PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                                   $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 #target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
@@ -188,7 +191,7 @@ add_executable(tests
                testing/nodal/rg16.cpp
                testing/hypoinverse2000/hypoinverse2000.cpp
                ${MINISEED_TEST_SRC})
-target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES})
+target_link_libraries(tests PRIVATE sff ${GTEST_BOTH_LIBRARIES} ${TIME_LIBRARY})
 target_include_directories(tests PRIVATE ${GTEST_INCLUDE_DIRS})
 add_test(NAME tests
          COMMAND tests)
