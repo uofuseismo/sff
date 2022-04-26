@@ -162,7 +162,7 @@ set_target_properties(sff PROPERTIES
                       CXX_EXTENSIONS NO)
 target_link_libraries(sff PRIVATE ${SFF_PRIVATE_LIBRARIES})
 target_include_directories(sff
-                           PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${TIME_INCLUDE_DIR}
+                           PRIVATE ${SFF_PRIVATE_INCLUDES}
                            PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
                                   $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 #target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
