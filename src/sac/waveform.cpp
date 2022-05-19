@@ -11,8 +11,8 @@
 #include <cassert>
 #endif
 #if __has_include(<boost/align/aligned_allocator.hpp>)
-#define USE_BOOST_ALIGN
-#include <boost/align/aligned_allocator.hpp>
+ #define USE_BOOST_ALIGN
+ #include <boost/align/aligned_allocator.hpp>
 #endif
 #include "sff/utilities/time.hpp"
 #include "sff/sac/waveform.hpp"
@@ -323,31 +323,30 @@ void Waveform::read(const std::string &fileName,
 #ifndef NDEBUG
         assert(lastByte <= nBytes);
 #endif
-        auto nBytesRemaining = lastByte - startByte;
+        nBytesRemaining = lastByte - startByte;
         //std::cout << startByte << " " << lastByte << " " << nBytesRemaining << " " << nBytes << std::endl;
 #ifndef NDEBUG
         assert(lastByte <= nBytes);
         assert(nBytesRemaining%4 == 0);
         assert(nBytesRemaining == sizeof(float)*nPtsToRead);
 #endif
+        sacfl.seekg(0, sacfl.beg);
         sacfl.seekg(startByte, sacfl.beg);
     }
     // Correct the header information
     pImpl->freeData(); // Resets npts
-//std::cout << nPtsToRead << std::endl;
     pImpl->mHeader.setHeader(Integer::NPTS, nPtsToRead);
     t0File.setEpoch(t0File.getEpoch() + i0*dt);
     setStartTime(t0File);
     pImpl->mData.resize(nPtsToRead);// = alignedAllocFloat(nPtsToRead);
     // Now read it
-    auto cdata = reinterpret_cast<char *> (pImpl->mData.data());
+    char *cdata = reinterpret_cast<char *> (pImpl->mData.data());
     sacfl.read(cdata, nBytesRemaining);
     sacfl.close();
     if (lswap)
     {
         for (int i = 0; i < nPtsToRead; i++)
         {
-            auto indx = 4*i;
             pImpl->mData[i] = swapFloat(pImpl->mData[i]);
         }
     }
