@@ -271,7 +271,7 @@ std::string EventSummaryLine::packString() const
         setInteger(8, 10, originTime.getHour(), result);
         setInteger(10, 12, originTime.getMinute(), result);
         setInteger(12, 14, originTime.getSecond(), result);
-        setInteger(14, 16, originTime.getMicroSecond()/1000, result);
+        setInteger(14, 16, originTime.getMicroSecond()/10000, result);
     }
     if (haveLatitude())
     {

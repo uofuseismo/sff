@@ -493,14 +493,15 @@ std::string StationArchiveLine::packString() const noexcept
         setInteger(27, 29, pickTime.getMinute(), result);
         if (havePPickTime())
         {
+//if (getStationName() == "YMR"){std::cout << pickTime << " " << pickTime.getMicroSecond() << " " << pickTime.getMicroSecond()/10000; getchar();}
             setInteger(30, 32, pickTime.getSecond(), result, false);
-            setInteger(32, 34, pickTime.getMicroSecond() / 1000, result);
+            setInteger(32, 34, pickTime.getMicroSecond() / 10000, result);
         }
         if (haveSPickTime())
         {
             if (havePPickTime()){pickTime = getSPickTime();}
             setInteger(42, 44, pickTime.getSecond(), result, false);
-            setInteger(44, 46, pickTime.getMicroSecond() / 1000, result);
+            setInteger(44, 46, pickTime.getMicroSecond() / 10000, result);
         }
     }
     if (havePResidual())

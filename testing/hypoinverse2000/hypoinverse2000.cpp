@@ -55,6 +55,9 @@ TEST(Hypo2000, StationArchiveLine)
     std::string pPickString("RBU  UU  EHZ IPU0202003181320 2596 -14198        0                   0     218110 0      84 85227    300     D 02");
     //std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2 -15   1424 0 24       0 1341210  14     199   251       0J L01");
     std::string sPickString("NOQ  UU  HHN    4202003181320             2689ES 2  -8   1424 0 24       0 1341210  14     199   251       0J L01");
+
+    std::string pPickStringMS("RBU  UU  EHZ IPU0202003181320 2506 -14198        0                   0     218110 0      84 85227    300     D 02");
+    std::string sPickStringMS("NOQ  UU  HHN    4202003181320             2609ES 2  -8   1424 0 24       0 1341210  14     199   251       0J L01");
     
     SFF::Utilities::Time pickTime;
     StationArchiveLine pPick;  
@@ -134,6 +137,25 @@ catch (const std::exception &e)
     EXPECT_EQ(sstring, sPickString);
     std::cout << sPickString << std::endl;
     std::cout << sstring << std::endl;
+
+    pPick.unpackString(pPickStringMS);
+    auto pPickTime = pPick.getPPickTime();
+    std::stringstream pstreamMS;
+    pstreamMS << pPickTime;
+    EXPECT_EQ(pstreamMS.str(), std::string("2020-03-18T13:20:25.060000"));
+
+    sPick.unpackString(sPickStringMS);
+    auto sPickTime = sPick.getSPickTime();
+    std::stringstream sstreamMS;
+    sstreamMS << sPickTime;
+    EXPECT_EQ(sstreamMS.str(), std::string("2020-03-18T13:20:26.090000"));
+
+    pPick.setPPickTime(pPickTime);
+    sPick.setSPickTime(sPickTime);
+    pstring = pPick.packString();
+    sstring = sPick.packString();
+    EXPECT_EQ(pstring, pPickStringMS);
+    EXPECT_EQ(sstring, sPickStringMS);
 }
 
 }
