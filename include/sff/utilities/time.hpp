@@ -52,24 +52,18 @@ public:
     void clear() noexcept;
     /// @}
 
-    /*!
-     * @name Epochal Time Setters/Getters
-     * @{
-     */
-    /*!
-     * @brief Sets the epochal time.
-     * @param[in] epoch  The number of seconds since the epoch (Jan 1, 1970)
-     *                   in UTC for which the date will be initialized.
-     */
+    /// @name Epochal Time Setters/Getters
+    /// @{
+    /// @brief Sets the epochal time.
+    /// @param[in] epoch  The number of seconds since the epoch (Jan 1, 1970)
+    ///                   in UTC for which the date will be initialized.
     void setEpoch(double epoch);
-    /*!
-     * @brief Gets the epochal time (seconds) correpsonding to the time
-     *        set in the class.
-     * @result The UTC epochal time in seconds since the epoch.
-     * @throws std::invalid_argument if the time is improperly set.
-     */
+    /// @brief Gets the epochal time (seconds) correpsonding to the time
+    ///        set in the class.
+    /// @result The UTC epochal time in seconds since the epoch.
+    /// @throws std::invalid_argument if the time is improperly set.
     [[nodiscard]] double getEpoch() const;
-    /*! @} */
+    /// @}
 
     /// @name Year
     /// @{
