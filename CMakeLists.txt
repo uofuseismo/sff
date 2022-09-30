@@ -83,7 +83,7 @@ if (${FindMiniSEED_FOUND})
    message("Found MiniSEED")
 endif()
 
-if (WRAP_PYTHON)
+if (${WRAP_PYTHON})
    find_package(PythonInterp 3)
    find_package(PythonLibs 3 REQUIRED)
    message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
@@ -167,7 +167,7 @@ target_include_directories(sff
                                   $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
 #target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
 
-if (WRAP_PYTHON)
+if (${WRAP_PYTHON})
    add_library(pysff MODULE
                python/time.cpp
                python/sac.cpp

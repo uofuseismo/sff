@@ -24,108 +24,118 @@ namespace
 //                                   Unpack                                   //
 //----------------------------------------------------------------------------//
 
+
+
+union SI2
+{   
+    char c2[2];
+    int16_t val;
+};
+
+union SI4 
+{   
+    char c4[4];
+    int32_t val;
+}; 
+
+union SF4 
+{   
+    char c4[4];
+    float val;
+}; 
+
+union SF8
+{
+    char c8[8];
+    double val;
+};
+
 #pragma omp declare simd uniform(lswap)
 [[maybe_unused]] int16_t unpackShort(const char c[2], const bool lswap)
 {
-    union
-    {
-        char c2[2];
-        int16_t val;
-    };
+    SI2 s;
     if (lswap)
     {
-        c2[0] = c[1];
-        c2[1] = c[0];
+        s.c2[0] = c[1];
+        s.c2[1] = c[0];
     }
     else
     {
-        c2[0] = c[0];
-        c2[1] = c[1];
+        s.c2[0] = c[0];
+        s.c2[1] = c[1];
     }
-    return val;
+    return s.val;
 }
 
 #pragma omp declare simd uniform(lswap)
 [[maybe_unused]] int32_t unpackInt(const char c[4], const bool lswap)
 {
-    union
-    {
-        char c4[4];
-        int32_t val;
-    };
+    SI4 s;
     if (lswap)
     {
-        c4[0] = c[3];
-        c4[1] = c[2];
-        c4[2] = c[1];
-        c4[3] = c[0];
+        s.c4[0] = c[3];
+        s.c4[1] = c[2];
+        s.c4[2] = c[1];
+        s.c4[3] = c[0];
     }
     else
     {
-        c4[0] = c[0];
-        c4[1] = c[1];
-        c4[2] = c[2];
-        c4[3] = c[3];
+        s.c4[0] = c[0];
+        s.c4[1] = c[1];
+        s.c4[2] = c[2];
+        s.c4[3] = c[3];
     }
-    return val;
+    return s.val;
 }
 
 #pragma omp declare simd uniform(lswap)
 [[maybe_unused]] float unpackFloat(const char c[4], const bool lswap)
 {
-    union
-    {
-        char c4[4];
-        float val;
-    };
+    SF4 s;
     if (lswap)
     {
-        c4[0] = c[3];
-        c4[1] = c[2];
-        c4[2] = c[1];
-        c4[3] = c[0];
+        s.c4[0] = c[3];
+        s.c4[1] = c[2];
+        s.c4[2] = c[1];
+        s.c4[3] = c[0];
     }
     else
     {
-        c4[0] = c[0];
-        c4[1] = c[1];
-        c4[2] = c[2];
-        c4[3] = c[3];
+        s.c4[0] = c[0];
+        s.c4[1] = c[1];
+        s.c4[2] = c[2];
+        s.c4[3] = c[3];
     }
-    return val;
+    return s.val;
 }
 
 #pragma omp declare simd uniform(lswap)
 [[maybe_unused]] double unpackDouble(const char c[8], const bool lswap)
 {
-    union
-    {
-        char c8[8];
-        double val;
-    };  
+    SF8 s;
     if (lswap)
     {
-        c8[0] = c[7];
-        c8[1] = c[6];
-        c8[2] = c[5];
-        c8[3] = c[4];
-        c8[4] = c[3];
-        c8[5] = c[2];
-        c8[6] = c[1];
-        c8[7] = c[0];
+        s.c8[0] = c[7];
+        s.c8[1] = c[6];
+        s.c8[2] = c[5];
+        s.c8[3] = c[4];
+        s.c8[4] = c[3];
+        s.c8[5] = c[2];
+        s.c8[6] = c[1];
+        s.c8[7] = c[0];
     }
     else
     {
-        c8[0] = c[0];
-        c8[1] = c[1];
-        c8[2] = c[2];
-        c8[3] = c[3];
-        c8[4] = c[4];
-        c8[5] = c[5];
-        c8[6] = c[6];
-        c8[7] = c[7];
+        s.c8[0] = c[0];
+        s.c8[1] = c[1];
+        s.c8[2] = c[2];
+        s.c8[3] = c[3];
+        s.c8[4] = c[4];
+        s.c8[5] = c[5];
+        s.c8[6] = c[6];
+        s.c8[7] = c[7];
     }
-    return val;
+    return s.val;
 }
 
 //----------------------------------------------------------------------------//
@@ -136,71 +146,59 @@ namespace
 [[maybe_unused]] void packShort(const int16_t valIn, char c[2],
                                 const bool lswap)
 {
-    union
-    {
-        char c2[2];
-        int16_t val;
-    };
-    val = valIn;
+    SI2 s;
+    s.val = valIn;
     if (lswap)
     {
-        c[0] = c2[1];
-        c[1] = c2[0];
+        c[0] = s.c2[1];
+        c[1] = s.c2[0];
     }
     else
     {
-        c[0] = c2[0];
-        c[1] = c2[1];
+        c[0] = s.c2[0];
+        c[1] = s.c2[1];
     }
 }
 
 #pragma omp declare simd uniform(lswap)
 [[maybe_unused]] void packInt(const int32_t valIn, char c[4], const bool lswap)
 {
-    union
-    {
-        char c4[4];
-        int32_t val;
-    };
-    val = valIn;
+    SI4 s;
+    s.val = valIn;
     if (lswap)
     {
-        c[0] = c4[3];
-        c[1] = c4[2];
-        c[2] = c4[1];
-        c[3] = c4[0];
+        c[0] = s.c4[3];
+        c[1] = s.c4[2];
+        c[2] = s.c4[1];
+        c[3] = s.c4[0];
     }
     else
     {
-        c[0] = c4[0];
-        c[1] = c4[1];
-        c[2] = c4[2];
-        c[3] = c4[3];
+        c[0] = s.c4[0];
+        c[1] = s.c4[1];
+        c[2] = s.c4[2];
+        c[3] = s.c4[3];
     }
 }
 
 #pragma omp declare simd uniform(lswap)
 [[maybe_unused]] void packFloat(const float valIn, char c[4], const bool lswap)
 {
-    union
-    {
-        char c4[4];
-        float val;
-    };
-    val = valIn;
+    SF4 s;
+    s.val = valIn;
     if (lswap)
     {
-        c[0] = c4[3];
-        c[1] = c4[2];
-        c[2] = c4[1];
-        c[3] = c4[0];
+        c[0] = s.c4[3];
+        c[1] = s.c4[2];
+        c[2] = s.c4[1];
+        c[3] = s.c4[0];
     }
     else
     {
-        c[0] = c4[0];
-        c[1] = c4[1];
-        c[2] = c4[2];
-        c[3] = c4[3];
+        c[0] = s.c4[0];
+        c[1] = s.c4[1];
+        c[2] = s.c4[2];
+        c[3] = s.c4[3];
     }
 }
 
@@ -208,33 +206,29 @@ namespace
 [[maybe_unused]] void packDouble(const double valIn, char c[8],
                                  const bool lswap)
 {
-    union
-    {
-        char c8[8];
-        double val;
-    };
-    val = valIn;
+    SF8 s;
+    s.val = valIn;
     if (lswap)
     {
-        c[0] = c8[7];
-        c[1] = c8[6];
-        c[2] = c8[5];
-        c[3] = c8[4];
-        c[4] = c8[3];
-        c[5] = c8[2];
-        c[6] = c8[1];
-        c[7] = c8[0];
+        c[0] = s.c8[7];
+        c[1] = s.c8[6];
+        c[2] = s.c8[5];
+        c[3] = s.c8[4];
+        c[4] = s.c8[3];
+        c[5] = s.c8[2];
+        c[6] = s.c8[1];
+        c[7] = s.c8[0];
     }
     else
     {
-        c[0] = c8[0];
-        c[1] = c8[1];
-        c[2] = c8[2];
-        c[3] = c8[3];
-        c[4] = c8[4];
-        c[5] = c8[5];
-        c[6] = c8[6];
-        c[7] = c8[7];
+        c[0] = s.c8[0];
+        c[1] = s.c8[1];
+        c[2] = s.c8[2];
+        c[3] = s.c8[3];
+        c[4] = s.c8[4];
+        c[5] = s.c8[5];
+        c[6] = s.c8[6];
+        c[7] = s.c8[7];
     }
 }
 
@@ -243,22 +237,12 @@ namespace
 ///--------------------------------------------------------------------------///
 [[nodiscard]] float swapFloat(const float f4)
 {
-    union
-    {
-        char c4[4];
-        float val;
-    };
-    val = f4;
-    union 
-    {
-        char c4r[4]; 
-        float result;
-    };
-    c4r[3] = c4[0];
-    c4r[2] = c4[1];
-    c4r[1] = c4[2];
-    c4r[0] = c4[3];
-    return result;
+    SF4 s;
+    s.val = f4;
+    char c4Temp[4];
+    std::reverse_copy(s.c4, s.c4 + 4, c4Temp);
+    std::copy(c4Temp, c4Temp + 4, s.c4);
+    return s.val;
 }
 
 }
