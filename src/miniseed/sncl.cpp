@@ -94,7 +94,7 @@ void SNCL::clear() noexcept
 }
 
 /// Network
-int SNCL::getMaximumNetworkLength() const noexcept
+int SNCL::getMaximumNetworkLength() noexcept 
 {
     return NETWORK_LENGTH;
 }
@@ -114,7 +114,7 @@ void SNCL::setNetwork(const std::string &str) noexcept
 }
 
 /// Station
-int SNCL::getMaximumStationLength() const noexcept
+int SNCL::getMaximumStationLength() noexcept
 {
     return STATION_LENGTH;
 }
@@ -134,7 +134,7 @@ void SNCL::setStation(const std::string &str) noexcept
 }
 
 /// Channel
-int SNCL::getMaximumChannelLength() const noexcept
+int SNCL::getMaximumChannelLength() noexcept 
 {
     return CHANNEL_LENGTH;
 }
@@ -154,7 +154,7 @@ void SNCL::setChannel(const std::string &str) noexcept
 }
 
 /// Location code
-int SNCL::getMaximumLocationCodeLength() const noexcept
+int SNCL::getMaximumLocationCodeLength() noexcept 
 {
     return LOCATION_LENGTH;
 }

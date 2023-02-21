@@ -134,6 +134,7 @@ set(SRC
 #    include/sff/hypoinverse2000/eventSummaryLine.hpp
 #    include/sff/hypoinverse2000/stationArchiveLine.hpp)
 if (${FindMiniSEED_FOUND})
+   add_compile_definitions(USE_MSEED)
    set(MINISEED_SRC
        src/miniseed/sncl.cpp
        src/miniseed/trace.cpp
@@ -168,12 +169,15 @@ target_include_directories(sff
 #target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
 
 if (${WRAP_PYTHON})
-   add_library(pysff MODULE
-               python/time.cpp
-               python/sac.cpp
-               python/silixaSEGY.cpp
-               python/hypoinverse2000.cpp
-               python/pysff.cpp)
+   SET(PYTHON_SOURCE python/time.cpp
+                     python/sac.cpp
+                     python/silixaSEGY.cpp
+                     python/hypoinverse2000.cpp
+                     python/pysff.cpp)
+   if (${FindMiniSEED_FOUND})
+       SET(PYTHON_SOURCE ${PYTHON_SOURCE} python/miniseed.cpp)
+   endif()
+   add_library(pysff MODULE ${PYTHON_SOURCE}) 
    target_link_libraries(pysff PRIVATE pybind11::module sff)# OpenMP::OpenMP_CXX)
    #set_property(TARGET pyforged PROPERTY CXX_STD_14) # Uncomment for old Intel CXX compiler doesn't work
    set_property(TARGET pysff PROPERTY PREFIX "")

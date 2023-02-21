@@ -66,7 +66,7 @@ public:
     [[nodiscard]] std::string getNetwork() const noexcept;
     /// @result The maximum network string length.
     /// @note A typical length is 2 but the file format can accomodate 10.
-    [[nodiscard]] int getMaximumNetworkLength() const noexcept;
+    [[nodiscard]] static int getMaximumNetworkLength() noexcept;
     /// @} 
 
     /// @name Station
@@ -80,7 +80,7 @@ public:
     [[nodiscard]] std::string getStation() const noexcept;
     /// @result The maximum station name string length.
     /// @note A typical length is 3-5 but the file format can accomodate 10.
-    [[nodiscard]] int getMaximumStationLength() const noexcept;
+    [[nodiscard]] static int getMaximumStationLength() noexcept;
     /// @}
 
     /// @name Channel
@@ -93,7 +93,7 @@ public:
     [[nodiscard]] std::string getChannel() const noexcept;
     /// @result The maximum channel name string length.
     /// @note A typical length is 3 but the file format can accomodate 10.
-    [[nodiscard]] int getMaximumChannelLength() const noexcept;
+    [[nodiscard]] static int getMaximumChannelLength() noexcept;
     /// @}
 
     /// @name Location Code
@@ -106,7 +106,7 @@ public:
     [[nodiscard]] std::string getLocationCode() const noexcept;
     /// @result The maximum location code string length.
     /// @note A typical length is 0 or 2 but the file format can accomodate 10.
-    [[nodiscard]] int getMaximumLocationCodeLength() const noexcept;
+    [[nodiscard]] static int getMaximumLocationCodeLength() noexcept;
     /// @}
 
     /// @brief Convenience routine to determine if the network, station,

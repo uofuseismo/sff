@@ -3,6 +3,7 @@
 #include "sac.hpp"
 #include "silixaSEGY.hpp"
 #include "hypoinverse2000.hpp"
+#include "miniseed.hpp"
 #include <pybind11/pybind11.h>
 
 PYBIND11_MODULE(pysff, m)
@@ -16,4 +17,8 @@ PYBIND11_MODULE(pysff, m)
 
     pybind11::module hypo2kModule = m.def_submodule("HypoInverse2000");
     PBSFF::HypoInverse2000::initialize(hypo2kModule);
+
+#ifdef USE_MSEED
+    PBSFF::MiniSEED::initialize(m);
+#endif
 }
