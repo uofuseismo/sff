@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <limits>
 #include "sff/hypoinverse2000/eventSummary.hpp"
 #include "sff/hypoinverse2000/eventSummaryLine.hpp"
 #include "sff/hypoinverse2000/stationArchiveLine.hpp"
@@ -54,15 +55,21 @@ int getNumberOfPolarities(const std::vector<StationArchiveLine> &picks)
 /// @retval A negative indicates that this could not be computed.
 double getSmallestDistance(const std::vector<StationArchiveLine> &picks)
 {
-    auto dmin = std::numeric_limits<double>::max();
+    bool haveSmallestDistance{false};
+    double dmin{0};
     for (const auto &pick : picks)
     {
         if (pick.haveEpicentralDistance())
         {
+            if (!haveSmallestDistance)
+            {
+                dmin = pick.getEpicentralDistance();
+                haveSmallestDistance = true;
+            }
             dmin = std::min(dmin, pick.getEpicentralDistance());
         }
     }
-    if (dmin == std::numeric_limits<double>::max()){return -1;}
+    if (!haveSmallestDistance){return -1;}
     return dmin;
 }
 
