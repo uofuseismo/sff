@@ -36,13 +36,13 @@ inline std::string returnString16(const char c[16]);
 inline int unpacki4(const char c4[4], bool lswap);
 inline double unpackf4(const char c4[4], bool lswap);
 
-inline std::string returnString8(const char c[])
+inline std::string returnString8(const char c[8])
 {
     std::string result(c, strnlen(c, 8));
     return result; 
 }
 
-inline std::string returnString16(const char c[])
+inline std::string returnString16(const char c[16])
 {
     std::string result(c, strnlen(c, 16));
     return result;
@@ -328,7 +328,7 @@ Header::Header() :
 
 /// Creates a header from a character stream
 [[maybe_unused]]
-Header::Header(const char header[], const bool lswap) :
+Header::Header(const char header[632], const bool lswap) :
     pImpl(std::make_unique<HeaderImpl> ())
 {
     setFromBinaryHeader(header, lswap);
