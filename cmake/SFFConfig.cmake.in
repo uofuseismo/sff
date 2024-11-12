@@ -1,0 +1,35 @@
+# SFF cmake module
+#
+# The following import targets are created
+#
+# ::
+#
+#   libsff-static
+#   libsff
+#
+# This module sets the following variables in your project::
+#
+#   SFF_FOUND - true if sff was found on the system
+#   SFF_INCLUDE_DIR - the directory containing SFF headers
+#   SFF_LIBRARY - 
+#   SFF_STATIC_LIBRARY
+
+@PACKAGE_INIT@
+
+if(NOT TARGET sff AND NOT TARGET sff-static)
+  include("${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake")
+
+  if (TARGET sff)
+    get_target_property(@PROJECT_NAME@_INCLUDE_DIR sff INTERFACE_INCLUDE_DIRECTORIES)
+  else ()
+    get_target_property(@PROJECT_NAME@_INCLUDE_DIR sff-static INTERFACE_INCLUDE_DIRECTORIES)
+  endif()
+
+  if (TARGET sff)
+    get_target_property(@PROJECT_NAME@_LIBRARY sff LOCATION)
+  endif()
+  if (TARGET sff-static)
+    get_target_property(@PROJECT_NAME@_STATIC_LIBRARY sff-static LOCATION)
+  endif()
+endif()
+

@@ -74,8 +74,8 @@ endif()
 #                         Look For Some Required Libraries                     #
 ################################################################################
 find_package(GTest REQUIRED)
-set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/CMakeModules)
-set(FindTime_DIR     ${CMAKE_SOURCE_DIR}/CMakeModules)
+set(FindMiniSEED_DIR ${CMAKE_SOURCE_DIR}/cmake)
+set(FindTime_DIR     ${CMAKE_SOURCE_DIR}/cmake)
 find_package(FindMiniSEED)
 find_package(FindTime REQUIRED)
 
@@ -84,11 +84,10 @@ if (${FindMiniSEED_FOUND})
 endif()
 
 if (${WRAP_PYTHON})
-   find_package(PythonInterp 3)
-   find_package(PythonLibs 3 REQUIRED)
    message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
    message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
    message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
+   find_package(Python COMPONENTS Interpreter Development)
    find_package(pybind11 REQUIRED)
 endif()
 
@@ -163,9 +162,10 @@ set_target_properties(sff PROPERTIES
                       CXX_EXTENSIONS NO)
 target_link_libraries(sff PRIVATE ${SFF_PRIVATE_LIBRARIES})
 target_include_directories(sff
-                           PRIVATE ${SFF_PRIVATE_INCLUDES}
-                           PUBLIC $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
-                                  $<INSTALL_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>)
+                           PRIVATE date::date
+                           PRIVATE $<BUILD_INTERFACE:${SFF_PRIVATE_INCLUDES}>
+                           PRIVATE $<BUILD_INTERFACE:${PUBLIC_HEADER_DIRECTORIES}>
+                           PUBLIC  $<INSTALL_INTERFACE:include>)
 #target_include_directories(sff PRIVATE ${PRIVATE_HEADER_DIRECTORIES} ${MINISEED_INCLUDE_DIR} ${TIME_INCLUDE_DIR})
 
 if (${WRAP_PYTHON})
@@ -207,21 +207,46 @@ file(COPY ${CMAKE_SOURCE_DIR}/testing/data DESTINATION .)
 #                                Installation                                  #
 ################################################################################
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    cmake/SFFConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    VERSION "${version}"
+    COMPATIBILITY AnyNewerVersion
+)
 if (WRAP_PYTHON)
    install(TARGETS sff pysff
+           EXPORT ${PROJECT_NAME}-targets
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+           COMPONENT Runtime)
 else()
    install(TARGETS sff
+           EXPORT ${PROJECT_NAME}-targets
            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+           PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+           COMPONENT Runtime)
 endif()
 install(DIRECTORY ${PUBLIC_HEADER_DIRECTORIES}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+#install(DIRECTORY ${PUBLIC_HEADER_DIRECTORIES}/time
+#        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+export(EXPORT ${PROJECT_NAME}-targets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
+install(EXPORT ${PROJECT_NAME}-targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
 ##########################################################################################
 #                                     CPACK Packaging                                    #
 ##########################################################################################
